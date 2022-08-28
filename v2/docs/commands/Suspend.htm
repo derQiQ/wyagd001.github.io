@@ -23,36 +23,38 @@
   <dd>
     <p>类型: <a href="../Concepts.htm#strings">字符串</a>或<a href="../Concepts.htm#numbers">整数</a></p>
     <p>以下值之一:</p>
-    <p><strong>On</strong> 或 1 (<a href="../Variables.htm#True">true</a>): 挂起所有的<a href="../Hotkeys.htm">热键</a>和<a href="../Hotstrings.htm">热字串</a>, 备注部分说明的除外.</p>
-    <p><strong>Off</strong> 或 0 (<a href="../Variables.htm#False">false</a>): 重新启用上面禁用的热键和热字串.</p>
-    <p><strong>Toggle</strong> 或 -1 (默认的): 更改为与以前状态相反的状态(On 或 Off).</p>
+    <p><code>1</code> 或 <code>True</code>: 挂起所有的<a href="../Hotkeys.htm">热键</a>和<a href="../Hotstrings.htm">热字串</a>, 备注部分说明的豁免除外.</p>
+    <p><code>0</code> 或 <code>False</code>: 重新启用上面禁用的热键和热字串.</p>
+    <p><code>-1</code> (默认的): 更改为与以前状态相反的状态(On 或 Off).</p>
   </dd>
 
 </dl>
 
 <h2 id="Remarks">备注</h2>
 <p>默认情况下, 脚本也可以通过它的<a href="../Program.htm#tray-icon">托盘图标</a>或<a href="../Program.htm#main-window">主窗口</a>来挂起.</p>
-<p>A hotkey/hotstring can be made exempt from suspension by preceding it with the <a href="_SuspendExempt.htm">#SuspendExempt</a> directive. An exempt hotkey/hotstring will remain enabled even while suspension is ON. This allows suspension to be turned off via a hotkey, which would otherwise be impossible since the hotkey would be suspended.</p>
-<p>The <a href="_InstallKeybdHook.htm">keyboard</a> and/or <a href="_InstallMouseHook.htm">mouse</a> hooks will be installed or removed if justified by the changes made by this function.</p>
-<p>To disable selected hotkeys or hotstrings automatically based on any condition, such as the type of window that is active, use <a href="_If.htm">#If</a>.</p>
-<p>Suspending a script's hotkeys does not stop the script's already-running <a href="../misc/Threads.htm">threads</a> (if any); use <a href="Pause.htm">Pause</a> to do that.</p>
-<p>When a script's hotkeys are suspended, its tray icon changes to the letter S. This can be avoided by freezing the icon, which is done by specifying 1 for the last parameter of the TraySetIcon function. 例如:</p>
-<pre><a href="TraySetIcon.htm">TraySetIcon</a> "C:\My Icon.ico", , 1</pre>
-<p>当脚本挂起时, 内置变量 A_IsSuspended 为 1, 否则为 0.</p>
+<p>热键/热字串可以通过在它前面加上 <a href="_SuspendExempt.htm">#SuspendExempt</a> 指令来避免挂起. 即使挂起为 ON, 豁免热键/热字符串将保持启用. 这允许通过热键来关闭挂起, 否则这是不可能的, 因为热键将被挂起.</p>
+<p>如果此函数所做的更改有充分理由, 那么<a href="InstallKeybdHook.htm">键盘</a>和/或<a href="InstallMouseHook.htm">鼠标</a>钩子将安装或删除.</p>
+<p>要根据任何条件(如活动窗口的类型) 自动禁用选定的热键或热字串, 请使用 <a href="_HotIf.htm">#HotIf</a>.</p>
+<p>挂起脚本的热键不会停止脚本中已经运行的<a href="../misc/Threads.htm">线程</a>(如果有); 请使用 <a href="Pause.htm">Pause</a> 来让它停止.</p>
+<p>当脚本的热键挂起时, 它的托盘图标会变为字母 S. 这可以通过冻结图标来避免, 这是通过为 TraySetIcon 函数的最后一个参数指定 1 来实现的. 例如:</p>
+<pre><a href="TraySetIcon.htm">TraySetIcon</a> ,, 1</pre>
+<p>当脚本挂起时, 内置变量 <a href="../Variables.htm#IsSuspended">A_IsSuspended</a> 为 1, 否则为 0.</p>
 
 <h2 id="Related">相关</h2>
-<p><a href="_SuspendExempt.htm">#SuspendExempt</a>, <a href="../Hotkeys.htm">Hotkeys</a>, <a href="../Hotstrings.htm">Hotstrings</a>, <a href="_If.htm">#If</a>, <a href="Pause.htm">Pause</a>, <a href="ExitApp.htm">ExitApp</a></p>
+<p><a href="_SuspendExempt.htm">#SuspendExempt</a>, <a href="../Hotkeys.htm">热键</a>, <a href="../Hotstrings.htm">热字串</a>, <a href="_HotIf.htm">#HotIf</a>, <a href="Pause.htm">Pause</a>, <a href="ExitApp.htm">ExitApp</a></p>
 
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExHotkey">
-<p><a href="#ExHotkey">#1</a></p>
-<pre>^!s::Suspend  <em>; 设置一个切换挂起功能的热键.</em></pre>
+<p><a class="ex_number" href="#ExHotkey"></a> 按下一次热键可暂停所有热键和热字串. 再按一次可取消暂停.</p>
+<pre>#SuspendExempt
+^!s::Suspend  <em>; Ctrl+Alt+S</em>
+#SuspendExempt False</pre>
 </div>
 
 <div class="ex" id="ExPostMessage">
-<p><a href="#ExPostMessage">#2</a>: 发送 Suspend 函数到另一个脚本.</p>
+<p><a class="ex_number" href="#ExPostMessage"></a> 发送 Suspend 函数到另一个脚本.</p>
 <pre>DetectHiddenWindows True
-WM_COMMAND := 0x111
+WM_COMMAND := 0x0111
 ID_FILE_SUSPEND := 65404
 <a href="PostMessage.htm">PostMessage</a> WM_COMMAND, ID_FILE_SUSPEND,,, "C:\YourScript.ahk ahk_class AutoHotkey"</pre>
 </div>

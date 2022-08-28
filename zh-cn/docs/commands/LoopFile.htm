@@ -18,7 +18,7 @@
 <h2 id="new">新语法 <span class="ver">[v1.1.21+]</span></h2>
 <pre class="Syntax"><span class="func">Loop, Files</span>, FilePattern <span class="optional">, Mode</span></pre>
 
-<h3>参数</h3>
+<h3 id="New_Parameters">参数</h3>
 <dl>
 
   <dt>Files</dt>
@@ -27,21 +27,26 @@
   <dt>FilePattern(文件模式)</dt>
   <dd><p>单个文件或文件夹的名称或者通配符模式, 例如 <code>C:\Temp\*.tmp</code>. 如果未指定绝对路径, 则假定 <em>FilePattern</em> 在 <a href="../Variables.htm#WorkingDir">A_WorkingDir</a>.</p>
      <p>支持星号和问号作为通配符使用. 当模式出现在文件的长/普通名称或其 <a href="#LoopFileShortName">8.3 短名称</a>时出现匹配.</p>
-     <p>如果此参数为单个文件或文件夹(即不含通配符) 且 <em>Mode</em> 包含 <code>R</code>, 同时指定的文件名出现在多个被搜索的文件夹中, 那么将找到多个匹配.</p></dd>
+     <p>如果此参数为单个文件或文件夹(即不含通配符) 且 <em>Mode</em> 包含 R, 同时指定的文件名出现在多个被搜索的文件夹中, 那么将找到多个匹配.</p>
+     <p>由于<a href="../misc/LongPaths.htm">系统限制(MAX_PATH)</a>, 超过 259 个字符的模式可能无法找到任何文件. 这个限制可以通过使用 <code>\\?\</code> <a href="../misc/LongPaths.htm#prefix">长路径前缀</a>绕过, 但有一些条件.</code></p>
+     </dd>
 
   <dt>Mode(方式)</dt>
-  <dd><p>零个或多个下列字母(的组合):</p>
-      <p><code>D</code> : 包含目录(文件夹).<br>
-      <code>F</code> : 包含文件. 如果同时省略 F 和 D, 则仅包含文件而不包括目录 .<br>
-      <code>R</code> : 递归子目录. 如果省略 R, 则不包含子目录中的文件和目录.</p></dd>
-
+  <dd><p>如果为空或省略, 则只包括文件且不递归子文件夹. 否则, 指定一个或多个下列字母:</p>
+      <ul>
+      <li>D = 包含目录(文件夹).</li>
+      <li>F = 包含文件. 如果同时省略 F 和 D, 则仅包含文件而不包括目录 .</li>
+      <li>R = 递归子目录. 如果省略 R, 则不包含子目录中的文件和目录.</li>
+    </ul>
+  </dd>
+  
 </dl>
 
 <h2 id="old">传统语法</h2>
-<p class="warning"><strong>不推荐:</strong> 不推荐在新脚本中使用此语法. 而是使用<a href="#new">新语法</a>.</p>
+<p class="warning"><strong>过时的:</strong> 不推荐在新脚本中使用此语法. 而是使用<a href="#new">新语法</a>.</p>
 <pre class="Syntax"><span class="func">Loop</span>, FilePattern <span class="optional">, IncludeFolders?, Recurse?</span></pre>
 
-<h3>参数</h3>
+<h3 id="Old_Parameters">参数</h3>
 <dl>
 
   <dt>FilePattern</dt>
@@ -50,21 +55,30 @@
       <p>如果此参数为单个文件或文件夹(即不含通配符) 且 <em>Recurse</em> 值为 1, 同时指定的文件名出现在多个被搜索的文件夹中, 那么将找到多个匹配.</p></dd>
 
   <dt>IncludeFolders?(包含子文件夹?)</dt>
- <dd><p>使用下列的其中一个数字, 或留空以使用默认值:<br>
-      0(默认) 不获取文件夹(仅文件).<br>
-      1 获取所有匹配通配符模式的文件和文件夹.<br>
-      2 仅获取文件夹(不获取文件).</p></dd>
+  <dd><p>如果为空或省略, 则默认为 0(仅获取文件). 否则, 指定下列数字之一:</p>
+      <ul>
+      <li>0 = 不获取文件夹(仅文件).</li>
+      <li>1 = 获取所有匹配通配符模式的文件和文件夹.</li>
+      <li>2 = 仅获取文件夹(不获取文件).</li>
+    </ul>
+  </dd>
   
   <dt>Recurse?(递归?)</dt>
-  <dd>使用下列的其中一个数字, 或留空以使用默认值:<br>
-      0(默认) 不对子文件夹进行递归.<br>
-      1 递归子文件夹, 以便获取包含在其中的匹配 <em>FilePattern</em> 的文件和文件夹. 将递归所有子文件夹, 而不仅是名称匹配 <em>FilePattern</em> 的那些.</dd>
-
+  <dd><p>如果为空或省略, 则默认为 0(不递归子文件夹). 否则, 指定下列数字之一:</p>
+      <li>0 = 不对子文件夹进行递归.</li>
+      <li>1 = 递归子文件夹, 以便获取包含在其中的匹配 <em>FilePattern</em> 的文件和文件夹. 将递归所有子文件夹, 而不仅是名称匹配 <em>FilePattern</em> 的那些.</li>
+    </ul>
+  </dd>
+  
 </dl>
 
-<h2>可在文件循环中使用的特殊变量</h2>
+<h2 id="Special_Variables">可在文件循环中使用的特殊变量</h2>
 <p>下列变量存在于任何文件循环中. 如果一个内层文件循环包含在一个外层文件循环中, 那么最内层循环的文件将具有优先权:</p>
 <table class="info">
+  <tr>
+    <th abbr="Var">变量</th>
+    <th abbr="Descr">描述</th>
+  </tr>
   <tr id="LoopFileName">
     <td>A_LoopFileName</td>
     <td>当前获取的文件或文件夹的名称(不含路径).</td>
@@ -129,7 +143,7 @@
   </tr>
 </table>
 
-<h2>备注</h2>
+<h2 id="Remarks">备注</h2>
 <p>当您想同时对文件和/或文件夹集合中的项逐个进行操作时, 文件循环很有用.</p>
 <p>所有匹配的文件都被获取, 包括隐藏文件. 相比之下, 诸如 DIR 命令的 OS 特性默认忽略隐藏文件. 要避免处理隐藏, 系统和/或只读文件, 请在循环内部使用类似下面的方法:</p>
 <pre>if A_LoopFileAttrib contains H,R,S  <em>; 跳过具有 H(隐藏), R(只读) 或 S(系统) 属性的任何文件. 注意: 在 "H,R,S" 中不含空格.</em>
@@ -142,15 +156,20 @@ Loop, Files, *.jpg
 Loop, Parse, FileList, `n
    FileMove, %A_LoopField%, renamed_%A_LoopField%</pre>
 <p>在 NTFS 文件系统中的文件可能总是按字母顺序来获取. 在其他文件系统中的文件则没有特殊的获取顺序. 要使用特殊的获取顺序, 使用 <a href="Sort.htm">Sort</a> 命令, 如同下文示例部分演示的那样.</p>
-<p>文件和文件夹的完整路径名称超过 259 个字符时, 这些文件和文件夹会被跳过, 就像它们不存在一样. 这样的文件很罕见, 因为操作系统一般不允许创建它们.</p>
+<p>只有 Unicode 版本的 AutoHotkey <span class="ver">[v1.1.31+]</span> 支持超过 259 个字符的文件模式, 并且只有在满足至少一个以下情况时有效:</p>
+<ul>
+  <li>系统启用了<a href="../misc/LongPaths.htm">长路径支持</a>(需要 Windows 10 版本 1607 或更高).</li>
+  <li>使用了 <code>\\?\</code> <a href="../misc/LongPaths.htm#prefix">长路径前缀</a>(适用注意事项).</li>
+</ul>
+<p>在所有其他情况下, 超过 259 个字符的文件模式将不会找到任何文件或文件夹. 这个限制既适用于 <em>FilePattern</em>, 也适用于递归到子文件夹时使用的任何临时模式. 然而, 在 <span class="ver">[v1.1.31+]</span> 中, 每个文件的目录和文件名的组合长度可以超过 259 个字符; 在更早的版本中, 这样的文件会被跳过, 就像它们不存在一样.</p>
 <p>请参阅 <a href="Loop.htm">Loop</a> 了解关于<a href="Block.htm">区块</a>, <a href="Break.htm">Break</a>, <a href="Continue.htm">Continue</a> 和 A_Index 变量(其存在于各种类型的循环中) 的相关信息.</p>
 
-<h2>相关</h2>
+<h2 id="Related">相关</h2>
 <p><a href="Loop.htm">Loop</a>, <a href="Break.htm">Break</a>, <a href="Continue.htm">Continue</a>, <a href="Block.htm">区块</a>, <a href="SplitPath.htm">SplitPath</a>, <a href="FileSetAttrib.htm">FileSetAttrib</a>, <a href="FileSetTime.htm">FileSetTime</a></p>
 
-<h2>示例</h2>
+<h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a> 报告位于目录及其子目录中的每个文本文件的完整路径.</p>
 <pre>Loop Files, %A_ProgramFiles%\*.txt, R  <em>; 递归子文件夹.</em>
 {
     MsgBox, 4, , Filename = %A_LoopFileFullPath%`n`nContinue?
@@ -160,7 +179,7 @@ Loop, Parse, FileList, `n
 </div>
 
 <div class="ex" id="ExSize">
-<p><a href="#ExSize">#2</a>: 计算文件夹的大小, 包括其所有子文件夹中的文件:</p>
+<p><a class="ex_number" href="#ExSize"></a> 计算文件夹的大小, 包括其所有子文件夹中的文件.</p>
 <pre>SetBatchLines, -1  <em>; 让操作以最快速度进行.</em>
 FolderSizeKB := 0
 FileSelectFolder, WhichFolder  <em>; 让用户选取文件夹.</em>
@@ -170,7 +189,7 @@ MsgBox Size of %WhichFolder% is %FolderSizeKB% KB.</pre>
 </div>
 
 <div class="ex" id="ExSortName">
-<p><a href="#ExSortName">#3</a>: 获取根据名称排序的文件名(要以日期排序请参阅下一个例子):</p>
+<p><a class="ex_number" href="#ExSortName"></a> 获取根据名称排序的文件名(要以日期排序请参阅下一个例子).</p>
 <pre>FileList := ""  <em>; 初始为空.</em>
 Loop, C:\*.*
     FileList .= A_LoopFileName "`n"
@@ -186,7 +205,7 @@ Loop, parse, FileList, `n
 </div>
 
 <div class="ex" id="ExSortDate">
-<p><a href="#ExSortDate">#4</a>: 获取根据修改日期排序的文件名:</p>
+<p><a class="ex_number" href="#ExSortDate"></a> 获取根据修改日期排序的文件名.</p>
 <pre>FileList := ""
 Loop, Files, %A_MyDocuments%\Photos\*.*, FD  <em>; 包含文件和子目录</em>
     FileList .= A_LoopFileTimeModified "`t" A_LoopFileName "`n"
@@ -203,7 +222,7 @@ Loop, Parse, FileList, `n
 </div>
 
 <div class="ex" id="ExFileCopy">
-<p><a href="#ExFileCopy">#5</a>: 仅复制比目标位置中它们的副本更新的源文件:</p>
+<p><a class="ex_number" href="#ExFileCopy"></a> 仅复制比目标位置中它们的副本更新的源文件.</p>
 
 <pre>CopyIfNewer:
 <em>; 调用者已经为我们赋值了变量 CopySourcePattern 和 CopyDest.</em>
@@ -223,14 +242,14 @@ Loop, Files, %CopySourcePattern%
     {
         FileCopy, %A_LoopFileFullPath%, %CopyDest%\%A_LoopFileName%, 1   <em>; 以覆盖形式复制</em>
         if ErrorLevel
-            MsgBox, Could not copy &quot;%A_LoopFileFullPath%&quot; to &quot;%CopyDest%\%A_LoopFileName%&quot;.
+            MsgBox, Could not copy "%A_LoopFileFullPath%" to "%CopyDest%\%A_LoopFileName%".
     }
 }
 Return</pre>
 </div>
 
 <div class="ex" id="ExLongPath">
-<p><a href="#ExLongPath">#6</a>: 把通过命令行参数传递的文件名转换为长名称, 完整路径和在文件系统中存储的正确的大写/小写字符形式.</p>
+<p><a class="ex_number" href="#ExLongPath"></a> 把通过命令行参数传递的文件名转换为长名称, 完整路径和在文件系统中存储的正确的大写/小写字符形式.</p>
 <pre>Loop %0%  <em>; 对于拖放到脚本上(或作为参数传递) 的每个文件.</em>
 {
     GivenPath := %A_Index%  <em>; 获取下一个命令行参数.</em>

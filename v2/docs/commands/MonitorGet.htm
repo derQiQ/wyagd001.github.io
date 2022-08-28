@@ -16,7 +16,7 @@
 
 <p>检查指定的监视器是否存在, 并可选地检索其边界坐标.</p>
 
-<pre class="Syntax">IsExisting := <span class="func">MonitorGet</span>(<span class="optional">N, Left, Top, Right, Bottom</span>)</pre>
+<pre class="Syntax">ActualN := <span class="func">MonitorGet</span>(<span class="optional">N, &amp;Left, &amp;Top, &amp;Right, &amp;Bottom</span>)</pre>
 
 <h2 id="Parameters">参数</h2>
 <dl>
@@ -26,19 +26,22 @@
         <p>监视器编号, 介于 1 和 <a href="MonitorGetCount.htm">MonitorGetCount</a> 返回的数字之间. 如果省略, 则使用主监视器.</p>
     </dd>
     
-    <dt>Left</dt>
-    <dt>Top</dt>
-    <dt>Right</dt>
-    <dt>Bottom</dt>
+    <dt>&amp;Left</dt>
+    <dt>&amp;Top</dt>
+    <dt>&amp;Right</dt>
+    <dt>&amp;Bottom</dt>
     <dd>
-        <p>类型: <a href="../Concepts.htm#variables">变量</a></p>
-        <p>用于边界坐标(以像素为单位) 的输出变量. 如果函数返回 false, 则它们为空.</p>
+        <p>类型: <a href="../Concepts.htm#variable-references">VarRef</a></p>
+        <p>储存边界坐标(以像素为单位) 的变量的引用.</p>
     </dd>
 </dl>
 
 <h2 id="Return_Value">返回值</h2>
-<p>类型: <a href="../Concepts.htm#boolean">整数(布尔值)</a></p>
-<p>如果指定的监视器存在, 函数返回 1(true), 如果不存在或发生错误, 则返回 0(false).</p>
+<p>类型: <a href="../Concepts.htm#numbers">整数</a></p>
+<p>该函数返回显示器编号(与 N 相同, 除非省略 N).</p>
+
+<h2 id="Error_Handling">错误处理</h2>
+<p>失败时抛出异常, 输出变量不会被修改.</p>
 
 <h2 id="Remarks">备注</h2>
 <p>内置变量 <a href="../Variables.htm#Screen">A_ScreenWidth</a> 和 <a href="../Variables.htm#Screen">A_ScreenHeight</a> 包含主监视器的尺寸(以像素为单位).</p>
@@ -50,10 +53,14 @@
 
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a>: 在消息框中显示监视器 #2 的边界坐标:</p>
-<pre>if MonitorGet(2, Left, Top, Right, Bottom)
+<p><a class="ex_number" href="#ExBasic"></a> 在消息框中显示监视器 #2 的边界坐标.</p>
+<pre>
+<pre>try
+{
+    MonitorGet 2, &amp;Left, &amp;Top, &amp;Right, &amp;Bottom
     MsgBox "Left: " Left " -- Top: " Top " -- Right: " Right " -- Bottom: " Bottom
-else
+}
+catch
     MsgBox "Monitor 2 doesn't exist or an error occurred."</pre>
 </div>
 

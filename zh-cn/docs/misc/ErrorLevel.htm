@@ -3,6 +3,7 @@
 <head>
 <title>ErrorLevel | AutoHotkey</title>
 <meta name="description" content="ErrorLevel is a built-in variable that is set to indicate the success or failure of some of the commands, functions and GUI/Control events." />
+<meta name="ahk:equiv-v2" content="AutoHotkey.htm" />
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <link href="../static/theme.css" rel="stylesheet" type="text/css" />
@@ -15,10 +16,12 @@
 
 <p>这是表示一些命令执行成功与否的内置变量(有些命令不会改变 ErrorLevel 的值). 值为 0 时通常表示成功, 而其他值一般表示失败. 您也可以自己设置 ErrorLevel 的值.</p>
 <p>特别有意义的是 <a href="../commands/Run.htm">RunWait</a> 会把 ErrorLevel 设置为它所运行程序的退出代码. 大多数程序在成功完成时会产生退出代码零.</p>
-<p>每个<a href="Threads.htm">线程</a>会保持它自己的 ErrorLevel 的值, 这意味着如果<a href="Threads.htm">当前线程</a> 被其他线程中断, 那么当原始线程恢复时它仍会拥有它原来的 ErrorLevel 值, 而不是由中断线程设置的 ErrorLevel 值.</p>
+<p>每个<a href="Threads.htm">线程</a>会保持它自己的 ErrorLevel 的值, 这意味着如果<a href="Threads.htm">当前线程</a>被其他线程中断, 那么当原始线程恢复时它仍会拥有它原来的 ErrorLevel 值, 而不是由中断线程设置的 ErrorLevel 值.</p>
 <p class="note"><strong>注意</strong>: 由于一些命令会设置大于 1 的 ErrorLevel 值, 所以最好不要检查 ErrorLevel 是否大于 1, 而是检查它是否等于零.</p>
 <p>下面的列表包含了设置 ErrorLevel 的所有命令, 函数和 GUI/Control 事件, 包括可能的 ErrorLevel 值:</p>
 <table class="info">
+    <tr><th abbr="Element">语言元素</th>
+    <th abbr="Values">ErrorLevel 值</th></tr>
     <tr><td><a href="../commands/ClipWait.htm">ClipWait</a></td><td>0, 1</td></tr>
     <tr><td><a href="../commands/Control.htm">Control</a></td><td>0, 1</td></tr>
     <tr><td><a href="../commands/ControlClick.htm">ControlClick</a></td><td>0, 1</td></tr>
@@ -104,10 +107,10 @@
     <tr><td><a href="../commands/WinWaitActive.htm">WinWaitActive / WinWaitNotActive</a></td><td>0, 1</td></tr>
     <tr><td><a href="../commands/WinWaitClose.htm">WinWaitClose</a></td><td>0, 1</td></tr>
 </table>
-<h2>示例</h2>
+<h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
-<pre>WinWait, MyWindow, , 1
+<p><a class="ex_number" href="#ExBasic"></a> 最多等待 1 秒, 直到 <var>MyWindow</var> 存在. 如果 WinWait 超时, ErrorLevel 设置为 1, 否则为 0.</p>
+<pre>WinWait, MyWindow,, 1
 if ErrorLevel   <em>; 即既不是空值, 也不是零.</em>
     MsgBox, The window does not exist.
 else

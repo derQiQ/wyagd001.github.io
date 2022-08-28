@@ -32,10 +32,10 @@
     <p>类型: <a href="../Concepts.htm#strings">字符串</a></p>
     <p>要追加内容的文件名, 如果未指定绝对路径, 则假定在 <a href="../Variables.htm#WorkingDir">A_WorkingDir</a> 中. 目标目录必须已经存在.</p>
     <p id="stdout"><strong>标准输出(stdout)</strong>: 在 <em>Filename</em> 指定星号(*) 可以把 <em>Text</em> 发送到标准输出(stdout). 这样文本可以重定向到文件, 指向另一个 EXE 的管道或被<a href="_ErrorStdOut.htm">高级文本编辑器</a>捕获. 例如, 在命令提示符中输入后面的例子是有效的:</p>
-      <pre class="no-highlight">&quot;%ProgramFiles%\AutoHotkey\AutoHotkey.exe&quot; &quot;My Script.ahk&quot; &gt;&quot;Error Log.txt&quot;</pre>
-    <p>然而, 发送到标准输出的文本将不会出现在运行它的命令提示符中. 解决此问题的方法是把脚本的输出通过管道传递给另一个命令或程序. 例如:</p>
-      <pre class="no-highlight">&quot;%ProgramFiles%\AutoHotkey\AutoHotkey.exe&quot; &quot;My Script.ahk&quot; |more</pre>
-      <pre class="no-highlight">For /F &quot;tokens=*&quot; %L in ('&quot;&quot;%ProgramFiles%\AutoHotkey\AutoHotkey.exe&quot; &quot;My Script .ahk&quot;&quot;') do @Echo %L</pre>
+      <pre class="no-highlight">"%ProgramFiles%\AutoHotkey\AutoHotkey.exe" "My Script.ahk" &gt;"Error Log.txt"</pre>
+    <p>然而, 发送到标准输出的文本将不会出现在运行它的命令提示符中. 解决此问题的方法是 1) 使用 <a href="../misc/Ahk2ExeDirectives.htm#ConsoleApp">Ahk2Exe ConsoleApp 指令</a>编译脚本, 或 2) 把脚本的输出通过管道传递给另一个命令或程序. 例如:</p>
+      <pre class="no-highlight">"%ProgramFiles%\AutoHotkey\AutoHotkey.exe" "My Script.ahk" |more</pre>
+      <pre class="no-highlight">For /F "tokens=*" %L in ('""%ProgramFiles%\AutoHotkey\AutoHotkey.exe" "My Script .ahk""') do @Echo %L</pre>
     <p> 在 <em>Filename</em> 指定两个星号(**) 可以把 <em>Text</em> 发送到标准错误输出(stderr).</p>
     </dd>
 
@@ -51,7 +51,7 @@
 </dl>
 
 <h2 id="Error_Handling">错误处理</h2>
-<p>如果遇到问题, <a href="../misc/ErrorLevel.htm">ErrorLevel</a> 设置为 1, 否则设置为 0.</p>
+<p>失败时抛出 <a href="../objects/Error.htm#OSError">OSError</a>.</p>
 <p><a href="../Variables.htm#LastError">A_LastError</a> 被设置为操作系统 GetLastError() 函数返回的结果.</p>
 
 <h2 id="Remarks">备注</h2>
@@ -62,25 +62,25 @@
 <p><a href="FileOpen.htm">FileOpen</a>/<a href="../objects/File.htm">文件对象</a>, <a href="FileRead.htm">FileRead</a>, <a href="LoopRead.htm">文件读取循环</a>, <a href="IniWrite.htm">IniWrite</a>, <a href="FileDelete.htm">FileDelete</a>, <a href="OutputDebug.htm">OutputDebug</a>, <a href="../Scripts.htm#continuation">延续片段</a></p>
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a> 必要时创建一个文件, 并附加一行.</p>
 <pre>FileAppend "Another line.`n", "C:\My Documents\Test.txt"</pre>
 </div>
 
 <div class="ex" id="ExContSect">
-<p><a href="#ExContSect">#2</a>: 下面的例子使用<a href="../Scripts.htm#continuation">延续片段</a>来提高可读性和可维护性:</p>
+<p><a class="ex_number" href="#ExContSect"></a> 使用<a href="../Scripts.htm#continuation">延续片段</a>来提高可读性和可维护性.</p>
 <pre>FileAppend "
 (
-A line of text.
-By default, the hard carriage return (Enter) between the previous line and this one will be written to the file.
-	This line is indented with a tab; by default, that tab will also be written to the file.
+一行文字.
+默认情况下, 前一行和这一行之间的硬回车(Enter) 将被写进文件.
+	这一行缩进了一个制表符; 默认情况下, 该制表符也将被写入文件.
 )", A_Desktop "\My File.txt"</pre>
 </div>
 
 <div class="ex" id="ExFTP">
-<p><a href="#ExFTP">#3</a>: 下面的例子演示了如何使用操作系统内置的 FTP 命令自动进行 FTP 上传.</p>
+<p><a class="ex_number" href="#ExFTP"></a> 演示如何使用操作系统内置的 FTP 命令自动进行 FTP 上传.</p>
 <pre>FTPCommandFile := A_ScriptDir "\FTPCommands.txt"
 FTPLogFile := A_ScriptDir "\FTPLog.txt"
-FileDelete FTPCommandFile  <em>; 避免之前运行意外中止带来的问题.</em>
+try FileDelete FTPCommandFile  <em>; 避免之前运行意外中止带来的问题.</em>
 
 FileAppend
 (

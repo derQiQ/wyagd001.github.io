@@ -14,87 +14,80 @@
 
 <h1>FileSelect</h1>
 
-<p>Displays a standard dialog  that allows the user to open or save file(s).</p>
+<p>显示可以让用户打开或保存文件的标准对话框.</p>
 
-<pre class="Syntax">SelectedFile := <span class="func">FileSelect</span>(<span class="optional">Options, RootDir\Filename, Prompt, Filter</span>)</pre>
+<pre class="Syntax">SelectedFile := <span class="func">FileSelect</span>(<span class="optional">Options, RootDir\Filename, Title, Filter</span>)</pre>
 <h2 id="Parameters">参数</h2>
 <dl>
 
   <dt>Options</dt>
   <dd>
-      <p>类型: <a href="../Concepts.htm#strings">字符串</a></p>
-      <p>If omitted, it will default to zero, which is the same as having none of the options below.</p>
-      <p><strong>M</strong>: Multi-select. Specify the letter M to allow the user to select more than one file via shift-click, control-click, or other means. <strong>M</strong> may optionally be followed by a number as described below (例如, both M and M1 are valid). To extract the individual files, 请参阅 the example at the bottom of this page.</p>
-      <p><strong>S</strong>: Save button. Specify the letter S to cause the dialog to always contain a Save button instead of an Open button. <strong>S</strong> may optionally be followed by a number (or sum of numbers) as described below (例如, both S and S24 are valid).</p>
-      <p>Even if <strong>M</strong> and <strong>S</strong> are absent, the following numbers can be used. To put more than one of them into effect, add them up. 例如, to use 8 and 16, specify the number 24.</p>
-      <p><strong>1</strong>: File Must Exist<br>
-        <strong>2</strong>: Path Must Exist<br>
-        <strong>8</strong>: Prompt to Create New File<br>
-        <strong>16</strong>: Prompt to Overwrite File<br>
-        <strong>32</strong>: Shortcuts (.lnk files) are selected as-is rather than being resolved to their targets. This option also prevents navigation into a folder via a folder shortcut.</p>
-      <p>If the &quot;Prompt to Overwrite&quot; option is present without the &quot;Prompt to Create&quot; option, the dialog will contain a Save button rather than an Open button. This behavior is due to a quirk in Windows.</p>
+      <p>类型: <a href="../Concepts.htm#strings">字符串</a>或<a href="../Concepts.htm#numbers">整数</a></p>
+      <p>如果省略, 则它默认为 0, 这等同于下面的任意选项都没有指定.</p>
+      <p>否则, 它可以是一个数字或下面列出的字母之一, 可选择在后面加一个数字. 例如, <code>"M"</code>, <code>1</code> 和 <code>"M1"</code> 都是有效的(但不相同).</p>
+      <p id="D"><strong>D</strong>: 选择文件夹(目录). 指定字母 D, 允许用户选择文件夹而不是文件. 该对话框具有与选择文件时相同的大部分功能, 但不支持过滤器(<em>Filter</em> 必须省略或置空).</p>
+      <p id="M"><strong>M</strong>: 多选. 指定字母 M 让用户可以使用 Shift+点击, Control+点击或其他方法来选择多个文件. 在这种情况下, 返回值是一个<a href="../objects/Array.htm">数组</a>不是一个字符串. 要提取单个文件, 请参阅本页底部的示例.</p>
+      <p id="S"><strong>S</strong>: 保存对话框. 指定字母 S 让对话框显示保存按钮代替打开按钮.</p>
+      <p>可以使用以下数字. 要使其中多个数字生效, 请将它们相加. 例如, 要使用 1 和 2, 请指定数字 3.</p>
+      <p><strong>1</strong>: 文件必须存在<br>
+        <strong>2</strong>: 路径必须存在<br>
+        <strong>8</strong>: 提示创建新文件<br>
+        <strong>16</strong>: 提示覆盖文件<br>
+        <strong>32</strong>: 选择快捷方式本身(.lnk 文件) 而不解析为它们的目标. 此选项也避免了通过文件夹快捷方式跳转到那个文件夹的情况.</p>
+      <p>由于 "提示覆盖" 选项只有保存对话框支持, 因此在没有 "提示创建" 选项的情况下指定该选项也会使 "S" 选项生效. 同样, 当 "S" 选项存在时, "提示创建" 选项也没有效果. 指定数字 24 可以启用对话框支持的任何一种提示类型.</p>
   </dd>
 
   <dt>RootDir\Filename</dt>
   <dd>
       <p>类型: <a href="../Concepts.htm#strings">字符串</a></p>
-      <p>If present, this parameter contains one or both of the following:</p>
-      <p><strong>RootDir</strong>: The root (starting) directory, which is assumed to be a subfolder in <a href="../Variables.htm#WorkingDir">A_WorkingDir</a> if an absolute path is not specified. If omitted or blank, the starting directory will be a default that might depend on the OS version (it will likely be the directory most recently selected by the user during a prior use of FileSelect).</p>
-      <p><strong>Filename</strong>: The default filename to initially show in the dialog's edit field. Only the naked filename (with no path) will be shown. To ensure that the dialog is properly shown, ensure that no illegal characters are present (such as /&lt;|:&quot;).</p>
-      <p>Examples:</p>
-      <pre>"C:\My Pictures\Default Image Name.gif"  <em>; Both <i>RootDir</i> and <i>Filename</i> are present.</em>
-"C:\My Pictures"  <em>; Only <i>RootDir</i> is present.</em>
-"My Pictures"  <em>; Only <i>RootDir</i> is present, and it's relative to the current working directory.</em>
-"My File"  <em>; Only <i>Filename</i> is present (but if &quot;My File&quot; exists as a folder, it is assumed to be <i>RootDir</i>).</em></pre>
+      <p>如果存在, 则此参数包含下列的其中一个或两个:</p>
+      <p><strong>RootDir</strong>: 根(起始) 目录, 如果未指定绝对路径, 则假定为 <a href="../Variables.htm#WorkingDir">A_WorkingDir</a> 中的子文件夹. 如果省略或为空, 则起始目录将为默认值, 这可能操作系统版本有关(它很可能是之前使用 FileSelect 时用户最近选择的目录).</p>
+      <p><strong>Filename</strong>: 初始显示对话框时在编辑区域的默认文件名. 只显示单独的文件名(不带路径). 要让对话框正确显示, 请确保不包含非法字符(例如 /&lt;|:").</p>
+      <p>示例:</p>
+      <pre>"C:\My Pictures\Default Image Name.gif"  <em>; <i>RootDir</i> 和 <i>Filename</i> 都存在.</em>
+"C:\My Pictures"  <em>; 仅 <i>RootDir</i> 存在.</em>
+"My Pictures"  <em>; 仅 <i>RootDir</i> 存在, 且它相对于当前工作目录.</em>
+"My File"  <em>; 仅 <i>Filename</i> 存在(但如果已存在 "My File" 的文件夹, 则它会被认为是 <i>RootDir</i>).</em></pre>
   </dd>
 
-  <dt>Prompt</dt>
+  <dt>Title</dt>
   <dd>
       <p>类型: <a href="../Concepts.htm#strings">字符串</a></p>
-      <p>Text displayed in the window to instruct the user what to do. If omitted or blank, it will default to <code>"Select File - " <a href="../Variables.htm#ScriptName">A_ScriptName</a></code> (i.e. the name of the current script).</p>
+      <p>文件选择窗口的标题. 如果省略或为空, 则它默认为 <code>"Select File - " <a href="../Variables.htm#ScriptName">A_ScriptName</a></code>(即当前脚本的名称).</p>
   </dd>
 
   <dt>Filter</dt>
   <dd>
       <p>类型: <a href="../Concepts.htm#strings">字符串</a></p>
-      <p>Indicates which types of files are shown by the dialog.</p>
-      <p>Example: Documents (*.txt)<br>
-        Example: Audio (*.wav; *.mp2; *.mp3)</p>
-      <p>If omitted, the filter defaults to All Files (*.*). An option for Text Documents (*.txt) will also be available in the dialog's &quot;files of type&quot; menu.</p>
-    <p>Otherwise, the filter uses the indicated string but also provides an option for All Files (*.*) in the dialog's &quot;files of type&quot; drop-down list. To include more than one file extension in the filter, separate them with semicolons as illustrated in the example above.</p>
+      <p>指示对话框显示的文件类型.</p>
+      <p>例如: 文本文档 (*.txt)<br>
+        例如: 音频文件 (*.wav; *.mp2; *.mp3)</p>
+      <p>如果省略, 则过滤器默认为 All Files (*.*). 在对话框 "文件类型" 菜单中, Text Documents (*.txt) 选项是可用的.</p>
+    <p>否则, 过滤器使用指示的字符串, 不过在对话框的 "文件类型" 下拉列表中仍然提供了 All Files (*.*) 选项. 要在过滤器中包含多个文件扩展名, 请使用分号分隔它们, 如上所示.</p>
   </dd>
 
 </dl>
 
 <h2 id="Return_Value">返回值</h2>
 <p>类型: <a href="../Concepts.htm#strings">字符串</a></p>
-<p>If multi-select is not in effect, this function returns the full path and name of the single file chosen by the user.</p>
-<p>If the M option (multi-select) is in effect, this function returns a list of items, each of which except the last is followed by a linefeed (`n) character. The first item in the list is the path that contains all the selected files (this path will end in a backslash only if it is a root folder such as C:\). The other items are the selected filenames (without path). 例如:</p>
-<pre>C:\My Documents\New Folder [this is the path in which all the files below reside]
-test1.txt [these are the naked filenames: no path info]
-test2.txt
-... etc.</pre>
-<p>(The example at the bottom of this page demonstrates how to extract the files one by one.)</p>
-<p>When multi-select is in effect, the sum of the lengths of the selected filenames is limited to 64 KB. Although this is typically enough to hold several thousand files, an empty string is returned if the limit is exceeded.</p>
-<p>In both cases, if the user cancels the dialog (i.e. does not wish to select a file), an empty string is returned.</p>
+<p>如果没有启用多选, 此函数将返回用户选择的单个文件的完整路径和名称.</p>
+<p>如果使用了 M 选项(多选), 此函数将返回一个项目数组, 其中每个项目是一个文件的完整路径和名称. 本页底部的示例演示了如何逐个提取文件. 如果用户取消对话框, 则数组为空(零项).</p>
 
-<h2>ErrorLevel</h2>
-<p><a href="../misc/ErrorLevel.htm">ErrorLevel</a> is set to 1 if the user dismissed the dialog without selecting a file (such as by pressing the Cancel button). It is also set to 1 if the system refused to show the dialog (rare). Otherwise, it is set to 0.</p>
 <h2 id="Remarks">备注</h2>
-<p>A file-selection dialog usually looks like this:</p>
+<p>文件选择对话框通常看起来像这样:</p>
 <img src="../static/dlg_file.png" alt="FileSelect" />
-<p>A GUI window may display a modal file-selection dialog by means of the <a href="../objects/Gui.htm#OwnDialogs">+OwnDialogs</a> option. A modal dialog prevents the user from interacting with the GUI window until the dialog is dismissed.</p>
-<p>Known limitation: A <a href="SetTimer.htm">timer</a> that launches during the display of a FileSelect dialog will postpone the effect of the user's clicks inside the dialog until after the timer finishes. To work around this, avoid using timers whose subroutines take a long time to finish, or disable all timers during the dialog:</p>
+<p>GUI 窗口可以使用 <a href="../objects/Gui.htm#OwnDialogs">+OwnDialogs</a> 选项的方法来显示模式文件夹选择对话框. 模式对话框在其消失之前会阻止用户与 GUI 窗口进行交互.</p>
+<p>已知限制: 在显示 DirSelect 对话框期间启动的<a href="SetTimer.htm">计时器</a>将推迟用户在对话框中单击的效果, 直到计时器结束为止. 要解决此问题, 请避免使用子程序需要很长时间来完成的计时器, 或在显示对话框期间禁用所有计时器:</p>
 <pre><a href="Thread.htm">Thread</a> "NoTimers"
 SelectedFile := FileSelect()
 Thread "NoTimers", false</pre>
 
 <h2 id="Related">相关</h2>
 <p><a href="DirSelect.htm">DirSelect</a>, <a href="MsgBox.htm">MsgBox</a>, <a href="InputBox.htm">InputBox</a>, <a href="ToolTip.htm">ToolTip</a>, <a href="../objects/Gui.htm">GUI</a>, <a href="../misc/CLSID-List.htm">CLSID List</a>, <a href="LoopParse.htm">parsing loop</a>, <a href="SplitPath.htm">SplitPath</a></p>
-<p>Also, the operating system offers standard dialog boxes that prompt the user to pick a font, color, or icon. These dialogs can be displayed via <a href="DllCall.htm">DllCall</a> as demonstrated at <a href="https://github.com/majkinetor/mm-autohotkey/tree/master/Dlg">GitHub</a>.</p>
+<p>此外, 操作系统提供了标准的对话框让用户选取字体, 颜色或图标. 使用 <a href="DllCall.htm">DllCall</a> 可以显示这些对话框, 如 <a href="https://github.com/majkinetor/mm-autohotkey/tree/master/Dlg">GitHub</a> 所示.</p>
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a> 允许用户选择当前存在的 .txt 或 .doc 文件.</p>
 <pre>SelectedFile := FileSelect(3, , "Open a file", "Text Documents (*.txt; *.doc)")
 if SelectedFile = ""
     MsgBox "The user didn't select anything."
@@ -103,25 +96,31 @@ else
 </div>
 
 <div class="ex" id="ExMulti">
-<p><a href="#ExMulti">#2</a>: Multi-select example.</p>
-<pre>files := FileSelect("M3")  <em>; M3 = Multiselect existing files.</em>
-if files = ""
+<p><a class="ex_number" href="#ExMulti"></a> 允许用户选择多个当前存在的文件.</p>
+<pre>SelectedFiles := FileSelect("M3")  <em>; M3 = 选择多个现有文件.</em>
+if SelectedFiles.Length = 0
 {
-    MsgBox "The user pressed cancel."
+    MsgBox "The dialog was canceled."
     return
 }
-Loop parse, files, "`n"
+for FileName in SelectedFiles
 {
-    if A_Index = 1
-        MsgBox "The selected files are all contained in " A_LoopField
-    else
-    {
-        Result := MsgBox("The next file is " A_LoopField ". Continue?",, 4)
-        if Result = "No"
-            break
-    }
+    Result := MsgBox("File #" A_Index " of " SelectedFiles.Length ":`n" FileName "`n`nContinue?",, "YN")
+    if Result = "No"
+        break
 }
-return</pre>
+</pre>
+</div>
+
+<div class="ex" id="ExFolder">
+<p><a class="ex_number" href="#ExFolder"></a> 允许用户选择文件夹.</p>
+<pre>
+SelectedFolder := FileSelect("D", , "Select a folder")
+if SelectedFolder = ""
+    MsgBox "The dialog was canceled."
+else
+    MsgBox "The following folder was selected:`n" SelectedFolder
+</pre>
 </div>
 
 </body>

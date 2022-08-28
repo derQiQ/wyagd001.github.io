@@ -15,29 +15,29 @@
 <p>查询 COM 对象的接口或服务.</p>
 <pre class="Syntax">InterfacePointer := <span class="func">ComObjQuery</span>(ComObject, <span class="optional">SID,</span> IID)</pre>
 
-<h2>参数</h2>
+<h2 id="Parameters">参数</h2>
 <dl>
 
   <dt>ComObject</dt>
   <dd><p>COM 包装器对象或原始接口指针.</p></dd>
 
   <dt>IID</dt>
-  <dd><p>格式为"{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}"的接口标识符(GUID).</p></dd>
+  <dd><p>格式为 "{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}" 的接口标识符(GUID).</p></dd>
 
   <dt>SID</dt>
   <dd><p>与 IID 格式相同的服务标识符. 省略此参数时, 必须同时省略后面跟着的逗号.</p></dd>
 
 </dl>
 
-<h2>一般说明</h2>
+<h2 id="General_Remarks">一般说明</h2>
 <p>在此函数使用两个参数时, 它相当于 <a href="http://msdn.microsoft.com/en-us/library/ms682521.aspx">IUnknown::QueryInterface</a>. 如果同时指定了 SID 和 IID, 那么它会内部查询 <a href="http://msdn.microsoft.com/en-us/library/cc678965.aspx">IServiceProvider</a> 接口, 然后调用 <a href="http://msdn.microsoft.com/en-us/library/cc678966.aspx">IServiceProvider::QueryService</a>. 在两种形式中, 返回值为零或到被请求接口的指针. 通常在脚本结束时必须<a href="ObjAddRef.htm">释放</a>这种指针.</p>
 
-<h2>相关</h2>
+<h2 id="Related">相关</h2>
 <a href="ObjAddRef.htm">ObjRelease()</a>, <a href="ComObjCreate.htm">ComObjCreate()</a>, <a href="ComObjGet.htm">ComObjGet()</a>, <a href="ComObjActive.htm">ComObjActive()</a>, <a href="ComObjError.htm">ComObjError()</a>
 
-<h2>示例</h2>
+<h2 id="Examples">示例</h2>
 <div class="ex" id="ExClassName">
-<p><a href="#ExClassName">#1</a>: 确定对象的类名.</p>
+<p><a class="ex_number" href="#ExClassName"></a> 确定对象的类名.</p>
 <pre>obj := ComObjCreate("Scripting.Dictionary")
 
 MsgBox % "Interface name: " ComObjType(obj, "name")
@@ -55,10 +55,13 @@ if !(pci := ComObjQuery(obj, IID_IProvideClassInfo))
 DllCall(vtable(pci, 3), "ptr", pci, "ptr*", ti)
 
 <em>; 调用 GetDocumentation 来获取对象的完整类型名称.</em>
-DllCall(vtable(ti, 12), "ptr", ti, "int", -1, "ptr*", name, "ptr", 0, "ptr", 0, "ptr", 0)
+DllCall(vtable(ti, 12), "ptr", ti, "int", -1, "ptr*", pname, "ptr", 0, "ptr", 0, "ptr", 0)
 
 <em>; 转换 BSTR 指针为可用的字符串.</em>
-name := StrGet(name, "UTF-16")
+name := StrGet(pname, "UTF-16")
+
+<em>; 通过 pname 释放 BSTR 引用.</em>
+DllCall("OleAut32\SysFreeString", "ptr", pname)
 
 <em>; 释放原始接口指针.</em>
 ObjRelease(ti)
@@ -77,7 +80,7 @@ vtable(ptr, n) {
 </div>
 
 <div class="ex" id="ExIE">
-<p><a href="#ExIE">#2</a>: 自动化现有的 Internet Explorer 窗口.</p>
+<p><a class="ex_number" href="#ExIE"></a> 自动化现有的 Internet Explorer 窗口.</p>
 <pre>sURL := "https://www.autohotkey.com/boards/"
 if WebBrowser := GetWebBrowser()
    WebBrowser.Navigate(sURL)

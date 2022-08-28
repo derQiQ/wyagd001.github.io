@@ -28,7 +28,8 @@
 </dl>
 
 <h2 id="Error_Handling">错误处理</h2>
-<p>如果遇到问题, <a href="../misc/ErrorLevel.htm">ErrorLevel</a> 设置为 1, 否则设置为 0.</p>
+<p>失败时抛出 <a href="../objects/Error.htm#OSError">OSError</a>.</p>
+
 <h2 id="Remarks">备注</h2>
 <p>脚本的工作目录是用来访问未指定绝对路径的文件和文件夹的默认目录. 在下面的例子中, 将假定文件 <em>My Filename.txt</em> 在 A_WorkingDir 中: <code><a href="FileAppend.htm">FileAppend</a> "A Line of Text", "My Filename.txt"</code>.</p>
 <p>不管脚本如何启动, 脚本的工作目录默认为 <a href="../Variables.htm#ScriptDir">A_ScriptDir</a>. 相反, <a href="../Variables.htm#InitialWorkingDir">A_InitialWorkingDir</a> 的值由脚本的启动方式确定. 例如, 如果它是通过快捷方式运行的 -- 例如在 "开始" 菜单中 -- 则其初始工作目录由快捷方式属性内的 "起始位置" 字段决定.</p>
@@ -37,9 +38,13 @@
 <p><a href="../Variables.htm#WorkingDir">A_WorkingDir</a>, <a href="../Variables.htm#InitialWorkingDir">A_InitialWorkingDir</a>, <a href="../Variables.htm#ScriptDir">A_ScriptDir</a>, <a href="DirSelect.htm">DirSelect</a></p>
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
-<pre>SetWorkingDir A_ScriptDir
-SetWorkingDir "D:\My Folder\Temp"</pre>
+<p><a class="ex_number" href="#ExBasic"></a> 改变脚本的当前工作目录.</p>
+<pre>SetWorkingDir "D:\My Folder\Temp"</pre>
+</div>
+
+<div class="ex" id="ExInitial">
+<p><a class="ex_number" href="#ExInitial"></a> 强制脚本使用它最初启动的文件夹作为其工作目录.</p>
+<pre>SetWorkingDir A_InitialWorkingDir</pre>
 </div>
 
 </body>

@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE HTML>
 <html lang="zh">
 <head>
-  <title>Standard Windows Fonts | AutoHotkey v2</title>
+  <title>标准 Windows 字体 | AutoHotkey v2</title>
 <meta name="description" content="A tabular list of standard windows fonts which can be used with the Gui object's SetFont method." />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,12 +10,20 @@
 <script type="text/javascript">$(function(){0<=window.navigator.userAgent.toLowerCase().indexOf("ucbrowser")&&CaoNiMaDeUc()})</script>
 <style>
   tr.h {
-    background-color:rgb(255, 255, 153)
+    background: rgba(255, 255, 0, 0.3);
   }
   th {
     cursor:pointer
   }
 </style>
+<!--[if lte IE 8]>
+<style>
+  tr.h {
+    background: rgb(255, 255, 153);
+    color: black;
+  }
+</style>
+<![endif]-->
 <script>
 /* Copyright (c) 2006-2013 Tyler Uebele * Released under the MIT license. * latest at https://github.com/tyleruebele/sort-table * minified by Google Closure Compiler */
 function sortTable(a,b,d){var c;sortTable.sortCol=-1;c=a.className.match(/js-sort-\d+/);null!=c&&(sortTable.sortCol=c[0].replace(/js-sort-/,""),a.className=a.className.replace(RegExp(" ?"+c[0]+"\\b"),""));"undefined"===typeof b&&(b=sortTable.sortCol);"undefined"!==typeof d?sortTable.sortDir=-1==d||"desc"==d?-1:1:(c=a.className.match(/js-sort-(a|de)sc/),sortTable.sortDir=null!=c&&sortTable.sortCol==b?"js-sort-asc"==c[0]?-1:1:1);a.className=a.className.replace(/ ?js-sort-(a|de)sc/g,"");a.className+=
@@ -30,10 +38,9 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
 
 <body>
 <h1>标准 Windows 字体</h1>
-<p>用于 <a href="../objects/Gui.htm#SetFont">Gui.SetFont</a>. &quot;开始存在于&quot; 列代表首次包含该字体的 Windows 版本. 表格中的常见的等宽字体有 Consolas, Courier, Courier New, Fixedsys, Lucida Console 和 Terminal. 某些字体的可用性可能取决于操作系统的语言.</p>
-<p><strong>黄色高亮显示的为推荐使用的字体.</strong> 请注意, 这里推荐的字体是自 Windows XP 或更早版本以来可读和系统已经包含的字体. 使用这种字体可确保在大多数操作系统上显示它们.</p>
-<p class="warning"><strong>注意:</strong> 这些建议还没有对 AutoHotkey v2.0 进行审核, 其需要 Windows Vista 或更高版本.</p>
-  <p>点击列标题可对表格的内容进行排序.</p>
+<p>用于 <a href="../objects/Gui.htm#SetFont">Gui.SetFont</a>. "开始存在于" 列代表首次包含该字体的 Windows 版本. 表格中的常见的等宽字体有 Consolas, Courier, Courier New, Fixedsys, Lucida Console 和 Terminal. 某些字体的可用性可能取决于操作系统的语言.</p>
+<p><strong>推荐使用黄色高亮显示的字体.</strong> 请注意, 这里推荐的字体是自 Windows Vista 或更早版本以来可读和系统已经包含的字体. 使用这种字体可确保在大多数操作系统上显示它们.</p>
+<p>默认情况下, 该表按升序的字体名称进行排序. 要按其他列或其他顺序对表格进行排序, 请单击列标题.</p>
 
 <table class="info js-sort-table js-sort-0 js-sort-asc" style="table-layout:fixed">
 <thead>
@@ -74,7 +81,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Indic</td>
   <td>7</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Arabic Typesetting</td>
   <td>Arabic</td>
   <td>Vista</td>
@@ -104,7 +111,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>韩文</td>
   <td>2000</td>
 </tr>
-<tr>
+<tr class="h">
   <td>BatangChe</td>
   <td>韩文</td>
   <td>Vista</td>
@@ -119,7 +126,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Thai</td>
   <td>2000</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Calibri</td>
   <td>Latin, Greek, Cyrillic</td>
   <td>Vista</td>
@@ -129,7 +136,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Latin, Greek, Cyrillic</td>
   <td>8</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Cambria</td>
   <td>Latin, Greek, Cyrillic</td>
   <td>Vista</td>
@@ -139,7 +146,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>符号</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Candara</td>
   <td>Latin, Greek, Cyrillic</td>
   <td>Vista</td>
@@ -149,17 +156,17 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Latin, Greek, Cyrillic</td>
   <td>95</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Consolas</td>
   <td>Latin, Greek, Cyrillic</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Constantia</td>
   <td>Latin, Greek, Cyrillic</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Corbel</td>
   <td>Latin, Greek, Cyrillic</td>
   <td>Vista</td>
@@ -184,9 +191,9 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Latin, Greek, Cyrillic</td>
   <td>95</td>
 </tr>
-<tr>
+<tr class="h">
   <td>DaunPenh</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>Vista</td>
 </tr>
 <tr class="h">
@@ -209,17 +216,17 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Thai</td>
   <td>2000</td>
 </tr>
-<tr>
+<tr class="h">
   <td>DokChampa</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Dotum</td>
   <td>韩文</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>DotumChe</td>
   <td>韩文</td>
   <td>Vista</td>
@@ -231,7 +238,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
 </tr>
 <tr class="h">
   <td>Estrangelo Edessa</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>XP</td>
 </tr>
 <tr class="h">
@@ -241,10 +248,10 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
 </tr>
 <tr>
   <td>Euphemia</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>FangSong(仿宋)</td>
   <td>中文</td>
   <td>Vista</td>
@@ -276,12 +283,12 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
 </tr>
 <tr>
   <td>Gadugi</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>8</td>
 </tr>
 <tr class="h">
   <td>Gautami</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>XP</td>
 </tr>
 <tr class="h">
@@ -299,7 +306,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Latin, Greek, Cyrillic</td>
   <td>10</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Gisha</td>
   <td>Hebrew</td>
   <td>Vista</td>
@@ -309,12 +316,12 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>韩文</td>
   <td>2000</td>
 </tr>
-<tr>
+<tr class="h">
   <td>GulimChe</td>
   <td>韩文</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Gungsuh</td>
   <td>韩文</td>
   <td>Vista</td>
@@ -339,9 +346,9 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Thai</td>
   <td>2000</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Iskoola Pota</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>Vista</td>
 </tr>
 <tr class="h">
@@ -359,19 +366,19 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>中文</td>
   <td>2000</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Kalinga</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>Vista</td>
 </tr>
 <tr class="h">
   <td>Kartika</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>XP</td>
 </tr>
 <tr>
   <td>Khmer UI</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>7</td>
 </tr>
 <tr class="h">
@@ -381,12 +388,12 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
 </tr>
 <tr>
   <td>Kokila</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>7</td>
 </tr>
 <tr>
   <td>Lao UI</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>7</td>
 </tr>
 <tr class="h">
@@ -394,7 +401,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Indic</td>
   <td>XP</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Leelawadee</td>
   <td>Thai</td>
   <td>Vista</td>
@@ -429,7 +436,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Latin, Greek, Cyrillic</td>
   <td>98</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Malgun Gothic</td>
   <td>韩文</td>
   <td>Vista</td>
@@ -444,7 +451,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>符号</td>
   <td>95</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Meiryo</td>
   <td>日文</td>
   <td>Vista</td>
@@ -454,12 +461,12 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>日文</td>
   <td>7</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Microsoft Himalaya</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Microsoft JhengHei(微软正黑)</td>
   <td>中文</td>
   <td>Vista</td>
@@ -471,13 +478,13 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
 </tr>
 <tr>
   <td>Microsoft New Tai Lue</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>7</td>
 </tr>
 <tr>
   <td>Microsoft PhagsPa</td>
-  <td>Other</td>
-  <td class="auto-style13" width="82">7</td>
+  <td>其他</td>
+  <td>7</td>
 </tr>
 <tr class="h">
   <td>Microsoft Sans Serif</td>
@@ -486,15 +493,15 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
 </tr>
 <tr>
   <td>Microsoft Tai Le</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>7</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Microsoft Uighur</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Microsoft YaHei(微软雅黑)</td>
   <td>中文</td>
   <td>Vista</td>
@@ -504,27 +511,27 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>中文</td>
   <td>8</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Microsoft Yi Baiti</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>MingLiU(细明体)</td>
   <td>中文</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>MingLiU_HKSCS</td>
   <td>中文</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>MingLiU_HKSCS-ExtB</td>
   <td>中文</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>MingLiU-ExtB</td>
   <td>中文</td>
   <td>Vista</td>
@@ -544,14 +551,14 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Latin</td>
   <td>95</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Mongolian Baiti</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>MoolBoran</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>Vista</td>
 </tr>
 <tr class="h">
@@ -564,12 +571,12 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>日文</td>
   <td>2000</td>
 </tr>
-<tr>
+<tr class="h">
   <td>MS PGothic</td>
   <td>日文</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>MS PMincho</td>
   <td>日文</td>
   <td>Vista</td>
@@ -584,19 +591,19 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Latin</td>
   <td>95</td>
 </tr>
-<tr>
+<tr class="h">
   <td>MS UI Gothic</td>
   <td>日文</td>
   <td>Vista</td>
 </tr>
 <tr class="h">
   <td>MV Boli</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>XP</td>
 </tr>
 <tr>
   <td>Myanmar Text</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>8</td>
 </tr>
 <tr class="h">
@@ -614,12 +621,12 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Indic</td>
   <td>8</td>
 </tr>
-<tr>
+<tr class="h">
   <td>NSimSun(新宋体)</td>
   <td>中文</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Nyala</td>
   <td>African</td>
   <td>Vista</td>
@@ -629,9 +636,9 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>Latin, Greek, Cyrillic</td>
   <td>2000</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Plantagenet Cherokee</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>Vista</td>
 </tr>
 <tr class="h">
@@ -639,7 +646,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>中文</td>
   <td>2000</td>
 </tr>
-<tr>
+<tr class="h">
   <td>PMingLiU-ExtB</td>
   <td>中文</td>
   <td>Vista</td>
@@ -671,7 +678,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
 </tr>
 <tr>
   <td>Sanskrit Text</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>10</td>
 </tr>
 <tr class="h">
@@ -684,12 +691,12 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>符号</td>
   <td>10</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Segoe Print</td>
   <td>Latin, Greek, Cyrillic</td>
   <td>Vista</td>
 </tr>
-<tr>
+<tr class="h">
   <td>Segoe Script</td>
   <td>Latin, Greek, Cyrillic</td>
   <td>Vista</td>
@@ -706,7 +713,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
 </tr>
 <tr>
   <td>Segoe UI Historic</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>10</td>
 </tr>
 <tr>
@@ -759,7 +766,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
   <td>中文</td>
   <td>2000</td>
 </tr>
-<tr>
+<tr class="h">
   <td>SimSun-ExtB</td>
   <td>中文</td>
   <td>Vista</td>
@@ -801,7 +808,7 @@ g),d=sortTable.getClickHandler(b[c],g),window.addEventListener?a.rows[e].cells[f
 </tr>
 <tr class="h">
   <td>Sylfaen</td>
-  <td>Other</td>
+  <td>其他</td>
   <td>XP</td>
 </tr>
 <tr>

@@ -39,6 +39,12 @@
   </dd>
 
 </dl>
+
+<h2 id="Return_Value">返回值</h2>
+<p>类型: <a href="../Concepts.htm#numbers">整数</a>或<a href="../Concepts.htm#nothing">空字符串</a></p>
+<p>If a tooltip is being shown or updated, this function returns the tooltip window's <a href="../misc/WinTitle.htm#ahk_id">unique ID (HWND)</a>, which can be used to move the tooltip or send <a href="https://docs.microsoft.com/en-us/windows/win32/controls/bumper-tooltip-control-reference-messages">Tooltip Control Messages</a>.</p>
+<p>If <em>Text</em> is omitted or blank, the return value is an empty string.</p>
+
 <h2 id="Remarks">备注</h2>
 <p>工具提示通常看起来像这样: <img src="../static/dlg_tooltip.png" alt="ToolTip" style="vertical-align: middle" /></p>
 <p>如果 X &amp; Y 坐标会让工具提示离开屏幕, 则会对其进行重新定位以使其完全可见.</p>
@@ -53,12 +59,12 @@
 <p><a href="CoordMode.htm">CoordMode</a>, <a href="TrayTip.htm">TrayTip</a>, <a href="../objects/Gui.htm">GUI</a>, <a href="MsgBox.htm">MsgBox</a>, <a href="InputBox.htm">InputBox</a>, <a href="FileSelect.htm">FileSelect</a>, <a href="DirSelect.htm">DirSelect</a></p>
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a> 在活动窗口的特定位置显示一个多行工具提示.</p>
 <pre>ToolTip "Multiline`nTooltip", 100, 150</pre>
 </div>
 
 <div class="ex" id="ExAutoHide">
-<p><a href="#ExAutoHide">#2</a>: 要让工具提示在一段时间后消失, 而不使用 Sleep(它停止了当前线程):</p>
+<p><a class="ex_number" href="#ExAutoHide"></a> 在一段时间后隐藏工具提示, 而不使用 Sleep(它会停止当前线程).</p>
 <pre>ToolTip "Timed ToolTip`nThis will be displayed for 5 seconds."
 SetTimer () =&gt; ToolTip(), -5000</pre>
 </div>

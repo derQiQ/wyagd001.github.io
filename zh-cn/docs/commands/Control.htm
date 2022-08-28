@@ -16,7 +16,7 @@
 <p>对控件进行各种改变.</p>
 <pre class="Syntax"><span class="func">Control</span>, <a href="#SubCommands">SubCommand</a> <span class="optional">, Value, Control, WinTitle, WinText, ExcludeTitle, ExcludeText</span></pre>
 
-<h2>参数</h2>
+<h2 id="Parameters">参数</h2>
 <dl>
   <dt>SubCommand, Value</dt>
   <dd>他们互相依赖, 其用法描述<a href="#SubCommands">如下</a>.</dd>
@@ -58,7 +58,7 @@
   <li><a href="#Add">Add</a>: 把 String 作为新条目添加到列表框(ListBox) 或组合框(ComboBox)(以及其他适合的类型) 的底部.</li>
   <li><a href="#Delete">Delete</a>: 删除列表框或组合框中指定的条目.</li>
   <li><a href="#Choose">Choose</a>: 设置列表框或组合框中的选择为指定的条目.</li>
-  <li><a href="#ChooseString">ChooseString</a>: 将列表框或组合框中的选择设置为 其前导部分与指定的字符串匹配的第一个条目.</li>
+  <li><a href="#ChooseString">ChooseString</a>: 将列表框或组合框中的选择设置为其前导部分与指定的字符串匹配的第一个条目.</li>
   <li><a href="#EditPaste">EditPaste</a>: 在编辑控件的插入符号处粘贴指定的字符串.</li>
 </ul>
 
@@ -135,7 +135,7 @@ SendMessage, 0x130C, <span class="red">5</span>,, SysTabControl321, WinTitle  <e
 <p>设置列表框或组合框中的选择为第 N 个条目.</p>
 <pre class="Syntax"><span class="func">Control</span>, Choose, N <span class="optional">, Control, WinTitle, WinText, ExcludeTitle, ExcludeText</span></pre>
 <p>对于首个条目 <em>N</em> 为 1, 对第二个则为 2, 等等. 要选择或取消选择 <em>多选</em> 列表框中的所有项目, 请参照此例:</p>
-<pre><a href="PostMessage.htm">PostMessage</a>, 0x185, 1, -1, ListBox1, WinTitle  <em>; 选择所有项目. 0x185 为 LB_SETSEL.</em></pre>
+<pre><a href="PostMessage.htm">PostMessage</a>, 0x0185, 1, -1, ListBox1, WinTitle  <em>; 选择所有项目. 0x0185 为 LB_SETSEL.</em></pre>
 
 <h3 id="ChooseString">ChooseString</h3>
 <p>将列表框或组合框中的选择(选项) 设置为开头部分与指定的 <em>字符</em> 匹配的第一个条目.</p>
@@ -147,21 +147,21 @@ SendMessage, 0x130C, <span class="red">5</span>,, SysTabControl321, WinTitle  <e
 <pre class="Syntax"><span class="func">Control</span>, EditPaste, String <span class="optional">, Control, WinTitle, WinText, ExcludeTitle, ExcludeText</span></pre>
 <p>这不会影响<a href="../misc/Clipboard.htm">剪贴板</a>中的内容.</p>
 
-<h2>错误处理</h2>
+<h2 id="Error_Handling">错误处理</h2>
 <p><span class="ver">[v1.1.04+]</span>: 此命令失败时会抛出异常. 想了解更多信息, 请参阅<a href="Catch.htm#RuntimeErrors">运行时错误</a>.</p>
 <p>如果遇到问题则 <a href="../misc/ErrorLevel.htm">ErrorLevel</a> 被置为 1, 否则为 0.</p>
 
-<h2>备注</h2>
+<h2 id="Remarks">备注</h2>
 <p>为了提高可靠性, 每次使用此命令后都会自动进行延迟(不包括 <a href="#Style">Style</a> 和 <a href="#ExStyle">ExStyle</a> 子命令). 这个延迟可以通过设置 <a href="SetControlDelay.htm">SetControlDelay</a> 来调整.</p>
 <p>要获取鼠标当前悬停的控件的 ClassNN 或 HWND, 请使用 <a href="MouseGetPos.htm">MouseGetPos</a>.</p>
 <p>窗口标题和文本是区分大小写的. 只有在打开 <a href="DetectHiddenWindows.htm">DetectHiddenWindows</a> 设置时, 才能检测到隐藏窗口.</p>
 
-<h2>相关</h2>
+<h2 id="Related">相关</h2>
 <p><a href="SetControlDelay.htm">SetControlDelay</a>, <a href="ControlGet.htm">ControlGet</a>, <a href="GuiControl.htm">GuiControl</a>, <a href="ControlGetText.htm">ControlGetText</a>, <a href="ControlSetText.htm">ControlSetText</a>, <a href="ControlMove.htm">ControlMove</a>, <a href="ControlGetPos.htm">ControlGetPos</a>, <a href="ControlClick.htm">ControlClick</a>, <a href="ControlFocus.htm">ControlFocus</a>, <a href="ControlSend.htm">ControlSend</a>, <a href="WinSet.htm">WinSet</a></p>
 
-<h2>示例</h2>
+<h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a>: 隐藏第一个 ComboBox 的下拉列表:</p>
+<p><a class="ex_number" href="#ExBasic"></a> 隐藏第一个 ComboBox 的下拉列表.</p>
 <pre>Control, HideDropDown,, ComboBox1, Some Window Title</pre>
 </div>
 

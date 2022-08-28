@@ -16,7 +16,7 @@
 <p>获取或改变控制 COM 包装器对象行为的标志.</p>
 <pre class="Syntax">Flags := <span class="func">ComObjFlags</span>(ComObject <span class="optional">, NewFlags, Mask</span>)</pre>
 
-<h2>参数</h2>
+<h2 id="Parameters">参数</h2>
 <dl>
 
   <dt>ComObject</dt>
@@ -28,28 +28,32 @@
   <dt>Mask</dt>
   <dd><p>需要改变的标志位掩码.</p></dd>
 
-  <dt>Flags</dt>
-  <dd><p><i>ComObject</i> 的所有标志(如果指定了 <i>NewFlags</i>, 则为应用后的新标志).</p></dd>
-
 </dl>
+
+<h2 id="Return_Value">返回值</h2>
+<p>函数返回指定 COM 对象的当前标志(如果指定了 NewFlags, 在应用 <var>NewFlags</var> 之后).</p>
 
 <h2>Flags</h2>
 <table class="info">
   <tr>
-    <td>F_OWNVALUE1</td>
-    <td>当前仅对 SafeArray 有效. 如果设置了此标志, 则当包装器对象释放时销毁 SafeArray. 由于 SafeArray 没有引用计数结构, 所以当含有此标志的 SafeArray 被赋值到另一个 SafeArray 的元素时, 会创建一个独立的副本.</td>
+    <th class="center">Flag</th>
+    <th>作用</th>
+  </tr>
+  <tr>
+    <td class="center">1</td>
+    <td>F_OWNVALUE. 当前仅对 SafeArray 有效. 如果设置了此标志, 则当包装器对象释放时销毁 SafeArray. 由于 SafeArray 没有引用计数结构, 所以当含有此标志的 SafeArray 被赋值到另一个 SafeArray 的元素时, 会创建一个独立的副本.</td>
   </tr>
 </table>
 
-<h2>一般说明</h2>
+<h2 id="General_Remarks">一般说明</h2>
 <p>如果省略 <i>Mask</i>, 则在 <i>NewFlags</i> 指定需要添加(为正数时) 或移除(为负数时) 的标志. 例如, <code>ComObjFlags(obj, -1)</code> 会移除 F_OWNVALUE 标志. 不要在 <i>Mask</i> 中使用 0 或 1 外的其他值, 其他所有位保留供将来使用.</p>
 
-<h2>相关</h2>
+<h2 id="Related">相关</h2>
 <p><a href="ComObjActive.htm">ComObjActive()</a>, <a href="ComObjArray.htm">ComObjArray()</a></p>
 
-<h2>示例</h2>
+<h2 id="Examples">示例</h2>
 <div class="ex" id="ExCheck">
-<p><a href="#ExCheck">#1</a>: 检查是否存在 F_OWNVALUE 标志.</p>
+<p><a class="ex_number" href="#ExCheck"></a> 检查是否存在 F_OWNVALUE 标志.</p>
 <pre>arr := ComObjArray(0xC, 1)
 if ComObjFlags(arr) &amp; 1
     MsgBox arr will be automatically destroyed.
@@ -59,7 +63,7 @@ else
 </div>
 
 <div class="ex" id="ExRemove">
-<p><a href="#ExRemove">#2</a>: 改变内嵌在其他数组中的数组的行为.</p>
+<p><a class="ex_number" href="#ExRemove"></a> 改变内嵌在其他数组中的数组的行为.</p>
 <pre>arr1 := ComObjArray(0xC, 3)
 arr2 := ComObjArray(0xC, 1)
 arr2[0] := "original value"

@@ -24,6 +24,8 @@
   <dd>
       <p>类型: <a href="../Concepts.htm#strings">字符串</a></p>
       <p>源目录的名称(不含末尾的反斜杠), 如果未指定绝对路径, 则假定在 <a href="../Variables.htm#WorkingDir">A_WorkingDir</a> 中. 例如: C:\My Folder</p>
+      <p>如果操作系统支持, <em>Source</em> 也可以是 zip 文件的路径, 将其内容复制到目标目录. 这已经被证实可以在 Windows 7 和 Windows 11 上工作.</p>
+
   </dd>
 
   <dt>Dest</dt>
@@ -42,8 +44,9 @@
 
 </dl>
 
-<h2>ErrorLevel</h2>
-<p>如果遇到问题, <a href="../misc/ErrorLevel.htm">ErrorLevel</a> 设置为 1, 否则设置为 0. 但是, 如果源目录包含任何由 <em>PageName.htm</em> 的文件和相应的名称为 <em>PageName_files</em> 的目录组成的保存的网页, 那么即使复制成功也可能提示错误.</p>
+<h2 id="Error_Handling">错误处理</h2>
+<p>如果发生错误, 则抛出异常.</p>
+<p>但是, 如果源目录包含任何由 <em>PageName.htm</em> 的文件和相应的名称为 <em>PageName_files</em> 的目录组成的保存的网页, 那么即使复制成功也可能抛出异常.</p>
 <h2 id="Remarks">备注</h2>
 <p>如果目标目录的结构不存在, 则可行时会进行创建.</p>
 <p>由于该操作将以递归方式复制文件夹及其所有子文件夹和文件, 因此将文件夹复制到自身内部某个位置的结果是不确定的. 要解决此问题, 请先将其复制到自身外部, 然后使用 <a href="DirMove.htm">DirMove</a> 将其复制移动到所需位置.</p>
@@ -52,12 +55,12 @@
 <p><a href="DirMove.htm">DirMove</a>, <a href="FileCopy.htm">FileCopy</a>, <a href="FileMove.htm">FileMove</a>, <a href="FileDelete.htm">FileDelete</a>, <a href="LoopFiles.htm">file-loops</a>, <a href="DirSelect.htm">DirSelect</a>, <a href="SplitPath.htm">SplitPath</a></p>
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a> 复制目录到新位置.</p>
 <pre>DirCopy "C:\My Folder", "C:\Copy of My Folder"</pre>
 </div>
 
 <div class="ex" id="ExDirSelect">
-<p><a href="#ExDirSelect">#2</a>: 一个提示您复制文件夹的可工作的脚本.</p>
+<p><a class="ex_number" href="#ExDirSelect"></a> 提示你复制文件夹.</p>
 <pre>SourceFolder := DirSelect(, 3, "Select the folder to copy")
 if SourceFolder = ""
     return
@@ -69,9 +72,10 @@ if TargetFolder = ""
 Result := MsgBox("A copy of the folder '" SourceFolder "' will be put into '" TargetFolder "'. Continue?",, 4)
 if Result = "No"
     return
-SplitPath SourceFolder, SourceFolderName  <em>; 仅从它的完整路径中提取文件夹名称.</em>
-DirCopy SourceFolder, TargetFolder "\" SourceFolderName
-if ErrorLevel
+SplitPath SourceFolder, &amp;SourceFolderName  <em>; 仅从它的完整路径中提取文件夹名称.</em>
+try
+    DirCopy SourceFolder, TargetFolder "\" SourceFolderName
+catch
     MsgBox "The folder could not be copied, perhaps because a folder of that name already exists in '" TargetFolder "'."
 return</pre>
 </div>

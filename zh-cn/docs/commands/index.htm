@@ -16,10 +16,15 @@
 
 <h1>按字母排序的命令和函数索引</h1>
 <p>点击命令或函数名称了解详情. <span class="larger">大字体显示</span> 的条目是最常用的.</p>
+<p>跳转到: <a href="#E">E</a>,  &nbsp; <a href="#I">I</a>,  &nbsp; <a href="#M">M</a>,  &nbsp; <a href="#S">S</a>,  &nbsp; <a href="#W">W</a>, &nbsp; <a href="#hash">#</a>.</p>
 
 <table class="info">
   <tr>
-    <td style="width:11em" class="larger"><a href="Block.htm">{ ... } (区块)</a></td>
+    <th style="width:12em">名称</th>
+    <th abbr="Descr">描述</th>
+  </tr>
+  <tr>
+    <td class="larger"><a href="Block.htm">{ ... } (区块)</a></td>
     <td>区块是用大括号括起来的一个或多个<a href="../Concepts.htm#statement">语句</a>. 通常与<a href="../Functions.htm#define">函数定义</a>和<a href="../Language.htm#control-flow">控制流语句</a>一起使用.</td>
   </tr>
   <tr>
@@ -27,7 +32,7 @@
     <td>创建脚本化关联数组.</td>
   </tr>
   <tr>
-    <td class="larger"><a href="../Objects.htm#Usage">[ ... ] / Array()</a></td>
+    <td class="larger"><a href="../Objects.htm#Usage_Simple_Arrays">[ ... ] / Array()</a></td>
     <td>创建含整数键的脚本化关联数组.</td>
   </tr>
   <tr>
@@ -88,7 +93,7 @@
   </tr>
   <tr>
     <td><a href="ComObjArray.htm">ComObjArray()</a></td>
-    <td>创建用于 COM 的 SAFEARRAY.</td>
+    <td>创建用于 COM 的 SafeArray.</td>
   </tr>
   <tr>
     <td><a href="ComObjConnect.htm">ComObjConnect()</a></td>
@@ -120,7 +125,7 @@
   </tr>
   <tr>
     <td><a href="ComObjActive.htm">ComObjMissing()</a></td>
-    <td>创建一个传递给 COM 方法的"缺少参数"对象.</td>
+    <td>创建一个传递给 COM 方法的 "缺少参数" 对象.</td>
   </tr>
   <tr>
     <td><a href="ComObjActive.htm">ComObjParameter()</a></td>
@@ -196,11 +201,11 @@
   </tr>
   <tr>
     <td><a href="DetectHiddenText.htm">DetectHiddenText</a></td>
-    <td>设置在探测窗口时窗口中隐藏的文本是否"可见". 此设置影响例如 IfWinExist 和 WinActivate 的这些命令.</td>
+    <td>设置在探测窗口时窗口中隐藏的文本是否 "可见". 此设置影响例如 WinExist() 和 WinActivate 的这些命令, 内置函数和控制流语句.</td>
   </tr>
   <tr>
     <td><a href="DetectHiddenWindows.htm">DetectHiddenWindows</a></td>
-    <td>设置脚本是否可以"看见"隐藏的窗口.</td>
+    <td>设置脚本是否可以 "看见" 隐藏的窗口.</td>
   </tr>
   <tr>
     <td class="larger"><a href="DllCall.htm">DllCall()</a></td>
@@ -218,7 +223,7 @@
     <td><a href="DriveSpaceFree.htm">DriveSpaceFree</a></td>
     <td>获取驱动器的可用磁盘空间, 单位为 MB.</td>
   </tr>
-  <tr>
+  <tr id="E">
     <td><a href="Edit.htm">Edit</a></td>
     <td>在关联编辑器中打开当前脚本进行编辑.</td>
   </tr>
@@ -256,15 +261,15 @@
   </tr>
   <tr>
      <td><a href="Throw.htm#Exception">Exception()</a></td>
-     <td>创建一个可用于抛出自定义异常的对象.</td>
+     <td>创建一个具有属性的对象, 这也是与<a href="Catch.htm#RuntimeErrors">运行时错误</a>创建的异常所通用的.</td>
    </tr>
   <tr>
     <td><a href="Exit.htm">Exit</a></td>
-    <td>退出<a href="../misc/Threads.htm">当前线程</a>或(如果脚本不是<a href="_Persistent.htm">持续运行的</a>且不包含热键时) 整个脚本.</td>
+    <td>退出<a href="../misc/Threads.htm">当前线程</a>或整个脚本(如果脚本不是<a href="_Persistent.htm">持续运行的</a>).</td>
   </tr>
   <tr>
     <td class="larger"><a href="ExitApp.htm">ExitApp</a></td>
-    <td>无条件终止脚本.</td>
+    <td>终止脚本.</td>
   </tr>
   <tr>
     <td><a href="Math.htm#Exp">Exp()</a></td>
@@ -296,7 +301,7 @@
   </tr>
   <tr>
     <td><a href="FileEncoding.htm">FileEncoding</a></td>
-    <td>为<a href="FileRead.htm">FileRead</a>, <a href="FileReadLine.htm">FileReadLine</a>, <a href="LoopReadFile.htm">Loop Read</a>, <a href="FileAppend.htm">FileAppend</a> 和 <a href="FileOpen.htm">FileOpen()</a> 设置默认编码.<br><i>也请参见: </i> <a href="../AHKL_Features.htm#enc">文本编码</a></td>
+    <td>为 <a href="FileRead.htm">FileRead</a>, <a href="FileReadLine.htm">FileReadLine</a>, <a href="LoopReadFile.htm">Loop Read</a>, <a href="FileAppend.htm">FileAppend</a> 和 <a href="FileOpen.htm">FileOpen()</a> 设置默认编码.</td>
   </tr>
   <tr>
     <td class="larger"><a href="FileExist.htm">FileExist()</a></td>
@@ -376,7 +381,7 @@
   </tr>
   <tr>
     <td class="larger"><a href="Finally.htm">Finally</a></td>
-    <td>确保在 <a href="Try.htm">Try</a> 语句结束后总是会执行的代码块.</td>
+    <td>确保在 <a href="Try.htm">Try</a> 语句结束后总是会执行的一行或多行语句.</td>
   </tr>
   <tr>
     <td><a href="Math.htm#Floor">Floor()</a></td>
@@ -411,7 +416,11 @@
     <td>获取按键的扫描码.</td>
   </tr>
   <tr>
-    <td><a href="GetKeyState.htm">GetKeyState</a></td>
+    <td><a href="GetKeyState.htm#command">GetKeyState</a></td>
+    <td>检查键盘按键或鼠标/操纵杆按钮是否按下或放开. 也可以获取操纵杆的状态.</td>
+ </tr>
+  <tr>
+    <td><a href="GetKeyState.htm#function">GetKeyState()</a></td>
     <td>检查键盘按键或鼠标/操纵杆按钮是否按下或放开. 也可以获取操纵杆的状态.</td>
   </tr>
   <tr>
@@ -458,13 +467,13 @@
     <td><a href="Hotstring.htm">Hotstring()</a></td>
     <td>在脚本运行时创建, 修改, 启用或禁用热字串.</td>
   </tr>
-  <tr>
+  <tr id="I">
     <td class="larger"><a href="IfExpression.htm">If (表达式)</a></td>
-    <td>指定在<a href="../Variables.htm#Expressions">表达式</a>计算结果为 true 时执行的一行或多行 <a href="../Concepts.htm#statement">语句</a>.</td>
+    <td>指定在<a href="../Variables.htm#Expressions">表达式</a>计算结果为 true 时执行的一行或多行<a href="../Concepts.htm#statement">语句</a>.</td>
   </tr>
   <tr>
-    <td class="larger"><a href="IfEqual.htm">If (传统)</a></td>
-    <td>指定在<a href="../Variables.htm">变量</a>与值比较结果为 true 时执行的一行或多行 <a href="../Concepts.htm#statement">语句</a>.</td>
+    <td class="larger"><a href="IfEqual.htm">If (传统型)</a></td>
+    <td>指定在<a href="../Variables.htm">变量</a>与值比较结果为 true 时执行的一行或多行<a href="../Concepts.htm#statement">语句</a>.</td>
   </tr>
   <tr>
     <td><a href="IfBetween.htm">If var [not] between</a></td>
@@ -483,7 +492,7 @@
     <td>比较<a href="../Variables.htm">变量</a>和值判断它们是否相等. 同义于: <code>if Var = Value</code> | <code>if Var != Value</code>.</td>
   </tr>
   <tr>
-    <td class="larger"><a href="IfExist.htm">IfExist / IfNotExist</a></td>
+    <td><a href="IfExist.htm">IfExist / IfNotExist</a></td>
     <td>检查文件或文件夹是否存在.</td>
   </tr>
   <tr>
@@ -491,7 +500,7 @@
     <td>比较<a href="../Variables.htm">变量</a>和某个值. 同义于: <code>if Var &gt; Value</code> | <code>if Var &gt;= Value</code>.</td>
   </tr>
   <tr>
-    <td class="larger"><a href="IfInString.htm">IfInString / IfNotInString</a> / <a href="InStr.htm">InStr()</a></td>
+    <td><a href="IfInString.htm">IfInString / IfNotInString</a></td>
     <td>检查<a href="../Variables.htm">变量</a>是否包含指定的字符串.</td>
   </tr>
   <tr>
@@ -503,11 +512,11 @@
     <td>检查用户在最近的 <a href="MsgBox.htm">MsgBox</a> 命令中点击了哪个按钮.</td>
   </tr>
   <tr>
-    <td class="larger"><a href="WinActive.htm">IfWinActive / IfWinNotActive</a><br></td>
+    <td><a href="IfWinActive.htm">IfWinActive / IfWinNotActive</a></td>
     <td>检查指定的窗口是否存在且当前是否活动(在最前面).</td>
   </tr>
   <tr>
-    <td class="larger"><a href="WinExist.htm">IfWinExist / IfWinNotExist</a><br></td>
+    <td><a href="IfWinExist.htm">IfWinExist / IfWinNotExist</a></td>
     <td>检查指定的窗口是否存在.</td>
   </tr>
   <tr>
@@ -526,11 +535,11 @@
   </tr>
   <tr>
     <td><a href="IniRead.htm">IniRead</a></td>
-    <td>读取标准格式的 .ini 文件中的值.</td>
+    <td>读取标准格式的 .ini 文件中的值, 段或段名列表.</td>
   </tr>
   <tr>
     <td><a href="IniWrite.htm">IniWrite</a></td>
-    <td>写入值到标准格式的 .ini 文件.</td>
+    <td>写入值或段到标准格式的 .ini 文件.</td>
   </tr>
   <tr>
     <td><a href="Input.htm">Input</a></td>
@@ -545,8 +554,8 @@
     <td>创建一个用于收集或拦截键盘输入的对象.</td>
   </tr>
   <tr>
-    <td><a href="InStr.htm">InStr()</a></td>
-    <td>搜索字符串的<em>出现位置</em>, 从左边或右边开始.</td>
+    <td class="larger"><a href="InStr.htm">InStr()</a></td>
+    <td>搜索字符串的 <em>出现位置</em>, 从左边或右边开始.</td>
   </tr>
   <tr>
     <td><a href="IsByRef.htm">IsByRef()</a></td>
@@ -630,7 +639,7 @@
     <a href="ListView.htm#LV_SetImageList">LV_SetImageList()</a></td>
     <td>添加, 修改或检索 <a href="ListView.htm">ListView</a> 控件的行和列的方法.</td>
   </tr>
-  <tr>
+  <tr id="M">
     <td><a href="Math.htm#Max">Max()</a></td>
     <td>返回一个或多个数字的最大值.</td>
   </tr>
@@ -672,7 +681,7 @@
   </tr>
   <tr>
     <td class="larger"><a href="MsgBox.htm">MsgBox</a></td>
-    <td>在含有一个或多个按钮(例如"是"和"否") 的小窗口中显示指定的文本 .</td>
+    <td>在含有一个或多个按钮(例如 "是" 和 "否") 的小窗口中显示指定的文本 .</td>
   </tr>
   <tr>
     <td><a href="NumGet.htm">NumGet()</a></td>
@@ -718,11 +727,11 @@
   </tr>
   <tr>
     <td><a href="../objects/Object.htm#RawGet">ObjRawGet()</a></td>
-    <td>检索对象中的 键-值 对, 绕过对象的<a href="../Objects.htm#Meta_Functions">元-函数</a>.</td>
+    <td>检索对象中的 键-值 对, 绕过对象的<a href="../Objects.htm#Meta_Functions">元函数</a>.</td>
   </tr>
   <tr>
     <td><a href="../objects/Object.htm#RawSet">ObjRawSet()</a></td>
-    <td>存储或覆盖对象中的一组键值对, 绕过对象的 <a href="../Objects.htm#Meta_Functions">元函数</a>.</td>
+    <td>存储或覆盖对象中的一组键值对, 绕过对象的<a href="../Objects.htm#Meta_Functions">元函数</a>.</td>
   </tr>
   <tr>
     <td><a href="../objects/Object.htm#SetBase">ObjSetBase()</a></td>
@@ -737,12 +746,16 @@
     <td>指定当发生未处理的错误时自动运行的<a href="../Functions.htm">函数</a>.</td>
   </tr>
   <tr>
-    <td><a href="OnExit.htm">OnExit</a></td>
+    <td><a href="OnExit.htm#command">OnExit</a></td>
     <td>指定在脚本退出时自动运行的<a href="Gosub.htm">子程序</a>.</td>
   </tr>
   <tr>
+    <td><a href="OnExit.htm#function">OnExit()</a></td>
+    <td>指定在脚本退出时自动运行的<a href="../Functions.htm">回调函数</a>.</td>
+  </tr>
+  <tr>
     <td><a href="OnMessage.htm">OnMessage()</a></td>
-    <td>指定当脚本接收到特定消息时自动调用的<a href="Functions.htm">函数</a>.</td>
+    <td>指定当脚本接收到特定消息时自动调用的<a href="Functions.htm">函数</a>或<a href="../objects/Functor.htm">函数对象</a>.</td>
   </tr>
   <tr>
     <td><a href="Ord.htm">Ord()</a></td>
@@ -814,7 +827,7 @@
   </tr>
   <tr>
     <td><a href="Math.htm#Round">Round()</a></td>
-    <td>如果 <em>N</em> 省略或为 0, 则 <em>Number</em> 被取整到最近的整数. 如果 <em>N</em> 为正数, 则 <em>Number</em> 被取整到 <em>N</em> 个小数位. 如果 <em>N</em> 为负数, 则 <em>Number</em> 被取整到十进制小数点左边 <em>N</em> 位.</td>
+    <td>返回 <em>Number</em> 四舍五入到 <em>N</em> 个小数位的数字.</td>
   </tr>
   <tr>
     <td class="larger"><a href="Run.htm">Run</a></td>
@@ -826,10 +839,9 @@
   </tr>
   <tr>
     <td class="larger"><a href="Run.htm">RunWait</a></td>
-    <td>运行外部程序, 并等待
-      其结束.</td>
+    <td>运行外部程序, 并等待其结束.</td>
   </tr>
-  <tr>
+  <tr id="S">
     <td><a href="GuiControls.htm#SB_SetIcon">SB_SetIcon()</a><br />
     <a href="GuiControls.htm#SB_SetParts">SB_SetParts()</a><br />
     <a href="GuiControls.htm#SB_SetText">SB_SetText()</a><br /></td>
@@ -857,7 +869,7 @@
   </tr>
   <tr>
     <td><a href="SetNumScrollCapsLockState.htm">SetCapsLockState</a></td>
-    <td>设置 <kbd>CapsLock</kbd> 键的状态. 还可以强制此键保持打开或关闭状态.</td>
+    <td>设置 <kbd>CapsLock</kbd> 的状态. 还可以强制此键保持打开或关闭状态.</td>
   </tr>
   <tr>
     <td><a href="SetControlDelay.htm">SetControlDelay</a></td>
@@ -885,15 +897,15 @@
   </tr>
   <tr>
     <td><a href="SetNumScrollCapsLockState.htm">SetNumLockState</a></td>
-    <td>设置 <kbd>NumLock</kbd> 键的状态. 还可以强制此键保持打开或关闭状态.</td>
+    <td>设置 <kbd>NumLock</kbd> 的状态. 还可以强制此键保持打开或关闭状态.</td>
   </tr>
   <tr>
     <td><a href="SetNumScrollCapsLockState.htm">SetScrollLockState</a></td>
-    <td>设置 <kbd>ScrollLock</kbd> 键的状态. 还可以强制此键保持打开或关闭状态.</td>
+    <td>设置 <kbd>ScrollLock</kbd> 的状态. 还可以强制此键保持打开或关闭状态.</td>
   </tr>
   <tr>
     <td><a href="SetRegView.htm">SetRegView</a></td>
-    <td>允许 32 位脚本中的注册表命令访问 64 位注册表视图, 反之亦然.</td>
+    <td>设置 <a href="RegRead.htm">RegRead</a>, <a href="RegWrite.htm">RegWrite</a>, <a href="RegDelete.htm">RegDelete</a> 和 <a href="LoopReg.htm">registry loops</a> 使用的注册表视图, 允许它们在 32 位脚本中访问 64 位注册表视图, 反之亦然.</td>
   </tr>
   <tr>
     <td><a href="SetStoreCapslockMode.htm">SetStoreCapsLockMode</a></td>
@@ -937,11 +949,11 @@
   </tr>
   <tr>
     <td><a href="SoundGet.htm">SoundGet</a></td>
-    <td>从音频设备中获取各种设置(主静音, 主音量等).</td>
+    <td>检索音频设备的各种设置(主静音, 主音量等).</td>
   </tr>
   <tr>
     <td><a href="SoundGetWaveVolume.htm">SoundGetWaveVolume</a></td>
-    <td>获取音频设备的波形输出音量.</td>
+    <td>检索音频设备的波形输出音量.</td>
   </tr>
   <tr>
     <td><a href="SoundPlay.htm">SoundPlay</a></td>
@@ -957,15 +969,11 @@
   </tr>
   <tr>
     <td><a href="Progress.htm">SplashImage</a></td>
-    <td>创建或更新含 JPG, GIF 或 BMP 图像的窗口.</td>
+    <td>创建或更新含图像的窗口.</td>
   </tr>
   <tr>
-    <td><a href="SplashTextOn.htm">SplashTextOn</a></td>
-    <td>创建自定义文本的弹出窗口.</td>
-  </tr>
-  <tr>
-    <td><a href="SplashTextOn.htm">SplashTextOff</a></td>
-    <td>关闭上面的窗口.</td>
+    <td><a href="SplashTextOn.htm">SplashTextOn / SplashTextOff</a></td>
+    <td>创建或删除自定义文本的弹出窗口.</td>
   </tr>
   <tr>
     <td class="larger"><a href="SplitPath.htm">SplitPath</a></td>
@@ -989,10 +997,10 @@
   </tr>
   <tr>
     <td><a href="StringCaseSense.htm">StringCaseSense</a></td>
-    <td>设置在字符串比较中是否区分大小写(默认为"不区分大小写").</td>
+    <td>设置在字符串比较中是否区分大小写(默认为 "不区分大小写").</td>
   </tr>
   <tr>
-    <td class="larger"><a href="StringGetPos.htm">StringGetPos</a> / <a href="InStr.htm">InStr()</a></td>
+    <td><a href="StringGetPos.htm">StringGetPos</a></td>
     <td>获取指定的子字符串在某个字符串中的位置.</td>
   </tr>
   <tr>
@@ -1001,7 +1009,7 @@
 		提取一些字符.</td>
   </tr>
   <tr>
-    <td class="larger"><a href="StringLen.htm">StringLen / StrLen()</a></td>
+    <td><a href="StringLen.htm">StringLen</a></td>
     <td>获取字符串中包含的字符数量.</td>
   </tr>
   <tr>
@@ -1009,11 +1017,11 @@
     <td>把字符串中的英文字母转换成小写.</td>
   </tr>
   <tr>
-    <td class="larger"><a href="StringMid.htm">StringMid</a> / <a href="SubStr.htm">SubStr()</a></td>
+    <td><a href="StringMid.htm">StringMid</a></td>
     <td>从字符串的指定位置提取一个或多个字符.</td>
   </tr>
   <tr>
-    <td class="larger"><a href="StringReplace.htm">StringReplace / StrReplace()</a></td>
+    <td><a href="StringReplace.htm">StringReplace</a></td>
     <td>用新字符串替换指定的子字符串.</td>
   </tr>
   <tr>
@@ -1022,7 +1030,7 @@
 		提取一些字符.</td>
   </tr>
   <tr>
-    <td><a href="StringSplit.htm">StringSplit / StrSplit()</a></td>
+    <td><a href="StringSplit.htm">StringSplit </a></td>
     <td>使用指定的分隔符把一个字符串分解成多个子字符串并保存到数组中.</td>
   </tr>
   <tr>
@@ -1040,8 +1048,24 @@
     <td>把字符串中的英文字母转换成大写.</td>
   </tr>
   <tr>
+    <td class="larger"><a href="StrLen.htm">StrLen()</a></td>
+    <td>获取字符串中的字符数量.</td>
+  </tr>
+  <tr>
     <td><a href="StrPut.htm">StrPut()</a></td>
     <td>将字符串复制到内存地址, 可选的将其转换到给定代码页.</td>
+  </tr>
+  <tr>
+    <td class="larger"><a href="StrReplace.htm">StrReplace()</a></td>
+    <td>用新字符串替换指定的子字符串.</td>
+  </tr>
+  <tr>
+    <td><a href="StrSplit.htm">StrSplit()</a></td>
+    <td>使用指定的分隔符把一个字符串分解成子字符串数组.</td>
+  </tr>
+  <tr>
+    <td class="larger"><a href="SubStr.htm">SubStr()</a></td>
+    <td>检索字符串中指定位置开始的一个或多个字符.</td>
   </tr>
   <tr>
     <td><a href="Suspend.htm">Suspend</a></td>
@@ -1077,11 +1101,11 @@
   </tr>
   <tr>
     <td><a href="TrayTip.htm">TrayTip</a></td>
-    <td>在托盘图标附近创建气球提示或吐司通知窗口.</td>
+    <td>在托盘图标附近创建气球提示. 在 Windows 10, 可能会显示一个吐司通知窗口.</td>
   </tr>
   <tr>
     <td><a href="Trim.htm">Trim() / LTrim() / RTrim()</a></td>
-    <td>移除字符串的开始和/或末尾的某些字符.</td>
+    <td>移除字符串的开始和/或末尾的字符.</td>
   </tr>
   <tr>
     <td class="larger"><a href="Try.htm">Try</a></td>
@@ -1111,7 +1135,7 @@
     <td>从互联网下载文件.</td>
   </tr>
   <tr>
-    <td class="larger"><a href="SetEnv.htm">Var = value</a></td>
+    <td><a href="SetEnv.htm">Var = Value</a></td>
     <td>把指定的值赋给<a href="../Variables.htm">变量</a>.</td>
   </tr>
   <tr>
@@ -1122,7 +1146,7 @@
     <td><a href="VarSetCapacity.htm">VarSetCapacity()</a></td>
     <td>增加或清空变量占用的内存. 通常只有在特殊情况下才需要, 例如 <a href="DllCall.htm">DllCall()</a>.</td>
   </tr>
-  <tr>
+  <tr id="W">
     <td class="larger"><a href="While.htm">While 循环</a></td>
     <td>重复执行一系列命令, 一直到指定的<a href="../Variables.htm#Expressions">表达式</a>计算结果为假.</td>
   </tr>
@@ -1135,8 +1159,8 @@
     <td>和 <a href="WinActivate.htm">WinActivate</a> 一样, 只是此命令激活最下面的匹配窗口而不是最上面的.</td>
   </tr>
   <tr>
-    <td><a href="WinActive.htm">WinActive()</a></td>
-    <td>返回匹配指定条件的活动窗口的 唯一 ID(HWND).</td>
+    <td class="larger"><a href="WinActive.htm">WinActive()</a></td>
+    <td>检查指定的窗口是否处于活动状态, 并返回其唯一 ID(HWND).</td>
   </tr>
   <tr>
     <td class="larger"><a href="WinClose.htm">WinClose</a></td>
@@ -1144,7 +1168,7 @@
   </tr>
   <tr>
   <td class="larger"><a href="WinExist.htm">WinExist()</a></td>
-    <td>返回首个匹配窗口的唯一 ID(HWND).</td>
+    <td>检查是否存在指定的窗口, 并返回第一个匹配窗口的唯一 ID(HWND).</td>
   </tr>
   <tr>
     <td><a href="WinGetActiveStats.htm">WinGetActiveStats</a></td>
@@ -1195,12 +1219,8 @@
     <td>缩小指定窗口为任务栏上的按钮.</td>
   </tr>
   <tr>
-    <td><a href="WinMinimizeAll.htm">WinMinimizeAll</a></td>
-    <td>最小化所有窗口.</td>
-  </tr>
-  <tr>
-    <td><a href="WinMinimizeAll.htm">WinMinimizeAllUndo</a></td>
-    <td>反转前面 <a href="WinMinimizeAll.htm">WinMinimizeAll</a> 的效果.</td>
+    <td><a href="WinMinimizeAll.htm">WinMinimizeAll / WinMinimizeAllUndo</a></td>
+    <td>最小化或还原所有窗口.</td>
   </tr>
   <tr>
     <td class="larger"><a href="WinMove.htm">WinMove</a></td>
@@ -1212,7 +1232,7 @@
   </tr>
   <tr>
     <td><a href="WinSet.htm">WinSet</a></td>
-    <td>对指定的窗口进行各种设置, 例如"总在最前面"和透明度.</td>
+    <td>对指定的窗口进行各种设置, 例如 "总在最前面" 和透明度.</td>
   </tr>
   <tr>
     <td><a href="WinSetTitle.htm">WinSetTitle</a></td>
@@ -1227,18 +1247,14 @@
     <td>等到指定的窗口出现.</td>
   </tr>
   <tr>
-    <td class="larger"><a href="WinWaitActive.htm">WinWaitActive</a></td>
-    <td>等到指定的窗口处于活动状态.</td>
+    <td class="larger"><a href="WinWaitActive.htm">WinWaitActive / WinWaitNotActive</a></td>
+    <td>等到指定的窗口处于活动状态或非活动状态.</td>
   </tr>
   <tr>
     <td class="larger"><a href="WinWaitClose.htm">WinWaitClose</a></td>
     <td>等到指定的窗口消失.</td>
   </tr>
-  <tr>
-    <td class="larger"><a href="WinWaitActive.htm">WinWaitNotActive</a></td>
-    <td>等到指定的窗口处于不活动状态.</td>
-  </tr>
-  <tr>
+  <tr id="hash">
     <td><a href="_ClipboardTimeout.htm">#ClipboardTimeout</a></td>
     <td>改变当首次访问剪贴板失败后脚本会继续尝试访问剪贴板的持续时间.</td>
   </tr>
@@ -1256,7 +1272,7 @@
   </tr>
   <tr>
     <td><a href="_ErrorStdOut.htm">#ErrorStdOut</a></td>
-    <td>把阻止脚本运行的任何语法错误发送到标准输出而不显示在对话框中.</td>
+    <td>把阻止脚本运行的任何语法错误发送到标准错误输出(stderr) 而不显示在对话框中.</td>
   </tr>
   <tr>
     <td><a href="_EscapeChar.htm">#EscapeChar</a></td>
@@ -1276,7 +1292,7 @@
   </tr>
   <tr>
     <td class="larger"><a href="_If.htm">#If</a></td>
-    <td>类似于 <a href="_IfWinActive.htm">#IfWinActive</a>, 但可以是任意类型的表达式.</td>
+    <td>创建上下文相关的<a href="../Hotkeys.htm">热键</a>和<a href="../Hotstrings.htm">热字串</a>. 这些热键会根据表达式的结果执行不同的操作(或根本不执行).</td>
   </tr>
   <tr>
     <td><a href="_IfTimeout.htm">#IfTimeout</a></td>
@@ -1332,7 +1348,7 @@
   </tr>
   <tr>
     <td><a href="_MenuMaskKey.htm">#MenuMaskKey</a></td>
-    <td>改变用来屏蔽 <kbd>Win</kbd> 或 <kbd>Alt</kbd> 键松开事件的按键.</td>
+    <td>改变用来屏蔽 Win 或 Alt 松开事件的按键.</td>
   </tr>
   <tr>
     <td class="larger"><a href="_NoEnv.htm">#NoEnv</a></td>
@@ -1347,6 +1363,10 @@
     <td>让脚本持续运行(即直到用户关闭或遇到 <a href="ExitApp.htm">ExitApp</a>).</td>
   </tr>
   <tr>
+    <td><a href="_Requires.htm">#Requires</a></td>
+    <td>如果不符合版本要求, 则显示错误并退出.</td>
+  </tr>
+  <tr>
     <td><a href="_SingleInstance.htm">#SingleInstance</a></td>
     <td>决定当脚本已经运行时是否允许它再次运行.</td>
   </tr>
@@ -1356,7 +1376,7 @@
   </tr>
   <tr>
     <td><a href="_Warn.htm">#Warn</a></td>
-    <td>启用或禁用为选择的情况提示开发者错误的警告.</td>
+    <td>启用或禁用特定条件下的警告, 这些条件可能表明一个错误, 如书写错误或缺少 "global" 声明.</td>
   </tr>
   <tr>
     <td><a href="_WinActivateForce.htm">#WinActivateForce</a></td>

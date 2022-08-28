@@ -33,7 +33,7 @@
   <dd><p>移动鼠标的速度, 介于 0(最快) 和 100(最慢) 之间, 可以为<a href="../Variables.htm#Expressions">表达式</a>.</p>
     <p class="note"><strong>注意</strong>: 速度为 0 表示瞬时移动鼠标到目标位置.
       <p>如果省略, 则使用默认速度(通过 <a href="SetDefaultMouseSpeed.htm">SetDefaultMouseSpeed</a> 设置, 若未设置则使用 2).</p>
-      <p>在 <a href="SendMode.htm">SendInput/Play 模式</a>中会忽略 <em>Speed</em>; 它们会瞬时移动鼠标到目标位置(不过 <a href="SetMouseDelay.htm">SetMouseDelay</a> 有适用于 SendPlay 的模式). 要显示鼠标移动轨迹(例如使用脚本向观众进行演示时), 请使用 <code><a href="Send.htm#Click">SendEvent {Click 100, 200}</a></code> 或 <code><a href="SendMode.htm">SendMode</a> Event</code>(可以和 <a href="BlockInput.htm">BlockInput</a> 联合使用).</p></dd>
+      <p>在 <a href="SendMode.htm">SendInput/Play 模式</a>中会忽略 <em>Speed</em>; 它们会瞬时移动鼠标到目标位置(不过 <a href="SetMouseDelay.htm">SetMouseDelay</a> 有适用于 SendPlay 的模式). 要显示鼠标移动轨迹(例如使用脚本向观众进行演示时), 请使用 <code><a href="Send.htm#Click">SendEvent {Click 100 200}</a></code> 或 <code><a href="SendMode.htm">SendMode</a> Event</code>(可以和 <a href="BlockInput.htm">BlockInput</a> 联合使用).</p></dd>
 
   <dt>Relative</dt>
   <dd>
@@ -43,26 +43,26 @@
 
 </dl>
 
-<h2>备注</h2>
+<h2 id="Remarks">备注</h2>
 <p>此命令的发送模式由 <a href="SendMode.htm">SendMode</a> 设置.</p>
 <p>还可以使用其他 Send 命令进行拖动, 这样更灵活, 因为可以通过命令名指定发送的模式. 例如:</p>
-<pre>SendEvent {Click 6, 52, down}{click 45, 52, up}</pre>
+<pre>SendEvent {Click 6 52 Down}{Click 45 52 Up}</pre>
 <p>上面这种方法的另一个好处是与 MouseClickDrag 不同, 它不受用户通过系统控制面板对左右键功能交换的设置的影响.</p>
 <p><a href="SendMode.htm">SendPlay 模式</a>生成的鼠标事件可以比其他模式适应更大范围的游戏. 然而, 使用 SendPlay 进行拖动操作在 RichEdit 控件中(可能还有其他的) 例如 WordPad 和 Metapad, 可能无法工作.</p>
 <p>某些应用程序和游戏在鼠标移动过快时可能会跟踪困难. 可以使用 <a href="SetDefaultMouseSpeed.htm">SetDefaultMouseSpeed</a> 的 <em>speed</em> 参数来降低鼠标的速度(仅对默认的 <a href="SendMode.htm">SendEvent 模式</a>有效).</p>
 <p>可以使用 <a href="BlockInput.htm">BlockInput</a> 命令防止用户对鼠标的任何物理操作扰乱由鼠标命令生成的模拟鼠标事件. 不过, 在 <a href="SendMode.htm">SendInput/Play</a> 模式中通常不需要这个命令, 因为它们会自动延迟用户对鼠标的物理操作到发送之后.</p>
 <p>在每次鼠标按下事件和鼠标弹起事件后都会有一个自动的延时(不包括 <a href="SendMode.htm">SendInput 模式</a>). 此延时同样发生在拖动期间鼠标的移动之后. 使用 <a href="SetMouseDelay.htm">SetMouseDelay</a> 可以改变延时的长度.</p>
-<h2>相关</h2>
+<h2 id="Related">相关</h2>
 <p><a href="CoordMode.htm">CoordMode</a>, <a href="SendMode.htm">SendMode</a>, <a href="SetDefaultMouseSpeed.htm">SetDefaultMouseSpeed</a>, <a href="SetMouseDelay.htm">SetMouseDelay</a>, <a href="Click.htm">Click</a>, <a href="MouseClick.htm">MouseClick</a>, <a href="MouseGetPos.htm">MouseGetPos</a>, 
   <a href="MouseMove.htm">MouseMove</a>, <a href="BlockInput.htm">BlockInput</a></p>
-<h2>示例</h2>
+<h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a> 点击并按住鼠标左键, 将鼠标光标移动到目标坐标, 然后松开按钮.</p>
 <pre>MouseClickDrag, left, 0, 200, 600, 400</pre>
 </div>
 
 <div class="ex" id="ExPaint">
-<p><a href="#ExPaint">#2</a>: 下面的例子打开微软的画图并画一个小房子:</p>
+<p><a class="ex_number" href="#ExPaint"></a> 打开微软的画图并画一个小房子.</p>
 <pre>Run, mspaint.exe
 WinWaitActive, ahk_class MSPaintApp,, 2
 if ErrorLevel

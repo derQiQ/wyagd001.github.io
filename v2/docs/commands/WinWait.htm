@@ -35,7 +35,7 @@
   <dt>Timeout</dt>
   <dd>
     <p>类型: <a href="../Concepts.htm#numbers">整数</a>或<a href="../Concepts.htm#numbers">浮点数</a></p>
-    <p>超时并返回 0 前等待的秒数. 留空以允许函数无限期等待. 指定 0 等同于指定 0.5.</p>
+    <p>超时并返回 0 前等待的秒数. 留空以允许函数无限期等待.</p>
   </dd>
 
   <dt>ExcludeTitle</dt>
@@ -65,10 +65,10 @@
 <p><a href="WinWaitActive.htm">WinWaitActive</a>, <a href="WinWaitClose.htm">WinWaitClose</a>, <a href="WinExist.htm">WinExist</a>, <a href="WinActive.htm">WinActive</a>, <a href="ProcessWait.htm">ProcessWait</a>, <a href="SetTitleMatchMode.htm">SetTitleMatchMode</a>, <a href="DetectHiddenWindows.htm">DetectHiddenWindows</a></p>
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a> 打开记事本, 最多等待 3 秒, 直到它存在. 如果 WinWait 超时, 会显示一条错误信息, 否则记事本将被最小化.</p>
 <pre>Run "notepad.exe"
 if WinWait("Untitled - Notepad", , 3)
-    WinMinimize  <em>; 最小化由 WinWait 找到的窗口.</em>
+    WinMinimize  <em>; 使用由 WinWait 找到的窗口.</em>
 else
     MsgBox "WinWait timed out."
 </pre>

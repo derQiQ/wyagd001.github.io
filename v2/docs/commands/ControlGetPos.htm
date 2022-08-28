@@ -13,23 +13,23 @@
 
 <h1>ControlGetPos</h1>
 
-<p>Retrieves the position and size of a control.</p>
+<p>获取控件的位置和大小.</p>
 
-<pre class="Syntax"><span class="func">ControlGetPos</span> <span class="optional">X, Y, Width, Height, Control, WinTitle, WinText, ExcludeTitle, ExcludeText</span></pre>
+<pre class="Syntax"><span class="func">ControlGetPos</span> <span class="optional">&amp;X, &amp;Y, &amp;Width, &amp;Height, Control, WinTitle, WinText, ExcludeTitle, ExcludeText</span></pre>
 <h2 id="Parameters">参数</h2>
 <dl>
 
-  <dt>X, Y</dt>
+  <dt>&amp;X, &amp;Y</dt>
   <dd>
-    <p>类型: <a href="../Concepts.htm#variables">变量</a></p>
-    <p>The names of the variables in which to store the X and Y coordinates (in pixels) of <em>Control</em>'s upper left corner. These coordinates are relative to the upper-left corner of the target window's <a href="CoordMode.htm#Client">client area</a> and thus are the same as those used by <a href="ControlMove.htm">ControlMove</a>.</p>
-    <p>If either X or Y is omitted, the corresponding values will not be stored.</p>
+    <p>类型: <a href="../Concepts.htm#variable-references">VarRef</a></p>
+    <p>用于存储 <em>Control</em> 左上角的 X 和 Y 坐标(英寸) 的变量的引用. 这些坐标相对于目标窗口的<a href="CoordMode.htm#Client">客户端区域</a>, 因此与 <a href="ControlMove.htm">ControlMove</a> 使用的坐标相同.</p>
+    <p>如果省略 X 或 Y, 则不会存储相应的值.</p>
   </dd>
 
-  <dt>Width, Height</dt>
+  <dt>&amp;Width, &amp;Height</dt>
   <dd>
-    <p>类型: <a href="../Concepts.htm#variables">变量</a></p>
-    <p>The names of the variables in which to store <em>Control</em>'s width and height (in pixels). If omitted, the corresponding values will not be stored.</p>
+    <p>类型: <a href="../Concepts.htm#variable-references">VarRef</a></p>
+    <p>用于存储 <em>Control</em> 的宽度和高度(单位为英寸) 的变量的引用. 如果省略, 则不会存储相应的值.</p>
   </dd>
 
   <dt>Control</dt>
@@ -64,20 +64,22 @@
 
 </dl>
 
+<h2 id="Error_Handling">错误处理</h2>
+<p>如果找不到窗口或控件, 则抛出 <a href="../objects/Error.htm#TargetError">TargetError</a>.</p>
+
 <h2 id="Remarks">备注</h2>
-<p>If no matching window or control is found, the output variables will be made blank.</p>
-<p>Unlike functions that change a control, ControlGetPos does not have an automatic delay (<a href="SetControlDelay.htm">SetControlDelay</a> does not affect it).</p>
+<p>与更改控件的函数不同, ControlGetPos 没有自动延迟(不受 <a href="SetControlDelay.htm">SetControlDelay</a> 影响).</p>
 <p>窗口标题和文本是区分大小写的. 除非 <a href="DetectHiddenWindows.htm">DetectHiddenWindows</a> 被打开, 否则不会检测隐藏窗口.</p>
 <h2 id="Related">相关</h2>
 <p><a href="ControlMove.htm">ControlMove</a>, <a href="WinGetPos.htm">WinGetPos</a>, <a href="Control.htm">Control 函数</a></p>
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a>: 这个示例会持续地更新和显示当前鼠标光标下的控件的名称和位置:</p>
+<p><a class="ex_number" href="#ExBasic"></a> 持续地更新和显示当前鼠标光标下的控件的名称和位置.</p>
 <pre>Loop
 {
     Sleep 100
-    MouseGetPos ,, WhichWindow, WhichControl
-    ControlGetPos x, y, w, h, WhichControl, "ahk_id " WhichWindow
+    MouseGetPos ,, &amp;WhichWindow, &amp;WhichControl
+    try ControlGetPos &amp;x, &amp;y, &amp;w, &amp;h, WhichControl, WhichWindow
     ToolTip WhichControl "`nX" X "`tY" Y "`nW" W "`t" H
 }</pre>
 </div>

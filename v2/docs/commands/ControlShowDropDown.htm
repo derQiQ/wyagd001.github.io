@@ -47,13 +47,9 @@
     </dd>
 </dl>
 
-<h2 id="Return_Value">返回值</h2>
-<p>类型: <a href="../Concepts.htm#boolean">整数(布尔值)</a></p>
-<p>函数返回 1(true) 表示成功, 或 0(false) 表示失败.</p>
-
 <h2 id="Error_Handling">错误处理</h2>
-<p>如果遇到问题, <a href="../misc/ErrorLevel.htm">ErrorLevel</a> 设置为 1, 否则设置为 0.</p>
-<p>如果检测到无效参数, 则抛出<a href="Catch.htm#RuntimeErrors">异常</a>.</p>
+<p>如果找不到窗口或控件, 则抛出 <a href="../objects/Error.htm#TargetError">TargetError</a>.</p>
+<p>如果消息不能被发送到控件, 则抛出 <a href="../objects/Error.htm#OSError">OSError</a>.</p>
 
 <h2 id="Remarks">备注</h2>
 <p>为了提高可靠性, 每次使用此函数后都会自动执行延迟. 该延迟可以通过 <a href="SetControlDelay.htm">SetControlDelay</a> 或给 <a href="../Variables.htm#ControlDelay">A_ControlDelay</a> 赋值来更改. 有关详情, 请参阅 <a href="SetControlDelay.htm#Remarks">SetControlDelay 备注</a>.</p>
@@ -64,14 +60,14 @@
 
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
-<pre>Send "#r"  <em>; 显示运行对话框.</em>
+<p><a class="ex_number" href="#ExBasic"></a> 打开运行对话框, 显示其下拉列表 2 秒, 然后关闭对话框.</p>
+<pre>Send "#r"  <em>; 打开运行对话框.</em>
 WinWaitActive "ahk_class #32770"  <em>; 等待对话框出现.</em>
 ControlShowDropDown "ComboBox1"  <em>; 显示下拉列表. 省略第二个参数, 以便使用最后找到的窗口.</em>
 Sleep 2000
 ControlHideDropDown "ComboBox1"  <em>; 隐藏下拉列表.</em>
 Sleep 1000
-Send "{Esc}"  <em>; 隐藏对话框窗口.</em></pre>
+Send "{Esc}"  <em>; 关闭对话框窗口.</em></pre>
 </div>
 
 </body>

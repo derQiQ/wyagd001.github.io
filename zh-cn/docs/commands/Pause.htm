@@ -15,15 +15,12 @@
 
 <p>暂停脚本的<a href="../misc/Threads.htm">当前线程</a>.</p>
 
-<pre class="Syntax">
-<span class="func">#p</span>::Pause <em>; 按一次 Win+P 会暂停脚本. 再按一次则取消暂停.</em>
-<span class="func">Pause</span> <span class="optional">, OnOffToggle, OperateOnUnderlyingThread</span>
-</pre>
-<h2>参数</h2>
+<pre class="Syntax"><span class="func">Pause</span> <span class="optional">, OnOffToggle, OperateOnUnderlyingThread</span></pre>
+<h2 id="Parameters">参数</h2>
 <dl>
 
   <dt>OnOffToggle</dt>
-  <dd><p>如果为空或省略, 则它默认为 Toggle. 否则, 请指定下列单词的其中一个:</p>
+  <dd><p>如果为空或省略, 则默认为 Toggle. 否则, 请指定下列单词的其中一个:</p>
       <p><strong>Toggle</strong>: 如果在<a href="../misc/Threads.htm">当前线程</a>下的潜在线程处于运行状态, 则暂停当前线程, 否则让潜在的线程恢复运行.</p>
       <p><strong>On</strong>: 暂停当前线程.</p>
       <p><strong>Off</strong>: 如果在当前线程下的线程已经处于暂停状态, 则把它恢复到取消暂停状态. 在其他情况下, 此命令没有效果.</p>
@@ -39,7 +36,7 @@
 
 </dl>
 
-<h2>备注</h2>
+<h2 id="Remarks">备注</h2>
 <p>默认情况下, 脚本也可以通过它的<a href="../Program.htm#tray-icon">托盘图标</a>或<a href="../Program.htm#main-window">主窗口</a>来暂停.</p>
 <p>与 <a href="Suspend.htm">Suspend</a> 禁用<a href="../Hotkeys.htm">热键</a>和<a href="Hotstrings.htm">热字串</a>不同, 打开暂停状态会冻结<a href="../misc/Threads.htm">当前线程</a>. 副作用是, 在它下面的任何被中断线程也将处于潜伏状态.</p>
 <p>暂停任意线程后, <a href="SetTimer.htm">计时器</a>不会运行. 与之相比, 明确地启动的线程(例如, <a href="../Hotkeys.htm">热键</a>和<a href="Menu.htm">菜单项</a>) 仍然可以运行; 但当它们的<a href="../misc/Threads.htm">线程</a>结束时, 潜在的线程仍会被暂停. 换句话说, 每个线程都能独立于其他线程被暂停.</p>
@@ -48,19 +45,19 @@
 <p>要禁用<a href="SetTimer.htm">计时器</a>而不暂停脚本, 请使用 <a href="Thread.htm">Thread, NoTimers</a>.</p>
 <p>当脚本显示任意类型的<a href="Menu.htm">菜单</a>(托盘菜单, 菜单栏, GUI 上下文菜单, 等等) 时脚本总是处于停住状态(虽然不是正式地暂停).</p>
 
-<h2>相关</h2>
+<h2 id="Related">相关</h2>
 <p><a href="Suspend.htm">Suspend</a>, <a href="Menu.htm">Menu</a>, <a href="ExitApp.htm">ExitApp</a>, <a href="../misc/Threads.htm">线程</a>, <a href="SetTimer.htm">SetTimer</a></p>
-<h2>示例</h2>
+<h2 id="Examples">示例</h2>
 <div class="ex" id="ExHotkey">
-<p><a href="#ExHotkey">#1</a></p>
-<pre>Pause::Pause  <em>; 设置 "pause" 键为切换暂停功能的热键...</em>
-#p::Pause  <em>; ... 或者设置 Win+p 或其他热键.</em></pre>
+<p><a class="ex_number" href="#ExHotkey"></a> 按一次热键暂停脚本. 再按一次取消暂停.</p>
+<pre>Pause::Pause  <em>; Pause/Break 键.</em>
+#p::Pause  <em>; Win+P</em></pre>
 </div>
 
 <div class="ex" id="PostMessage">
-<p><a href="#PostMessage">#2</a>: 发送 Pause 命令到另一个脚本.</p>
+<p><a class="ex_number" href="#PostMessage"></a> 发送 Pause 命令到另一个脚本.</p>
 <pre><a href="DetectHiddenWindows.htm">DetectHiddenWindows</a>, On
-WM_COMMAND := 0x111
+WM_COMMAND := 0x0111
 ID_FILE_PAUSE := 65403
 <a href="PostMessage.htm">PostMessage</a>, WM_COMMAND, ID_FILE_PAUSE,,, C:\YourScript.ahk ahk_class AutoHotkey</pre>
 </div>

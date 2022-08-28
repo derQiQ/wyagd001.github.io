@@ -17,6 +17,143 @@
 <p>对于较旧的变更, 请参阅<a href="ChangeLogHelp.htm">存档变更</a>.</p>
 
 <!--new revisions go here-->
+<h2 id="v1.1.34.03">1.1.34.03 - 2022 年 6 月 5 日</h2>
+<p>修复 热字符串中 Unicode 补充字符的两次回删.</p>
+<p>修复 如果 <code>a up::</code> 和 <code>a &amp; b::</code> 存在, <code>a::</code> 不会触发.</p>
+<p>修复 MinSize/MaxSize 在第一次调用 Gui Show 之前应用不正确.</p>
+<p>修复 如果 InputHook 在停止后过早重启, 钩子线程会陷入无限循环的问题.</p>
+<p>修复 崩溃或未定义的行为时, 一个空白参数被传递到 FileCopy, FileMove, FileCopyDir, FileMoveDir 或 FileRemoveDir.</p>
+<p>修复 死键被键盘钩子在热字符串的最后一个字符被抑制后错误地重新应用(例如, 对于 <code>:?*:ò::ó</code>).</p>
+
+<h2 id="v1.1.34.02">1.1.34.02 - 2022 年 5 月 13 日</h2>
+<p>修复 由 v1.1.34.00 引入的 bug:</p>
+<ul>
+  <li>修复 嵌入脚本 #1 的命令行参数.</li>
+  <li>修复 <code>Alt::</code>, <code>Ctrl::</code> 和 <code>Shift::</code> 的行为像普通的键, 而不是如文档记录的触发或释放.</li>
+  <li>修复 <code>~a &amp; b::</code>(当使用 #If 禁用时) 导致 <code>a::</code> 在 key-up 时触发, 甚至在激活一些其他组合键之后.</li>
+</ul>
+
+<h2 id="v1.1.34.01">1.1.34.01 - 2022 年 5 月 7 日</h2>
+<p>修正了 v1.1.34.00 版引入的错误:</p>
+<ul>
+  <li>如果 <code>a up::</code> 是第一个热键且 <code>~a &amp; b::</code> 存在, 则其在按下时触发, 而不是释放时.</li>
+  <li>如果 <code>~a &amp; b::</code> 存在, <code>a::</code> 不会被抑制, 除非 <code>a::</code> 是第一个热键.</li>
+  <li>当 <code>CapsLock &amp; x::</code> 存在时, <code>CapsLock::</code> 不工作, NumLock 和 ScrollLock 同样如此.</li>
+</ul>
+
+<h2 id="v1.1.34.00">1.1.34.00 - 2022 年 5 月 5 日</h2>
+<p>新增 使用 AutoHotkey.exe 作为编译脚本基础的功能, 允许编译的脚本在通过 <code>/script</code> 命令行开关时执行外部文件.</p>
+<p>新增 在每个脚本顶部隐含包含代码的功能, 通过在 AutoHotkey.exe 中嵌入资源或使用 /include 命令行开关.</p>
+<p>在未编译的脚本中启用菜单 NoMainWindow/MainWindow.</p>
+<p>更改 <code>~x &amp; y::</code> 当 #If 禁用时不影响对 <em>x</em> 的抑制.</p>
+<p>增强 FileCopyDir 以便在操作系统支持的情况下, 允许源目录是一个 zip 文件, 在这种情况下, 其内容会被提取出来.</p>
+<p>修复 在同一滴答中执行多个一次性运行计时器[由 v1.1.33.11 破坏].</p>
+<p>修复 ToolTip 定位/大小的错误.</p>
+<ul>
+  <li>在 Windows 10 和 11 中, 如果将工具提示与任务栏重叠, 它会出现在屏幕的顶部.</li>
+  <li>工具提示受到主屏幕宽度的限制, 即使它们应该出现在副屏幕上, 这可能会阻止它们出现在适当的屏幕上(当它们太宽时).</li>
+  <li>由于操作系统的行为, 最大宽度实际上是 <code>A_ScreenDPI/96</code> 倍; 现在已经考虑到这一点.</li>
+</ul>
+<p>优化 用于文本没有变化的情况下的工具提示, 以减少闪烁并加快其速度.</p>
+<p>修复 如果在按下键之后(而不是之前) 打开热键, 并且该键也是带有波浪号的自定义前缀键(例如 激活 <code>~a &amp; b::</code> 干扰了 <code>a up</code>), 则热键无法执行.</p>
+<p>修复 自定义组合热键的前缀键导致钩子重置, 如 <code>~RButton &amp; WheelUp::</code> 当 <code>RButton::</code> 启用或禁用脚本的唯一键盘钩子热键时.</p>
+
+<h2 id="v1.1.33.11">1.1.33.11 - 2022 年 4 月 20 日</h2>
+<p>修复 <code>Format(n)</code> 返回空白, 当 <code>n</code> 为纯数字表达式.</p>
+<p>修复 调试器无法查询 <code>obj.&lt;base&gt;.&lt;base&gt;</code>.</p>
+<p>更改 调试器的步进/断点滑过 Try/Catch/Finally/Case.</p>
+<p>修复 <code>Switch {</code> 错误引发加载时错误.</p>
+<p>修复 调试器 stack_get 在 OnError 后报告错误行.</p>
+<p>修复 调试器 stack_get 报告自动执行线程的错误行.</p>
+<p>修复 自动环境检索和 A_ComVar 安全允许大于官方限制的变量的问题 [PR #259 from mikeblas].</p>
+<p>修复 鼠标滚轮热键的 A_EventInfo [broken by v1.1.33.05].</p>
+<p>修复 ControlClick 无法正确转换滚轮消息坐标.</p>
+<p>修复 AutoHotkey 对象的 IDispatch 实现为属性名保留大小写的问题.</p>
+<p>修复 #Warn StdOut 默认为代码页 0, 当 /ErrorStdOut 未使用时.</p>
+<p>修复 计时器的 __delete() 元函数删除下一个计时器时崩溃的问题.</p>
+
+<h2 id="v1.1.33.10">1.1.33.10 - 2021 年 8 月 29 日</h2>
+<p>修复 加载已经打开的 JPG/GIF 文件的问题.</p>
+<p>修复 if-var-is 对 digits/xdigits 的错误识别.</p>
+<p>新增 ControlGet Selected 的安全检查, 以防它被用于非 Edit 控件.</p>
+<p>修复 变量在某些罕见情况下被设置为 NULL , 导致崩溃的问题. 唯一被证实的情况是, 当 AutoHotkey 作为 Windows 商店应用程序运行时, 一个超过 63 个字符的字符串从一个函数返回并被分配到一个变量.</p>
+<p>修复 InputHook 回调在输入停止和重新启动后失败的问题.</p>
+
+<h2 id="v1.1.33.09">1.1.33.09 - 2021 年 5 月 8 日</h2>
+<p>修复 当 AltTab 动作被用于 key-up/down 对时的加载崩溃问题.</p>
+<p>修复 主脚本文件无法打开时的垃圾错误文本.</p>
+<p>删除 在读取第一行之前出现的错误信息中的 "Error at line 0".</p>
+<p>修复 当最小化的 GUI 被恢复时焦点重置的问题.</p>
+<p>修复 在使用 Gui Show 将 GUI 最小化时焦点无法保存的问题.</p>
+
+<h2 id="v1.1.33.08">1.1.33.08 - 2021 年 4 月 23 日</h2>
+<p>修复 非零 SendLevel 事件在 v1.1.33.07 版修正中未涵盖的情况下被错误地抑制:</p>
+<ul>
+  <li>当有一个匹配的上下文相关热键具有较高 #InputLevel 且没有启用全局变量时.</li>
+  <li>当没有匹配的 key-down 热键, 但有一个具有更高 #InputLevel 的 key-up 热键.</li>
+</ul>
+
+<h2 id="v1.1.33.07">1.1.33.07 - 2021 年 4 月 21 日</h2>
+<p>修复 屏幕 DPI 变化后托盘图标冻结和变得模糊的问题.</p>
+<p>修复 由 #InputLevel 错误的抑制按键而禁用热键的问题.</p>
+
+<h2 id="v1.1.33.06">1.1.33.06 - 2021 年 3 月 14 日</h2>
+<p>修复 由 v1.1.33.05 版本引入的一个错误, 即某些热键被忽略. 这包括操纵杆热键和所有应用了 #MaxThreadsBuffer 或 B 选项的热键.</p>
+
+<h2 id="v1.1.33.05">1.1.33.05 - 2021 年 3 月 10 日</h2>
+<p>修复 热键变体有不同 #InputLevels 的错误.</p>
+<ul>
+  <li>由于全局变体的 #InputLevel 较低, 即使发送级别够低, 热键变体也能执行.</li>
+  <li>热键变体不执行, 因为之前的变体由于 #InputLevel 而不符合条件.</li>
+</ul>
+<p>修复 Ctrl/Shift/Alt(没有 L/R) 作为钩子热键的问题.</p>
+
+<h2 id="v1.1.33.04">1.1.33.04 - 2021 年 3 月 2 日</h2>
+<p>删除了对 POPCNT 指令的依赖性, 老式 CPU 不支持该指令(例如 Core 2).</p>
+
+<h2 id="v1.1.33.03">1.1.33.03 - 2021 年 3 月 1 日</h2>
+<p>修复 当空的 SafeArray 被枚举时会崩溃的问题.</p>
+<p>修复 Button/Checkbox/Radio 使用 -Wrap 时高度不自动展开.</p>
+<p>修复 WM_DESTROY 绕过释放全局/静态变量中的对象的问题.</p>
+<p>修复 WinMenuSelectItem 二次尝试匹配能正确的处理 &amp;. 具体而言, 有实际文本的项目, 如 "a &amp;&amp; b" 显示为 "a &amp; b" 现在将匹配 "a &amp; b" 而不是 "a&nbsp; b".</p>
+<p>修复 在 Case/Default 行的断点中断在前一个案例的结束处.</p>
+<p>变更 SoundBeep, 如果持续时间为负值, 则忽略持续时间, 而不是将其转换为一个大的正值.</p>
+<p>修复 带有 ! 的鼠标热键在重复按键时掩饰 Alt-up, 如果可能.</p>
+<p>修复 几个热键重叠的问题.</p>
+<ul>
+  <li>Key-up 热键触发不正确, 因为它们与有重叠但需求不同的热键配对, 如 <code>&lt;^a up</code> 触发 RCtrl+A, 因为它与 <code>^a</code> 配对; 或 <code>*^c up</code> 触发 Shift+C, 因为它与 <code>*+c</code> 配对, 两者都可以触发 Ctrl+Shift+C.</li>
+  <li>热键的优先次序无法预测, 具有相同的修饰符但 L/R 不同的变体, 或不同的修饰符当其中一个都不是另一个的完美子集时.  优先级在一定程度上受到定义顺序的影响, 但当添加或删除热键时, 优先级的变化是不可预测的.</li>
+</ul>
+
+<h2 id="v1.1.33.02">1.1.33.02 - 2020 年 7 月 17 日</h2>
+<p>修复 InputHook.EndKey 以优先 vk 于 sc000.</p>
+<p>修复 <code>InputHook.KeyOpt("{sc000}", flags)</code>.</p>
+<p>修复 #Warn Unreachable 标记 Case/Default 为不可达.</p>
+
+<h2 id="v1.1.33.01">1.1.33.01 - 2020 年 7 月 13 日</h2>
+<p>修复 修饰键-松开热键, 如 <code>LShift up::</code> 不抑制按键-松开, 除非定义了相应的按键-按下热键.</p>
+<p>修复 DLL/EXE 中加载的图标, 如果它在图标组中排在第一位, 则不使用最接近的匹配尺寸[被 v1.1.33.00 破坏].</p>
+<p>修复 如果定义了 <code>a::</code> 但没有定义 <code>b &amp; a::</code>, 则错误地将 <code>a up::</code> 优先于 <code>b &amp; a up::</code>. .</p>
+<p>修复 <code>b &amp; a up::</code> 不抑制 <code>a</code>, 当 <code>a::</code> 已定义但被 #If 禁用, 且 <code>b &amp; a::</code> 未定义时.</p>
+
+<h2 id="v1.1.33.00">1.1.33.00 - 2020 年 6 月 30 日</h2>
+<p>增加 <a href="commands/_ErrorStdOut.htm">#ErrorStdOut</a> <em>Encoding</em> 参数.</p>
+<p>增加 <a href="Scripts.htm#ErrorStdOut">/ErrorStdOut=<em>Encoding</em></a> 命令行开关.</p>
+<p>增加 <a href="commands/_Warn.htm#Unreachable">#Warn Unreachable</a>(警告模式).</p>
+<p>增加 <a href="commands/_Requires.htm">#Requires AutoHotkey v<em>Version</em></a>(指令).</p>
+<p>增加 程序终止 SEH 异常的检测, 以显示错误对话框.</p>
+<p>实现了由 fincs, TAC109, Joe DF 和 Ben Allred 开发的 Ahk2Exe 的许多改进.</p>
+<p>修复 发送导致不必要的热键缓冲的问题.</p>
+<p>修复 Input 一个可能引发未定义行为的 bug.[PR #159 from Helgef].</p>
+<p>修复 WinKill 比 WinClose 做得更多.</p>
+<p>修复 A_WinDir 总是返回系统 Windows 目录.</p>
+<p>修复 FileGetShortcut/FileCreateShortcut 不递增/递减负的图标指数(资源 ID).</p>
+<p>修复 InputBox Locale 选项不聚焦 Cancel 按钮的问题.</p>
+<p>修复 当 GUI 没有控件时, 菜单栏键盘快捷键不起作用的问题.</p>
+<p>修复 LoadPicture 在 DLL/EXE 中可用时使用 256x256 图形的问题.</p>
+<p>修复 DBGp stderr 复制模式不抑制错误对话框.</p>
+<p>修复 行为空时, ControlGet Line 设置 ErrorLevel=1 的问题.</p>
+
 <h2 id="v1.1.32.00">1.1.32.00 - 2019 年 11 月 24 日</h2>
 <p>更改 带有 WinTitle 参数的命令和函数将 cloaked 窗口视为隐藏窗口.</p>
 <p>增加 对快速模式下反向 PixelSearch 的支持. [PR #156 from changyuheng]</p>
@@ -113,7 +250,7 @@
 <p>增加 <code>OnError(Func [, AddRemove])</code>.</p>
 <p>改进的异常处理:</p>
 <ul>
-  <li>如果未处理, 在堆栈展开<em>之前</em>显示错误消息/调用 OnError(使异常与运行时错误一致).</li>
+  <li>如果未处理, 在堆栈展开 <em>之前</em> 显示错误消息/调用 OnError(使异常与运行时错误一致).</li>
   <li>修复 __Delete 导致命令抛出, 即使 Try 没有使用.</li>
   <li>修复 COM 客户端无法捕获内置脚本错误.</li>
 </ul>
@@ -153,7 +290,7 @@
 <li>增加 热字符串的 <a href="Hotstrings.htm#X">X 选项</a>可以执行相同行中的操作, 而不是自动替换.</li>
 <li>增加 <a href="commands/Hotstring.htm">Hotstring()</a> 函数.</li>
 <li>增加 <a href="Hotstrings.htm#Function">函数热字串</a>.</li>
-<li>增加 <a href="commands/StringSplit.htm#function">StrSplit</a> 的 MaxParts 参数.</li>
+<li>增加 <a href="commands/StringSplit.htm">StrSplit</a> 的 MaxParts 参数.</li>
 <li>改进 <a href="commands/_MenuMaskKey.htm">#MenuMaskKey</a> 以允许指定 VK 和 SC 或 vk00sc000.</li>
 </ul>
 
@@ -221,7 +358,7 @@
 <p>变更 在按下钩子热键时, <a href="commands/_MenuMaskKey.htm">菜单(Alt/Win) 掩饰键</a>的规则:</p>
 <ul>
   <li>显式发送 Alt/Win 可能被屏蔽. 这修复了键盘映射, 如 <code>AppsKey::RWin</code>, 但为了激活开始菜单的热键可能需要新的变通办法.</li>
-  <li>如果 Alt/Win 逻辑是按下但没有物理按下, 只有热键需要 Alt/Win (如 <code>#a::</code>, 而不是 <code>*a::</code>) 时, 才引发掩饰键. 这是允许重映射或通配符热键发送 key-up 不被掩饰.</li>
+  <li>如果 Alt/Win 逻辑是按下但没有物理按下, 只有热键需要 Alt/Win(如 <code>#a::</code>, 而不是 <code>*a::</code>) 时, 才引发掩饰键. 这是允许重映射或通配符热键发送 key-up 不被掩饰.</li>
   <li>不抑制热键原生功能的热键如 <code>~#a::</code> 不再引发掩饰键, 因为原生的 keydown/keyup 足以阻止菜单. 但是, 鼠标热键像 <code>~*MButton::</code> 结合 Win 键, 不再阻止开始菜单. 它可以通过发送 <code>Send {Blind}{vk07}</code> 或类似的方式手动阻止.</li>
   <li>现在, 键盘钩子跟踪与 Alt/Win 相关的事件, 因此如果 Alt/Win 已被某些其他事件(物理或发送) 掩饰, 则不需要发送掩饰键.</li>
 </ul>
@@ -265,7 +402,7 @@
 <li>修复 一些不使用钩子的热键被通配符热键遮盖失效的问题, 这取决于热键定义的顺序.</li>
 <li>修复 如果 key-down 热键只是 "k-hook" 时, 在相应的 key-up 热键被禁用后, 恢复为 "reg". (在 v1.1.07.03 之前, 这已经发生了, 但是如果 key-down 热键在 key-up 热键之后定义的话, 则 key-down 热键从一开始就不会被设置为 "k-hook".)</li>
 <li>修复 钩子热键忽略由 <code>Send !^+#{key}</code> 或发送 Unicode 字符引起的修饰符变化. 在 SendLevel 0 时, 这会恢复 Send 到 v1.1.06 之前的状态, 但在 SendLevel &gt;= 1 时, 保持 v1.1.06 + 的行为, 允许 Send 触发正确的热键.</li>
-<li>改进 如果 Send 是从"reg" 热键中如 <code>^m::Send x</code> 第一次被调用时, 恢复修饰符状态的几率进行改进. 这样就不太可能在第一次按住时产生不同的(意外的) 结果, 如 xmmm 而不是 xxxx.</li>
+<li>改进 如果 Send 是从 "reg" 热键中如 <code>^m::Send x</code> 第一次被调用时, 恢复修饰符状态的几率进行改进. 这样就不太可能在第一次按住时产生不同的(意外的) 结果, 如 xmmm 而不是 xxxx.</li>
 </ul>
 
 <h2 id="v1.1.26.01">1.1.26.01 - 2017 年 7 月 16 日</h2>
@@ -310,7 +447,7 @@
 <p>修复 <code>{U+x}</code> 支持补充的字符(x &gt; 0xFFFF).</p>
 <p>修复 没有 get{} 的类属性返回空值代替对象的内置属性当基类没有定义属性值. 无基类中定义的属性已经正确地运行.</p>
 <p>修复 当系统禁用视觉样式(例如, Windows Classic) 时, Tab3 控件中的控件的背景颜色.</p>
-<p>修复 在事件(例如, OnExit 函数)直接调用的函数中处理退出线程. 除了在 v2-alpha 分支中, 这个 bug 没有已知的效果.</p>
+<p>修复 在事件(例如, OnExit 函数) 直接调用的函数中处理退出线程. 除了在 v2-alpha 分支中, 这个 bug 没有已知的效果.</p>
 <p>修复 调试器立即检测断开的连接(例如, 当客户端终止时没有调用 stop 或 detach).</p>
 <p>修复 调试器对 <code>property_get -m 0</code> 当做 "unlimited" 处理, 根据 DBGp 规范.</p>
 <p>修复 调试器要求 base64 为 <code>property_set -t integer/float</code>, 根据 DBGp 规范.</p>
@@ -427,13 +564,13 @@
 <p>修复 Edit 控件中如果最后一行为空行也进行自动伸缩大小.</p>
 <p>修复 可响应 ComObj 函数的 内存不足 问题.</p>
 <p>修复 ComObjArray 直接忽略多余的参数而不会崩溃(仅适用于动态调用).</p>
-<p>修复 GuiControl 以"追加"的形式修改 Tabs 控件(而不是原来的直接替换, 见 GuiControl 中的 Tab 说明).</p>
+<p>修复 GuiControl 以 "追加" 的形式修改 Tabs 控件(而不是原来的直接替换, 见 GuiControl 中的 Tab 说明).</p>
 <p>修复 XP64 支持.</p>
 
 <h2 id="v1.1.22.05">1.1.22.05 - 2015 年 9 月 10 日</h2>
 <p>修复 优化无数字 ID 的图标加载.</p>
 <p>修复 当 Gui 销毁时, 对于 +g 选项的函数对象不会主动释放资源.</p>
-<p>修复 Gui Show 显示 主Gui 时避免强制激活 子GUI.</p>
+<p>修复 Gui Show 显示主 Gui 时避免强制激活子 GUI.</p>
 <p>修复 当 Caps/Num/ScrollLock 按键按下时状态设置失败.</p>
 <p>修复 Gui 颜色影响文本的颜色(一般为黑色).</p>
 <p>修改 提高当 Gui Show 时 GuiSize 立即执行的成功几率.</p>
@@ -446,7 +583,7 @@
 <h2 id="v1.1.22.04">1.1.22.04 - 2015 年 8 月 19 日</h2>
 <p>修正 ObjRawSet() 不返回内容.</p>
 <p>添加 Windows 10 supportedOS 标签到执行程序的 manifest(避免一些兼容性问题).</p>
-<p>添加 检测函数声明中")"之后的语法错误的检测.</p>
+<p>添加 检测函数声明中 ")" 之后的语法错误的检测.</p>
 
 <h2 id="v1.1.22.03">1.1.22.03 - 2015 年 6 月 12 日</h2>
 <p>修正 A_EndChar 在 Unicode 结尾字符中返回截断值的情况.</p>
@@ -470,7 +607,7 @@
 <p>添加 一个脚本对话框的解决方案就像 Ctrl 或 Shift 在键盘钩子被锁后按下的情况.</p>
 
 <h2 id="v1.1.22.00">1.1.22.00 - 2015 年 5 月 1 日</h2>
-<p>添加 SetErrorMode(SEM_FAILCRITICALERRORS) 在程序启动时抑制系统级错误消息, 例如"驱动器中没有磁盘". 调用 Drive 或 DriveGet 不再影响进程的错误模式.</p>
+<p>添加 SetErrorMode(SEM_FAILCRITICALERRORS) 在程序启动时抑制系统级错误消息, 例如 "驱动器中没有磁盘". 调用 Drive 或 DriveGet 不再影响进程的错误模式.</p>
 <p>变更 MonthCal 控件默认拥有 tab-stop 在 Vista 或更高系统中.</p>
 <p>改进 ComObjConnect 使用 IProvideClassInfo, 如果可用.</p>
 <p>修正 了方法, 属性定义和括号在同一行结束出现的一些问题.</p>
@@ -526,7 +663,7 @@
 <p>增强 Hotkey, Menu, SetTimer, Gui 事件和 Gui 控件事件接受<a href="misc/Labels.htm#Functions">函数替换标签</a>, 如果没有找到标签.</p>
 <p>增强 Hotkey, Menu, SetTimer 和 Gui 控件事件接受 <a href="objects/Functor.htm">Func 对象</a>. 添加一个删除子命令来让 settimer 释放对象.</p>
 <p>增强 <a href="commands/OnMessage.htm">OnMessage()</a> 允许任意数量的函数或函数对象来监控单个消息.</p>
-<p>添加 <a href="commands/OnExit.htm">OnExit()</a> 和 <a href="commands/OnClipboardChange.htm">OnClipboardChange()</a> 接受函数名或对象.</p>
+<p>添加 <a href="commands/OnExit.htm#function">OnExit()</a> 和 <a href="commands/OnClipboardChange.htm#function">OnClipboardChange()</a> 接受函数名或对象.</p>
 <p>添加 <a href="Hotkeys.htm#Function">热键标签指向函数</a>的功能.</p>
 <p>添加 <a href="commands/Format.htm#ULT">U/L/T 修饰语</a>执行 Format() 的情况转换.</p>
 <p>添加 Input 的<a href="commands/Input.htm#E"> E 选项</a>, 从而处理单个字符的字符代码结束键而不是通过键码.</p>
@@ -548,8 +685,8 @@
   <li>在 console 窗口中生效.</li>  
 </ul>
 <p>变更 A_OSVersion 使用 <a href="http://msdn.microsoft.com/en-us/library/ff561910">RtlGetVersion()</a> 来获取 win10 及未来版本.</p>
-<p>变更 A_OSVersion 返回"major.minor.build"格式如果系统没有名字.</p>
-<p>变更 对象来支持<code>x[,y]</code>, <code>x.y[,z]</code> 和 <code>x[](y)</code>.</p>
+<p>变更 A_OSVersion 返回 "major.minor.build" 格式如果系统没有名字.</p>
+<p>变更 对象来支持 <code>x[,y]</code>, <code>x.y[,z]</code> 和 <code>x[](y)</code>.</p>
 <ul>
   <li>用户自定义对象可以利用 this 来指定属性和元函数的参数的默认值. 在 __Call 中, 第一个参数被省略了, 如 <code>x. __Call(,y)</code>.</li>
   <li>COM 对象调用 DISPID_VALUE 如果成员名略. 例如, <code>x[]</code> 检索 x 的默认属性并且 <code>fn[]()</code> 可以用来调用 JScript 函数.</li>
@@ -579,7 +716,7 @@
 
 <h2 id="v1.1.19.03">1.1.19.03 - 2015 年 2 月 11 日</h2>
 <p>改进按键映射来支持 <code>scXXX::Y</code> 当当前键盘布局不映射 <code>scXXX</code> 至 VK 码. 当然, <code>Y</code> 必须存在在当前键盘布局.</p>
-<p>修正 <code>break n</code> 运转正常当当前是<code>until</code> 的情况, 而不是终止线程.</p>
+<p>修正 <code>break n</code> 运转正常当当前是 <code>until</code> 的情况, 而不是终止线程.</p>
 <p>修正 ControlGetFocus 破坏用户双击的能力(感谢 HotKeyIt).</p>
 <p>修正 ListView 不调用 g标签 当消息事件是不支持或未知的情况, 例如 LVN_GETEMPTYMARKUP.</p>
 <p>修正 <code>#Include *i &lt;X&gt;</code> 当 X 语法错误时退出程序.</p>
@@ -593,7 +730,7 @@
 <p>修正 热键在加载时验证出错的情况.</p>
 <ul>
 	<li>热键永远都不可用时, 例如, foo::, 现在会视为错误而不是对键盘布局给出误导的警告.</li>
-	<li>像 ^!&auml;:: 这样的热键是无效的因为当前键盘布局可以有相同的动作, 并且标签被正确注册(例如"^!&auml;"而不是"^!&auml;:"). 如果 /ILIB 命令行开关使用, 警告被抑制.</li>
+	<li>像 ^!&auml;:: 这样的热键是无效的因为当前键盘布局可以有相同的动作, 并且标签被正确注册(例如 "^!&auml;" 而不是 "^!&auml;:"). 如果 /ILIB 命令行开关使用, 警告被抑制.</li>
 	<li>重映射是无效的因为当前键盘布局显示两个警告而不是不可恢复的错误.</li>
 	<li>当滚轮键被作为前缀键, 只有一个错误消息而不是两个, 这遵循 /ErrorStdOut.</li>
 </ul>
@@ -602,16 +739,16 @@
 
 <h2 id="v1.1.19.01">1.1.19.01 - 2015 年 1 月 5 日</h2>
 <p>修复 Hotkey 命令在创建变量中已存在的热键时引起程序崩溃(由 v1.1.19.00 引入).</p>
-<p>为 Hotkey 命令和 A_TimeIdle 做了多处优化(删除Win9x的支持).</p>
+<p>为 Hotkey 命令和 A_TimeIdle 做了多处优化(删除 Win9x 的支持).</p>
 
 <h2 id="v1.1.19.00">1.1.19.00 - 2015 年 1 月 4 日</h2>
 <p>为 <code>Func.Call()</code> 增加了一个名字. <code>Func.()</code> 仍然可用但已废弃.</p>
 <p>修正 一些错误当 <code>X.Y</code> 和 <code>X.Y(Z)</code> 在 VBScript/JScript/C#:</p>
 <ul>
   <li>如果 <code>X.__Call</code> 包含一个函数 <em>name</em>, 会被返回而不是调用.</li>
-  <li>当 <code>X.Y(Z)</code> 返回一个值, Z 被忽略. 它实现像<code>X.Y[Z]</code> 当 X.Y 不是函数.</li>
+  <li>当 <code>X.Y(Z)</code> 返回一个值, Z 被忽略. 它实现像 <code>X.Y[Z]</code> 当 X.Y 不是函数.</li>
 </ul>
-<p>修正 热键命令忽略 ~ 前缀当<em>标签</em>被省略.</p>
+<p>修正 热键命令忽略 ~ 前缀当 <em>标签</em> 被省略.</p>
 <p>修正 热键命令忽略 $ 前缀如果热键变种已经创建但没有使用 $.</p>
 <p>修正 <code>%Fn%()</code> 语法以工作于 JavaScript 函数对象.</p>
 <p>修正 EXE 的 manifest 来禁用 UAC 检测算法(由 v1.1.17 引入).</p>
@@ -641,7 +778,7 @@
 <p>添加 <a href="commands/Format.htm">Format()</a>.</p>
 <p><a href="commands/FileOpen.htm">FileOpen()</a> 现在通过将 <code>"*"</code> 或 <code>"**"</code> 作为文件名可以读取 stdin 或写入 stdout 或者 stderr. <code>AutoHotkey.exe *</code> 可以用来从另一个线程执行程序管道而不是读取文件. 例子查看 <a href="commands/Run.htm#ExecScript">ExecScript()</a>.</p>
 <p>添加 通过传递 Autohotkey 对象至 COM API 来实现 IDispatch.</p>
-<p>添加 ComObject 包装的 VT_BYREF 支持. 使用<code>obj[]</code>来访问参考值.</p>
+<p>添加 ComObject 包装的 VT_BYREF 支持. 使用 <code>obj[]</code> 来访问参考值.</p>
 <p><strong>错误修复:</strong></p>
 <p>修正 在 XP SP2 上的蓝屏.</p>
 <p>修正 按值而不是按指针返回 ComObjArray. 也就是说, 返回的数组的副本, 而不是指向即将被删除的数组的指针.</p>
@@ -673,7 +810,7 @@
 <p>优化带O(对象) 选项的 RegExMatch(正则查找). 某些情况下, 捕获长字符串较之前有极大提速.</p>
 <p>修正 对象, 当 __Call 结束时将检测新方法(与 __Set 及 __Get 一致).</p>
 <p>修正 一些 VarSetCapacity 失败后的未定义行为.</p>
-<p>修正 FileRead, 使正确报告文件超4GB时的错误, 而非截断数据, 即便不需要这部分数据时.</p>
+<p>修正 FileRead, 使正确报告文件超 4GB 时的错误, 而非截断数据, 即便不需要这部分数据时.</p>
 <p>修正 FileRead *c, 使当字节长度为奇数时, 亦能正确的放置空结尾字符.</p>
 <p>修正 ClipboardAll 的问题, 作如下改变:</p>
 <ul>
@@ -730,7 +867,7 @@
 <h2 id="v1.1.14.00">1.1.14.00 - 2014 年 1 月 15 日</h2>
 <p>增加 <a href="commands/Finally.htm">Finally</a> 语句用于 try/catch 后的清理操作. [fincs]</p>
 <p><b>改变 </b>自定义组合键中 <a href="Hotkeys.htm#Tilde">~ 前缀</a>的行为, 使之更直观.</p>
-<p>修正 <code>x &amp; y::</code> 热键中, 在释放x时会触发 <code>x::</code> 和 <code>x up::</code> 热键的问题.</p>
+<p>修正 <code>x &amp; y::</code> 热键中, 在释放 x 时会触发 <code>x::</code> 和 <code>x up::</code> 热键的问题.</p>
 <p>修正 ImageSearch, 当 GDI 调用失败时设置 ErrorLevel=2(而非 0).</p>
 <p>修正 EnvGet, 当变量超过 32767 个字符时致使程序崩溃的问题.</p>
 <p>修正 在 StatusBarWait 的 ErrorLevel 中一个小的错误处理缺陷.</p>
@@ -738,12 +875,12 @@
 <p>修正 递归调用中传递局部变量到可变参数函数.</p>
 <p>修正 脚本第一行为小括号括住的表达式时, 脚本加载失败的问题.</p>
 <p>修正 PixelSearch 快速模式, 使其仅在成功时才设置 OutputVarX/Y.</p>
-
+.
 <h2 id="v1.1.13.01">1.1.13.01 - 2013 年 10 月 11 日</h2>
 <p>修复 用已命名值调用带参可变函数.</p>
 
 <h2 id="v1.1.13.00">1.1.13.00 - 2013 年 8 月 27 日</h2>
-<p>从v2测试版移植 <a href="commands/StringSplit.htm">StrSplit()</a> 函数.</p>
+<p>从v2测试版移植 <a href="commands/StrSplit.htm">StrSplit()</a> 函数.</p>
 
 <h2 id="v1.1.12.00">1.1.12.00 - 2013 年 8 月 14 日</h2>
 <p>可选参数可通过连写两个逗号的方式略过, 如 <code>InStr(a, b,, 2)</code>. 和之前版本不同的是, 这种方式可以用在对象(包括COM对象) 和内置函数中. <code>[a,,b]</code>  的写法可以用来创建稀疏数组.</p>
@@ -805,7 +942,7 @@
 
 <p><strong>Bug 修复:</strong></p>
 <p>修复 通过评估命令的参数, 警告对话框出现不稳定性.</p>
-<p>修复 PixelSearch 快速模式将"未找到"作为错误来处理.</p>
+<p>修复 PixelSearch 快速模式将 "未找到" 作为错误来处理.</p>
 <p>修复 ahk_exe 允许其他 ahk_ 条件在其后面.</p>
 <p>修复 <code>else continue 2</code> 和类似的要求周围循环的大括号.</p>
 <p>修复 成功读取二进制数据后, RegRead 提示失败.</p>
@@ -838,7 +975,7 @@
 <p>调试器的改进:</p>
 <ul>
   <li>增加 基本支持检查 Func, ComObject 和 RegExMatchObject 对象.</li>
-  <li>修复 在某些情况下, "附加调试器"消息被忽略. 请参阅 <a href="https://github.com/Lexikos/AutoHotkey_L/commit/83f0a0e39a0f69fc8861f8c4234690557c4ab347">83f0a0e</a> 提交.</li>
+  <li>修复 在某些情况下, "附加调试器" 消息被忽略. 请参阅 <a href="https://github.com/Lexikos/AutoHotkey_L/commit/83f0a0e39a0f69fc8861f8c4234690557c4ab347">83f0a0e</a> 提交.</li>
 </ul>
 
 <p><strong>新特性:</strong></p>
@@ -877,7 +1014,7 @@
 <p>修复 <a href="commands/Send.htm#SendEvent">SendEvent</a> 热键延迟为 0; v1.1.05.04 引入的更改导致其比预期更慢.</p>
 <p>修复 <a href="objects/Object.htm#Remove">Object.Remove(i)</a> 不调整键如果 Object[i] 不存在.</p>
 <p>修复 当 <a href="commands/ComObjType.htm">ComObjType()</a> 通过<a href="commands/ComObjActive.htm#Remarks">替代名</a>被调用时, 引起不可预知的行为的错误.</p>
-<p>修复 <a href="commands/ExitApp.htm">ExitApp</a> 退出线程, 如果 <a href="commands/OnExit.htm">OnExit</a> 子例程阻止脚本终止, 而不是在含有 ExitApp 的<a href="commands/Block.htm">区块</a>之后继续执行.</p>
+<p>修复 <a href="commands/ExitApp.htm">ExitApp</a> 退出线程, 如果 <a href="commands/OnExit.htm#command">OnExit</a> 子例程阻止脚本终止, 而不是在含有 ExitApp 的<a href="commands/Block.htm">区块</a>之后继续执行.</p>
 <p>通过对象调用函数不再作为退出线程的障碍. 因此, 如果使用 <a href="commands/Exit.htm">Exit</a> 或 <a href="Objects.htm#Custom_Classes_method">class method</a> 中产生运行错误, 整个线程将退出而不是仅仅是该函数.</p>
 <p>使用 <a href="Objects.htm#Custom_Classes_base">base.Method()</a> 调用基类方法或类似在类定义中如果该方法不存在不再会导致 <a href="commands/_Warn.htm">UseUnset</a> 警告. 因此, 有<a href="Objects.htm#Custom_Classes_var">实例变量</a>的实例化对象如果基类没有实例变量, 不再会导致内置的 <code>base.__Init</code> 方法的警告.</p>
 
@@ -928,7 +1065,7 @@
 <p>修复 当使用未初始化变量时, inc (++) 和 dec (--) 产生警告.</p>
 
 <h2 id="v1.1.05.05">1.1.05.05 - 2011 年 12 月 17 日</h2>
-<p>修复 当循环内没有大括号"{..}" <code>continue <i>n</i></code> 行为不当.</p>
+<p>修复 当循环内没有大括号 "{..}" <code>continue <i>n</i></code> 行为不当.</p>
 <p>修复 <code>RegExMatchObject[Name]</code> 有重复的名称时正常工作.</p>
 
 <h2 id="v1.1.05.04">1.1.05.04 - 2011 年 12 月 5 日</h2>
@@ -1010,7 +1147,7 @@
 <p>修复: COM events 或 ComObjConnect 崩溃及相关的内存泄漏.</p>
 <p>修复: <code>GuiControlGet OutputVar, Subcmd, </code> <b>%OutputVar%</b> 总是失败的问题.</p>
 <p>变更 "Missing )/]/}" 错误消息比 "Unexpected )/]/}" 更清晰.</p>
-<p>变更 ListLines 显示每次迭代执行的 While 和 Until行.</p>
+<p>变更 ListLines 显示每次迭代执行的 While 和 Until 行.</p>
 <p>变更 ~= 优先级高于 =/!=/&lt;/&gt;/&lt;=/&gt;= 但是低于连接("."), 添加相关说明到帮助文件中.</p>
 
 <h2 id="v1.1.02.03">1.1.02.03 - 2011 年 8 月 21 日</h2>
@@ -1054,7 +1191,7 @@
 <p>修复: 扫描码/修饰键映射冲突, 例如 sc1xx vs ^sc0xx.</p>
 <p>修复: $ 和 #UseHook 如果仅在热键的第二个或后续实例上使用, 则不起作用.</p>
 <p>修复: 从 __Delete 元函数返回值时可能发生崩溃.</p>
-<p>修复: "未初始化的变量"的警告是由调试器触发的.</p>
+<p>修复: "未初始化的变量" 的警告是由调试器触发的.</p>
 <p>变更: <code>base.Method()</code> 不在触发默认的 元函数或警告.</p>
 <p>变更: <code>Gui +(Ex)Style</code> 不在 隐藏/显示  Gui 窗口.</p>
 <p>变更 调试器将未初始化变量报告 type="undefined".</p>
@@ -1254,7 +1391,7 @@
 <p>增加 <code><a href="commands/_Include.htm">#include</a> &lt;<i>LibName</i>&gt;</code> 用于明确地包含<a href="Functions.htm#lib">函数库文件夹</a>中的脚本.</p>
 <p>增加 <a href="commands/IniRead.htm">IniRead</a> 和 <a href="commands/IniWrite.htm">IniWrite</a> 的功能, 允许整段被读取或写入.</p>
 <p>增加 <a href="commands/IniRead.htm">IniRead</a> 的功能, 允许获取段名列表.</p>
-<p>增加 Run/RunWait 中对<a href="commands/Run.htm#verbs">自定义动词</a>的支持 : <code>Run *<i>verb file</i></code>.</p>
+<p>增加 Run/RunWait 中对<a href="commands/Run.htm#verbs">自定义动词</a>的支持: <code>Run *<i>verb file</i></code>.</p>
 <p>对 Run/RunWait 从<i>目标</i>参数提取操作及其参数的方式进行了<a href="Compat.htm#Run">改进</a>.</p>
 <p>变更 <a href="commands/NumGet.htm">NumGet</a>/<a href="commands/NumPut.htm">NumPut</a> 以允许 <i>Offset</i> 完全省略, 因为 <i>Type</i> 总是非数字的.</p>
 <p>移除 标签不能指向块的结尾的限制.</p>
@@ -1338,7 +1475,7 @@
 <p>变更: <code>x.y[]</code> 现在相当于 <code>(x.y)[]</code> 而不是 <code>x["y"]</code>.</p>
 <p>变更: 现在可以使用或不使用下划线前缀来调用内置方法(例如, <code>obj.MaxIndex()</code> 或 <code>obj._MaxIndex()</code>).</p>
 
-<h2 id="L52">Revision 52 (again) - 2010 年 6 月 10 日</h2>
+<h2 id="L52_2">Revision 52 (again) - 2010 年 6 月 10 日</h2>
 <p>增加 在双重引用中支持内置变量和环境变量.(译者增加示例如下:)
 <pre>
 C=A_ScriptFullPath
@@ -1358,7 +1495,7 @@ if (%C%="我")  ; 该句脚本判断结果为真
 <p>修复: 双重引用作为对象 - <code>literal%var%.literal</code>.</p>
 <p>修复: <code>StrPut("", Encoding)</code> 空终止于无效地址.</p>
 
-<h2>Revision 52 - 2010 年 6 月 12 日</h2>
+<h2 id="L52">Revision 52 - 2010 年 6 月 12 日</h2>
 <p>修复: ObjRemove 的键参数现在是可选的, 正如, <a href="objects/Object.htm#Remove">Object._Remove</a>.</p>
 <p>修复: 文件在读取时, 不能正确的被锁定, 不同于旧版本.</p>
 <p>修复: 大写的十六进制格式导致负整数变成无符号类型.</p>
@@ -1396,7 +1533,7 @@ if (%C%="我")  ; 该句脚本判断结果为真
 <h2 id="L48">Revision 48 - 2010 年 2 月 21 日</h2>
 <p>修复: 独立的 <code>obj.()</code> 不再被识别为错误的表达式.</p>
 <p>ControlSend 现在能使用 WM_CHAR 支持没有关联键码的字符. 例如, 这适用于 "&#8230;"(en-US), "&#x221e;" 在 Unicode 构建和 <code>{U+221e}</code> 在任一构建.</p>
-<p>对 VK_PACKET (VK=E7)事件, KeyHistory 现在显示完整的16位字符. <a href="commands/Send.htm#Unicode">Send</a> 可以间接生成 Unicode 字符.</p>
+<p>对 VK_PACKET(VK=E7) 事件, KeyHistory 现在显示完整的16位字符. <a href="commands/Send.htm#Unicode">Send</a> 可以间接生成 Unicode 字符.</p>
 
 <h2 id="L47">Revision 47 - 2010 年 2 月 13 日</h2>
 <p>修复(Unicode): ControlGet, 列表视图中获取条目列表.</p>
@@ -1409,7 +1546,7 @@ if (%C%="我")  ; 该句脚本判断结果为真
 <p>增加 _GetAddress; _SetCapacity/_GetCapacity 在一个指定区域生效. <a href="objects/Object.htm">[更多信息]</a></p>
 <p>增加 由子类化导致的 WM_PAINT 无限循环的解决方法.</p>
 <p>允许 <code>obj.()</code> 作为一种手段来调用对象的默认方法; 相同于 <code>obj[""]()</code>.</p>
-<p>开发: 增加了 MSBuild 4.0 & VS2010 的决方案和项目文件. <a href="http://github.com/Lexikos/AutoHotkey_L/commit/ed81ea089c223b46c883036c14454aa4386d3801">[更多信息]</a></p>
+<p>开发: 增加了 MSBuild 4.0 & VS2010 的决方案和项目文件. <a href="https://github.com/Lexikos/AutoHotkey_L/commit/ed81ea089c223b46c883036c14454aa4386d3801">[更多信息]</a></p>
 <p>修复(Unicode): 'Running' 列在 ListHotkeys 中.</p>
 
 <h2 id="L44">Revision 44 - 2010 年 2 月 7 日</h2>
@@ -1443,11 +1580,11 @@ if (%C%="我")  ; 该句脚本判断结果为真
 <p>变更: 如果 <code>x[1,2]:=3</code> 创建一个对象 <code>x[1]</code>, 他的基不在自动设置为 <code>x.base</code>. 请参阅<a href="Objects.htm#Subclassing_aoa">子类化数组嵌套</a>控制这种行为的一种方法.</p>  
 
 <h2 id="L37">Revision 37 - 2009 年 11 月 7 日</h2>
-<p>增加:支持 <code>obj[method_name](params)</code> 对象调用语法.</p>
+<p>增加: 支持 <code>obj[method_name](params)</code> 对象调用语法.</p>
 
 <h2 id="L36">Revision 36 - 2009 年 11 月 4 日</h2>
 <p>变更: 如果 <code>x.y</code> 或类似的语句紧跟着左中括号(<code>[</code>), 中括号与其右边最近的分隔符之间的部分被当作操作的第一个参数. 例如, <code>a.b.c[d]</code> 相当于 <code>ObjGet(a.b,"c",d)</code> 和 <code>x.y[z]:=v</code> 相当于 <code>ObjSet(x,"y",z,v)</code>. 在以前的版本中, 中括号前的每个子表达式是分别计算的.</p>
-<p>变更: 如果方法调用, 例如, <code>x.y()</code> 紧跟着赋值, 小括号"()" 视为中括号 "[]". 例如, <code>x.y(z):=v</code> 现在相当于 <code>ObjSet(x,"y",z,v)</code>.</p>
+<p>变更: 如果方法调用, 例如, <code>x.y()</code> 紧跟着赋值, 小括号 "()" 视为中括号 "[]". 例如, <code>x.y(z):=v</code> 现在相当于 <code>ObjSet(x,"y",z,v)</code>.</p>
 <p>修复: If(expr) 和 While(expr) 不需要空格或逗号来分割.</p>
 
 <h2 id="L35">Revision 35 - 2009 年 10 月 25 日</h2>
@@ -1565,7 +1702,7 @@ if (%C%="我")  ; 该句脚本判断结果为真
 <h2 id="L13">Revision 13 - 2008 年 11 月 29 日</h2>
 <p>修复: 无效的 DllCall 类型在某些构建环境中被视为 INT.</p>
 <p>增加: 当禁用焦点控件变通方式解决 GuiEscape 问题.</p>
-<p>变更 版本信息: 内部名称, 产品名称和文件描述(说明)现在由"AutoHotkey_L" 替代 "AutoHotkey".</p>
+<p>变更 版本信息: 内部名称, 产品名称和文件描述(说明) 现在由 "AutoHotkey_L" 替代 "AutoHotkey".</p>
 
 <h2 id="L12">Revision 12 - 2008 年 9 月 6 日</h2>
 <p>修复: 在内置变量上使用 property_get 时可能存在访问冲突. -- DBGP</p>
@@ -1584,7 +1721,7 @@ if (%C%="我")  ; 该句脚本判断结果为真
 
 <h2 id="L8">Revision 8 - 2008 年 6 月 27 日</h2>
 <p>增加: #IfTimeout 指令设置用于评估 #If 表达式的超时值, 毫秒作为单位. 默认是 1000.</p>
-<p>增加: 函数的假定静态模式. "静态变量"必须先于任何局部/全局变量声明.</p>
+<p>增加: 函数的假定静态模式. "静态变量" 必须先于任何局部/全局变量声明.</p>
 <p>增加: One-true-brace 风格支持 While.</p>
 <p>变更: While 现在设置 A_Index 在迭代的开始.</p>
 

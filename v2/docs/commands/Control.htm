@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE HTML>
 <html lang="zh">
 <head>
-<title>List of Control Functions | AutoHotkey v2</title>
+<title>Control 函数列表 | AutoHotkey v2</title>
 <meta name="description" content="This page lists functions to retrieve information about a control, or make a variety of changes to a control." />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,21 +11,21 @@
 </head>
 <body>
 
-<h1>Control Functions</h1>
+<h1>控件函数</h1>
 
-<p>Functions to retrieve information about a control, or make a variety of changes to a control. Click on a function name for details.</p>
+<p>函数检索有关控件的信息, 或对控件进行各种更改. 单击函数名查看详细信息.</p>
 <table class="info">
   <tr>
     <th>函数</th>
-    <th>描述</th>
+    <th abbr="Descr">描述</th>
   </tr>
   <tr>
     <td><a href="ControlAddItem.htm">ControlAddItem</a></td>
     <td>添加指定的字符串作为 ListBox(列表框) 或 ComboBox(组合框) 底部的新条目.</td>
   </tr>
   <tr>
-    <td><a href="ControlChoose.htm">ControlChoose</a></td>
-    <td>设置列表框或组合框中的选择为指定的条目编号.</td>
+    <td><a href="ControlChooseIndex.htm">ControlChooseIndex</a></td>
+    <td>设置列表框, 组合框或标签页控件中的选择为指定的条目或选项卡编号.</td>
   </tr>
   <tr>
     <td><a href="ControlChooseString.htm">ControlChooseString</a></td>
@@ -38,10 +38,6 @@
   <tr>
     <td><a href="ControlDeleteItem.htm">ControlDeleteItem</a></td>
     <td>从 ListBox 或 ComboBox 中删除指定的条目.</td>
-  </tr>
-  <tr>
-    <td><a href="ControlEditPaste.htm">ControlEditPaste</a></td>
-    <td>将指定的字符串粘贴到 Edit 控件中的插入符号(文本插入点) 处.</td>
   </tr>
   <tr>
     <td><a href="ControlFindItem.htm">ControlFindItem</a></td>
@@ -64,14 +60,6 @@
     <td>返回指定控件的 ClassNN(类名和序号).</td>
   </tr>
   <tr>
-    <td><a href="ControlGetCurrentCol.htm">ControlGetCurrentCol</a></td>
-    <td>返回插入符号(文本插入点) 在的 Edit 控件中的列号.</td>
-  </tr>
-  <tr>
-    <td><a href="ControlGetCurrentLine.htm">ControlGetCurrentLine</a></td>
-    <td>返回插入符号(插入点) 在的 Edit 控件中的行号.</td>
-  </tr>
-  <tr>
     <td><a href="ControlGetEnabled.htm">ControlGetEnabled</a></td>
     <td>如果指定的控件是启用的, 则返回非零值.</td>
   </tr>
@@ -84,33 +72,22 @@
     <td>返回指定控件的唯一 ID.</td>
   </tr>
   <tr>
-    <td><a href="ControlGetLine.htm">ControlGetLine</a></td>
-    <td>返回 Edit 控件中指定行的文本.</td>
+    <td><a href="ControlGetIndex.htm">ControlGetIndex</a></td>
+    <td>返回 ListBox, ComboBox 或 Tab 控件中当前选中的条目或标签的索引.</td>
   </tr>
   <tr>
-    <td><a href="ControlGetLineCount.htm">ControlGetLineCount</a></td>
-    <td>返回 Edit 控件的行数.</td>
-  </tr>
-  <tr>
-    <td><a href="ControlGetList.htm">ControlGetList</a></td>
-    <td>从列表视图, 列表框, 组合框或下拉列表中返回项目/行的列表.</td>
+    <td><a href="ControlGetItems.htm">ControlGetItems</a></td>
+    <td>返回 ListBox, ComboBox 或 DropDownList 中的项目/行数组.</td>
   </tr>
   <tr>
     <td><a href="ControlGetPos.htm">ControlGetPos</a></td>
     <td>获取控件的位置和大小.</td>
   </tr>
   <tr>
-    <td><a href="ControlGetSelected.htm">ControlGetSelected</a></td>
-    <td>返回 Edit 控件中选定的文本.</td>
-  </tr>
-  <tr>
     <td><a href="ControlGetStyle.htm">ControlGetStyle<br>ControlGetExStyle</a></td>
     <td>返回表示指定控件样式或扩展样式的整数.</td>
   </tr>
   <tr>
-    <td><a href="ControlGetTab.htm">ControlGetTab</a></td>
-    <td>返回 SysTabControl32 中所选选项卡的位置编号.</td>
-  </tr>
   <tr>
     <td><a href="ControlGetText.htm">ControlGetText</a></td>
     <td>从控件检索文本.</td>
@@ -148,10 +125,6 @@
     <td>分别更改指定控件的样式或扩展样式.</td>
   </tr>
   <tr>
-    <td><a href="ControlSetTab.htm">ControlSetTab</a></td>
-    <td>选择 SysTabControl32 中选项卡的指定位置.</td>
-  </tr>
-  <tr>
     <td><a href="ControlSetText.htm">ControlSetText</a></td>
     <td>更改控件的文本.</td>
   </tr>
@@ -163,28 +136,60 @@
     <td><a href="ControlShowDropDown.htm">ControlShowDropDown</a></td>
     <td>显示 ComboBox 控件的下拉列表.</td>
   </tr>
+  <tr>
+    <td><a href="EditGetCurrentCol.htm">EditGetCurrentCol</a></td>
+    <td>返回编辑控件中插入点所在的列号.</td>
+  </tr>
+  <tr>
+    <td><a href="EditGetCurrentLine.htm">EditGetCurrentLine</a></td>
+    <td>返回编辑控件中插入点所在的行号.</td>
+  </tr>
+  <tr>
+    <td><a href="EditGetLine.htm">EditGetLine</a></td>
+    <td>返回 Edit 控件中指定行的文本.</td>
+  </tr>
+  <tr>
+    <td><a href="EditGetLineCount.htm">EditGetLineCount</a></td>
+    <td>返回 Edit 控件的行数.</td>
+  </tr>
+  <tr>
+    <td><a href="EditGetSelectedText.htm">EditGetSelectedText</a></td>
+    <td>返回 Edit 控件中选定的文本.</td>
+  </tr>
+  <tr>
+    <td><a href="EditPaste.htm">EditPaste</a></td>
+    <td>将指定的字符串粘贴到 Edit 控件中的插入符号(文本插入点) 处.</td>
+  </tr>
+  <tr>
+    <td><a href="ListViewGetContent.htm">ListViewGetContent</a></td>
+    <td>返回列表视图中的项目/行列表.</td>
+  </tr>
 </table>
 
-<h2 id="Parameter">The <em>Control</em> Parameter</h2>
-<p>Functions which operate on individual controls have a parameter named <em>Control</em> which supports a few different ways to identify the control. The <em>Control</em> parameter can be one of the following:</p>
-<p><strong>ClassNN</strong> (<a href="../Concepts.htm#strings">String</a>): The ClassNN (classname and instance number) of the control, which can be determined via Window Spy. For example "Edit1" is the first control with classname "Edit".</p>
-<p><strong>Text</strong> (<a href="../Concepts.htm#strings">String</a>): The control's text. The matching behavior is determined by <a href="SetTitleMatchMode.htm">SetTitleMatchMode</a>.</p>
-<p><strong>HWND</strong> (<a href="../Concepts.htm#numbers">Integer</a>): The control's HWND, which is typically retrieved via <a href="ControlGetHwnd.htm">ControlGetHwnd</a>, <a href="MouseGetPos.htm">MouseGetPos</a>, or <a href="DllCall.htm">DllCall</a>. This also works on hidden controls even when <a href="DetectHiddenWindows.htm">DetectHiddenWindows</a> is Off. Any subsequent window parameters are ignored.</p>
-<p><strong>Object</strong>: An object of any type with a <code>Hwnd</code> property, such as a <a href="../objects/GuiControl.htm">GuiControl</a>. An exception is thrown if the object has no <code>Hwnd</code> property or it does not return a pure integer. Any subsequent window parameters are ignored.</p>
-<p><strong>Omitted</strong>: A few functions are able to operate on either a control or a top-level window. Omitting the <em>Control</em> parameter causes the function to use the target window (specified by <em><a href="../misc/WinTitle.htm">WinTitle</a></em>) instead of one of its controls. 例如, <a href="ControlSend.htm">ControlSend</a> can send keyboard messages directly to the window.</p>
+<h2 id="Parameter"><em>Control</em> 参数</h2>
+<p>操作单个控件的函数有一个名为 <em>Control</em> 的参数, 该参数支持几种不同的方法来识别控件. <em>Control</em> 参数可以是以下参数之一:</p>
+<p><strong>ClassNN</strong>(<a href="../Concepts.htm#strings">字符串</a>): 控件的 ClassNN(类名和实例号), 可以通过 Window Spy 来确定. 例如 "Edit1" 是类名为 "Edit" 的第一个控件.</p>
+<p><strong>Text</strong>(<a href="../Concepts.htm#strings">字符串</a>): 控件的文本. 匹配行为由 <a href="SetTitleMatchMode.htm">SetTitleMatchMode</a> 决定.</p>
+<p><strong>HWND</strong>(<a href="../Concepts.htm#numbers">整数</a>): 控件的 HWND, 通常通过 <a href="ControlGetHwnd.htm">ControlGetHwnd</a>, <a href="MouseGetPos.htm">MouseGetPos</a> 或 <a href="DllCall.htm">DllCall</a> 检索. 这也适用于隐藏控件, 即使 <a href="DetectHiddenWindows.htm">DetectHiddenWindows</a> 关闭. 任何后续的窗口参数都被忽略.</p>
+<p><strong>Object</strong>: 具有 <code>Hwnd</code> 属性的任何类型的对象, 如 <a href="../objects/GuiControl.htm">GuiControl</a>. 如果对象没有 <code>Hwnd</code> 属性, 则抛出 <a href="../objects/Error.htm#PropertyError">PropertyError</a>, 或不返回纯整数, 则抛出 <a href="../objects/Error.htm#TypeError">TypeError</a>. 任何后续的窗口参数都将被忽略.</p>
+<p><strong>省略</strong>: 一些函数可以操作控件或顶级窗口. 省略 <em>Control</em> 参数会导致函数使用目标窗口(由 <em><a href="../misc/WinTitle.htm">WinTitle</a></em> 指定) 而不是它的一个控件. 例如, <a href="ControlSend.htm">ControlSend</a> 可以直接发送键盘消息到窗口.</p>
 
 <h2 id="Error_Handling">错误处理</h2>
-<p>如果遇到问题, <a href="../misc/ErrorLevel.htm">ErrorLevel</a> 设置为 1, 否则设置为 0. Unless specified otherwise, each function also returns 1 (true) to indicate success or 0 (false) to indicate failure.</p>
-<p>如果检测到无效参数, 则抛出<a href="Catch.htm#RuntimeErrors">异常</a>.</p>
+<p>通常情况下, 可能会抛出以下错误之一:</p>
+<ul>
+  <li><a href="../objects/Error.htm#TargetError">TargetError</a>: 找不到目标窗口或控件.</li>
+  <li><a href="../objects/Error.htm">Error</a> 或 <a href="../objects/Error.htm#OSError">OSError</a>: 在执行该函数的目的时出现了问题, 例如检索设置或应用更改.</li>
+  <li><a href="../objects/Error.htm#ValueError">ValueError</a> 或 <a href="../objects/Error.htm#TypeError">TypeError</a>: 检测到无效参数.</li>
+</ul>
 
 <h2 id="Remarks">备注</h2>
-<p>To improve reliability, a delay is done automatically after each use of a Control function that changes a control (except for <a href="ControlSetStyle.htm">ControlSetStyle</a> and <a href="ControlSetStyle.htm">ControlSetExStyle</a>). 该延迟可以通过 <a href="SetControlDelay.htm">SetControlDelay</a> 或给 <a href="../Variables.htm#ControlDelay">A_ControlDelay</a> 赋值来更改. 有关详情, 请参阅 <a href="SetControlDelay.htm#Remarks">SetControlDelay 备注</a>.</p>
-<p>To discover the ClassNN or HWND of the control that the mouse is currently hovering over, use <a href="MouseGetPos.htm">MouseGetPos</a>.</p>
-<p>To retrieve a list of all controls in a window, use <a href="WinGetControls.htm">WinGetControls</a> or <a href="WinGetControlsHwnd.htm">WinGetControlsHwnd</a>.</p>
+<p>为了提高可靠性, 在每次使用更改控件的控件函数(除了 <a href="ControlSetStyle.htm">ControlSetStyle</a> 和 <a href="ControlSetStyle.htm">ControlSetExStyle</a> 外) 之后, 会自动执行延迟. 该延迟可以通过 <a href="SetControlDelay.htm">SetControlDelay</a> 或给 <a href="../Variables.htm#ControlDelay">A_ControlDelay</a> 赋值来更改. 有关详情, 请参阅 <a href="SetControlDelay.htm#Remarks">SetControlDelay 备注</a>.</p>
+<p>要发现鼠标当前悬停的控件的 ClassNN 或 HWND, 请使用 <a href="MouseGetPos.htm">MouseGetPos</a>.</p>
+<p>要检索窗口中所有控件的列表, 请使用 <a href="WinGetControls.htm">WinGetControls</a> 或 <a href="WinGetControlsHwnd.htm">WinGetControlsHwnd</a>.</p>
 <p>窗口标题和文本是区分大小写的. 除非 <a href="DetectHiddenWindows.htm">DetectHiddenWindows</a> 被打开, 否则不会检测隐藏窗口.</p>
 
 <h2 id="Related">相关</h2>
-<p><a href="SetControlDelay.htm">SetControlDelay</a>, <a href="Win.htm">Win 函数</a>, <a href="../objects/GuiControl.htm">GuiControl object</a> (for controls created by the script)</p>
+<p><a href="SetControlDelay.htm">SetControlDelay</a>, <a href="Win.htm">Win 函数</a>, <a href="../objects/GuiControl.htm">GuiControl 对象</a>(用于由脚本创建的控件)</p>
 
 </body>
 </html>

@@ -1,5 +1,5 @@
 ﻿; On-Screen Keyboard (based on the v1 script by Jon)
-; http://www.autohotkey.com
+; https://www.autohotkey.com
 ; This script creates a mock keyboard at the bottom of your screen that shows
 ; the keys you are pressing in real time. I made it to help me to learn to
 ; touch-type (to get used to not looking at the keyboard). The size of the
@@ -27,14 +27,14 @@ k_Monitor := ""
 ;---- End of configuration section. Don't change anything below this point
 ; unless you want to alter the basic nature of the script.
 
-;---- Create a GUI window for the on-screen keyboard:
-Gui := GuiCreate("-Caption +ToolWindow +AlwaysOnTop +Disabled")
-Gui.SetFont("s" k_FontSize " " k_FontStyle, k_FontName)
-Gui.MarginY := 0, Gui.MarginX := 0
+;---- Create a Gui window for the on-screen keyboard:
+MyGui := Gui("-Caption +ToolWindow +AlwaysOnTop +Disabled")
+MyGui.SetFont("s" k_FontSize " " k_FontStyle, k_FontName)
+MyGui.MarginY := 0, MyGui.MarginX := 0
 
 ;---- Alter the tray icon menu:
 A_TrayMenu.Delete
-A_TrayMenu.Add k_MenuItemHide, (*) => k_ShowHide(Gui, k_MenuItemHide, k_MenuItemShow)
+A_TrayMenu.Add k_MenuItemHide, k_ShowHide
 A_TrayMenu.Add "&Exit", (*) => ExitApp()
 A_TrayMenu.Default := k_MenuItemHide
 
@@ -55,7 +55,7 @@ for n, k_Row in k_Layout
     {
         k_KeyWidthMultiplier := 1
         ; Get custom key width multiplier:
-        if RegExMatch(k_Key, "(.+):(\d)", m)
+        if RegExMatch(k_Key, "(.+):(\d)", &m)
         {
             k_Key := m[1]
             k_KeyWidthMultiplier := m[2]
@@ -78,48 +78,49 @@ for n, k_Row in k_Layout
         if (i = 1)
             opt .= " y+m xm"
         ; Add the button:
-        Btn := Gui.Add("Button", opt, k_KeyNameText)
+        Btn := MyGui.Add("Button", opt, k_KeyNameText)
         ; When a key is pressed by the user, click the corresponding button on-screen:
-        Hotkey("~*" k_Key, Func("k_KeyPress").bind(Btn))
+        Hotkey("~*" k_Key, k_KeyPress.bind(Btn))
     }
 
 ;---- Position the keyboard at the bottom of the screen (taking into account
 ; the position of the taskbar):
-Gui.Show("Hide") ; Required to get the window's calculated width and height.
+MyGui.Show("Hide") ; Required to get the window's calculated width and height.
 ; Calculate window's X-position:
-MonitorGetWorkArea(k_Monitor, WL,, WR, WB)
-k_xPos := (WR - WL - Gui.Pos.W) / 2 ; Calculate position to center it horizontally.
+MonitorGetWorkArea(k_Monitor, &WL,, &WR, &WB)
+MyGui.GetPos(,, &k_width, &k_height)
+k_xPos := (WR - WL - k_width) / 2 ; Calculate position to center it horizontally.
 ; The following is done in case the window will be on a non-primary monitor
 ; or if the taskbar is anchored on the left side of the screen:
 k_xPos += WL
 ; Calculate window's Y-position:
-k_yPos := WB - Gui.Pos.H
+k_yPos := WB - k_height
 
 ;---- Show the window:
-Gui.Show("x" k_xPos " y" k_yPos " NA")
+MyGui.Show("x" k_xPos " y" k_yPos " NA")
 
 ;---- Function definitions:
-k_KeyPress(BtnCtrl)
+k_KeyPress(BtnCtrl, *)
 { 
     BtnCtrl.Opt("Default") ; Highlight the last pressed key.
-    ControlClick(, "ahk_id " BtnCtrl.Hwnd,,,, "D")
+    ControlClick(, BtnCtrl,,,, "D")
     KeyWait(SubStr(A_ThisHotkey, 3))
-    ControlClick(, "ahk_id " BtnCtrl.Hwnd,,,, "U")
+    ControlClick(, BtnCtrl,,,, "U")
 }
 
-k_ShowHide(GuiObj, HideText, ShowText)
+k_ShowHide(*)
 {
     static isVisible := true
     if isVisible
     {
-        GuiObj.Hide
-        A_TrayMenu.Rename HideText, ShowText
+        MyGui.Hide
+        A_TrayMenu.Rename k_MenuItemHide, k_MenuItemShow
         isVisible := false
     }
     else
     {
-        GuiObj.Show
-        A_TrayMenu.Rename ShowText, HideText
+        MyGui.Show
+        A_TrayMenu.Rename k_MenuItemShow, k_MenuItemHide
         isVisible := true
     }
 }
@@ -127,7 +128,7 @@ k_ShowHide(GuiObj, HideText, ShowText)
 GetKeyNameText(Key, Extended := false, DoNotCare := false)
 {
     Params := (GetKeySC(Key) << 16) | (Extended << 24) | (DoNotCare << 25)
-    KeyNameText := BufferAlloc(64, 0)
+    KeyNameText := Buffer(64, 0)
     DllCall("User32.dll\GetKeyNameText", "Int", Params, "Ptr", KeyNameText, "Int", 32)
     return StrGet(KeyNameText)
 }

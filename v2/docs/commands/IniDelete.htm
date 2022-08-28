@@ -39,7 +39,9 @@
 
 </dl>
 <h2 id="Error_Handling">错误处理</h2>
-<p>如果遇到问题, <a href="../misc/ErrorLevel.htm">ErrorLevel</a> 设置为 1, 否则设置为 0.</p>
+<p>失败时抛出 <a href="../objects/Error.htm#OSError">OSError</a> .</p>
+<p>无论是否抛出异常, <a href="../Variables.htm#LastError">A_LastError</a> 被设置为操作系统的 GetLastError() 函数的结果.</p>
+
 <h2 id="Remarks">备注</h2>
 <p>标准的 ini 文件看起来类似下面这样:</p>
 <pre>[SectionName]
@@ -48,7 +50,7 @@ Key=Value</pre>
 <p><a href="IniRead.htm">IniRead</a>, <a href="IniWrite.htm">IniWrite</a>, <a href="RegDelete.htm">RegDelete</a>, <a href="RegDeleteKey.htm">RegDeleteKey</a></p>
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a> 从标准格式的 .ini 文件中删除位于 section2 中的一个键及其值.</p>
 <pre>IniDelete "C:\Temp\myfile.ini", "section2", "key"</pre>
 </div>
 

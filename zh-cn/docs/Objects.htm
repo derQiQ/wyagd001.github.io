@@ -32,16 +32,15 @@ ul.list_of_p li { margin: 1em 0; }
 <p><b>IsObject()</b> 可以用来确定一个值是否为对象:</p>
 <pre>Result := IsObject(<i>expression</i>)</pre>
 
-<p>对象类型包括:</p>
+<p>有关标准对象类型的列表, 请参阅文档侧栏中的 <em>对象类型</em>. 有三种基本类型:</p>
 <ul>
-  <li><a href="objects/Object.htm"><b>对象</b></a> - 脚本化关联数组.</li>
-  <li><a href="objects/File.htm">文件</a> - 为文件输入/输出提供接口.</li>
-  <li><a href="objects/Functor.htm">函数对象</a> - <a href="objects/Func.htm">Func</a>, <a href="objects/Functor.htm#BoundFunc">绑定函数</a>或<a href="objects/Functor.htm#User-Defined">用户定义的</a>.</li>
-  <li><a href="commands/ComObjCreate.htm">ComObject</a> - 包装 IDispatch 接口(COM 或 "自动化" 对象).</li>
+  <li><a href="objects/Object.htm"><b>Object</b></a>: 所有用户定义对象, 简单数组和关联数组的基本类型.</li>
+  <li><strong>内置对象</strong>, 例如 <a href="objects/File.htm">File</a>. 内置对象有一组严格的属性和方法, 不允许添加新的属性或方法.</li>
+  <li><strong>COM 包装器对象</strong>. 它们通常代表一个实现 <a href="https://docs.microsoft.com/windows/desktop/api/oaidl/nn-oaidl-idispatch">IDispatch 接口的</a> COM 或 "Automation(自动化)" 对象, 但也用于包装传递给 COM 对象和函数的<a href="commands/ComObjActive.htm">特定类型的包装值</a>. COM 对象是由外部库实现的, 因此通常与 AutoHotkey 对象的行为不同.</li>
 </ul>
 <p>对对象的支持需要 <span class="ver">[AHK_L 31+]</span>, 但是一些特性可能需要更后面的版本.</p>
 
-<h2>目录</h2>
+<h2 id="toc">目录</h2>
 <ul>
   <li><a href="#Usage">基本用法</a> - <a href="#Usage_Simple_Arrays">简单数组</a>, <a href="#Usage_Associative_Arrays">关联数组</a>, <a href="#Usage_Objects">对象</a>, <a href="#Usage_Freeing_Objects">释放对象</a>, <a href="#Usage_Remarks">备注</a></li>
   <li><a href="#Extended_Usage">扩展用法</a> - <a href="#Function_References">函数引用</a>, <a href="#Usage_Arrays_of_Arrays">数组嵌套</a>, <a href="#Usage_Arrays_of_Functions">函数数组</a></li>
@@ -135,7 +134,7 @@ x := "", y := ""             <em>; 如果没有上一行, 则此行无法释放�
 
 <h3 id="Usage_Remarks">备注</h3>
 
-<h4>语法</h4>
+<h4 id="Remarks_Syntax">语法</h4>
 <p>对于所有类型的对象都支持数组语法(方括号) 和对象语法(句点).</p>
 <p>同时, 对象引用自身也可以用在表达式中:</p>
 <ul>
@@ -150,11 +149,12 @@ obj.item[x] := y</pre>
 <p id="cassign">支持 <code>x.y += 1</code> 和 <code>--arr[1]</code> 这样的复合赋值.</p>
 <p><span class="ver">[v1.1.20+]:</span> 当获取或设置属性时, 参数可以省略. 例如, <code>x[,2]</code>. 脚本可以利用这一点来定义<a href="#Custom_Classes_property">属性</a>和<a href="#Meta_Functions">元函数</a>的参数的默认值. 方法名称也可以完全省略, 如 <code>x[](a)</code> 所示. 脚本可以利用这一点来定义 __Call <a href="#Meta_Functions">元函数</a>的首个参数的默认值, 因为它并不提供其他的返回值. 注意, 这并不同于 <code>x.(a)</code>, 而相当于 <code>x[""](a)</code>. 如果在调用 COM 对象时省略了属性或方法的名称, 它的 "默认成员" 将被调用.</p>
 
-<h4>键</h4>
+<h4 id="Keys">键</h4>
 <p>使用 <code>[]</code>, <code>{}</code> 或 <code>new</code> 运算符创建的对象中可以将值作为键使用的一些限制:</p>
 <ul>
-  <li>整数键使用本机有符号整数类型存储. AutoHotkey 32 位支持使用从 -2147483648 到 2147483647 范围内的整数作为键. AutoHotkey 支持 64 位整数, 但仅 AutoHotkey 64 位版本才支持完整范围的整数在对象中作为键使用.</li>
-  <li>由上面这点可知, 整数值的字符串格式不会被保留. 例如, <code>x[0x10]</code>, <code>x[16]</code> 和 <code>x[00016]</code> 都是等同的. 这点同样适用于不含小数点的数值型字符串.</li>
+  <li>整数键使用本机有符号整数类型存储. 32 位 AutoHotkey 支持使用从 -2147483648 到 2147483647 范围内的整数作为键, 并截断该范围以外的值. AutoHotkey 支持 64 位整数, 但仅 AutoHotkey 64 位版本才支持完整范围的整数在对象中作为键使用.</li>
+  <li>整数值的字符串格式不会被保留. 例如, 在 AutoHotkey v1 中, <code>0x10</code> 和 <code>16</code> 是两个不同的字符串(这与 <a href="https://www.autohotkey.com/v2/">AutoHotkey v2</a> 不同), 但 <code>x[0x10]</code>, <code>x[16]</code> 和 <code>x[00016]</code> 是等同的, 因为只使用数字值.</li>
+  <li>不含小数点的数值型字符串被转换为纯整数, 所以受到上述的限制. 64 位范围之外的数字字符串可能产生不一致的结果.</li>
   <li>用引号括起来的原义字符串在 v1.x 中被视为纯非数值型, 所以 <code>x[1]</code> 和 <code>x["1"]</code> 是 <i>不</i> 等同的. 同时, 如果原义字符串和另一个值串联在一起(如同在 <code>"0x" x</code>), 结果被视为纯非数值型. 不过, 这不适用于变量, 所以 <code>x[1]</code> 和 <code>x[y:="1"]</code> 是等同的. 此问题将在 <a href="https://autohotkey.com/v2/">AutoHotkey v2</a> 中解决, 所以脚本应避免使用用引号括起来的原义数字作为键.</li>
   <li>不支持使用浮点数作为键 - 而是把它们转换成字符串. 在 v1.x 中, 浮点数文字保留它们原始的格式, 而纯浮点数(例如 <code>0+1.0</code> 或 <code>Sqrt(y)</code> 的结果) 被强制转换成当前的<a href="commands/SetFormat.htm">浮点格式</a>. 考虑到一致和清晰, 脚本中应避免使用浮点文字作为键.</li>
   <li id="base-key">默认情况下, 字符串键 "base" 对应对象的 <a href="objects/Object.htm#Base">base</a> 属性, 因此不能通过正常的赋值来存储普通值. 但是, 任何属性都可以通过其他方式存储值来覆盖, 例如 <code><a href="objects/Object.htm#RawSet">ObjRawSet</a>(Object, "base", "")</code> 或 <code><a href="objects/Object.htm#SetCapacity">Object.SetCapacity</a>("base", 0)</code>. 一旦完成, 键 "base" 就跟其他字符串一样了.</li>
@@ -174,7 +174,7 @@ RetVal := Func.(<i>Params</i>)      <em>; 不推荐</em>
 <p>有关函数引用的其他属性的详细信息, 请参阅 <a href="objects/Func.htm">Func 对象</a>.</p>
 
 <span id="JaggedArrays"></span><h3 id="Usage_Arrays_of_Arrays">数组嵌套</h3>
-<p>AutoHotkey 通过显式地把数组存储到其他数组中来支持"多维"数组. 例如, 表格可以表示为行数组, 其中每一行本身是一个列数组. 在这种情况下,  <code>x</code> 行 <code>y</code> 列的内容可以用以下两种方法的其中一个进行设置:</p>
+<p>AutoHotkey 通过显式地把数组存储到其他数组中来支持 "多维" 数组. 例如, 表格可以表示为行数组, 其中每一行本身是一个列数组. 在这种情况下,  <code>x</code> 行 <code>y</code> 列的内容可以用以下两种方法的其中一个进行设置:</p>
 <pre>table[x][y] := content  <em>; A</em>
 table[x, y] := content  <em>; B</em></pre>
 <p>如果 <code>table[x]</code> 不存在, <span class="Code"><em>A</em></span> 和 <span class="Code"><em>B</em></span> 在两个方面有区别:</p>
@@ -216,7 +216,7 @@ SecondFunc(param) {
 <p>为了向后兼容, 如果 <code>array[A_Index]</code> 含有函数名而非函数引用时, 在第二种形式中 <i>array</i> 将不会作为参数被传递. 但是, 如果 <code>array[A_Index]</code> <a href="#Custom_Objects">继承</a>自 <code>array.base[A_Index]</code>, 那么 <i>array</i> 将作为参数被传递.</p>
 
 <h2 id="Custom_Objects">自定义对象</h2>
-<p>由脚本创建的对象可以不包含预定义结构. 相反, 每个对象可以从其 <code>base</code> 对象(基对象, 也称为"原型"或"类") 中继承属性和方法. 还可以随时添加或移除对象中的属性和方法, 这些改变会影响它的所有派生对象. 更多复杂或专用方案, 可通过定义<a href="#Meta_Functions"><i>元函数</i></a>来覆盖它所派生对象的标准行为.</p>
+<p>由脚本创建的对象可以不包含预定义结构. 相反, 每个对象可以从其 <code>base</code> 对象(基对象, 也称为 "原型" 或 "类") 中继承属性和方法. 还可以随时添加或移除对象中的属性和方法, 这些改变会影响它的所有派生对象. 更多复杂或专用方案, 可通过定义 <a href="#Meta_Functions"><i>元函数</i></a> 来覆盖它所派生对象的标准行为.</p>
 <p><em>基</em>对象只是普通对象, 通常有两种创建方法:</p>
 <pre>class baseObject {
     static foo := "bar"
@@ -253,7 +253,7 @@ other.test()</pre>
 </p>
 
 <h3 id="Custom_Classes">类 <span class="ver">[v1.1.00+]</span></h3>
-<p>从根本上讲, "类"是具有相同属性和行为的一类事物. 由<a href="#Custom_Objects">基类</a>或<a href="#Custom_Prototypes">原型</a>定义了一系列属性和行为的对象, 就可以被称为 <em>类</em> 对象. 为了方便, 用 "Class" 关键字定义基对象可以像下面这样:</p>
+<p>从根本上讲, "类" 是具有相同属性和行为的一类事物. 由<a href="#Custom_Objects">基类</a>或<a href="#Custom_Prototypes">原型</a>定义了一系列属性和行为的对象, 就可以被称为 <em>类</em> 对象. 为了方便, 用 "Class" 关键字定义基对象可以像下面这样:</p>
 <pre>class ClassName extends BaseClassName
 {
     InstanceVar := Expression		<em>; 实例变量(实例属性)</em>
@@ -321,7 +321,7 @@ Method()
 <p id="Custom_Classes_base">在方法的内部, 伪关键字 <code>base</code> 可用于在派生类中访问父类中的同名方法或属性. 例如, <code>base.Method()</code> 在类定义中将会调用 <em>BaseClassName</em> 中定义的 <em>Method</em> 版本. <a href="#Meta_Functions">元函数</a>不会被调用; 其他情况下, <code>base.Method()</code> 的表现类似 <code>BaseClassName.Method.Call(this)</code>. 就是说,</p>
 <ul>
   <li><code>base.Method()</code> 总是调用基类的当前方法的定义, 即使 <code>this</code> 完全是从那个类派生的 <em>sub-class</em> 或其他类派生而来的.</li>
-  <li><code>base.Method()</code> 隐式传递 <code>this</code> 作为首个(隐藏)参数.</li>
+  <li><code>base.Method()</code> 隐式传递 <code>this</code> 作为首个(隐藏) 参数.</li>
 </ul>
 <p><code>base</code> 仅在后面跟着点 <code>.</code> 或方括号 <code>[]</code> 时才有特殊含义, 所以像 <code>obj := base, obj.Method()</code> 这样的代码将不起作用. 通过把 <i>base</i> 赋为非空值可以禁用它的特殊行为, 但是不建议这样做. 因为变量 <i>base</i> 必须为空, 所以如果脚本中不含有 <a href="commands/_NoEnv.htm">#NoEnv</a> 指令那么性能可能会降低.</p>
 
@@ -365,8 +365,11 @@ class GMem
         DllCall("GlobalFree", "Ptr", this.ptr)
     }
 }</pre>
-<p>__Delete 不可被任何含有 "__Class" 键的对象调用. <a href="#Custom_Classes">Class objects(类对象)</a> 默认包含这个键.</p>
+<p>__Delete 不可被任何含有 "__Class" 键的对象调用. <a href="#Custom_Classes">Class Object(类对象)</a> 默认包含这个键.</p>
+<p>如果类有定义这些方法的父类, 则通常应该调用 <code>base.__New()</code>(带有适当的参数) 和 <code>base.__Delete()</code>. 否则, 只调用方法的最派生的定义, 不包括目标对象本身中的任何定义.</p>
 <p><span class="ver">[v1.1.28+]:</span> 如果在 __Delete 执行时抛出了异常或运行时错误, 并且未在 __Delete 中处理, 则它就像从一个新<a href="misc/Threads.htm">线程</a>调用 __Delete. 也就是说, 显示一个错误对话框并 __Delete 返回, 但是线程不会退出(除非它已经退出). 在 v1.1.28 之前, 未处理的异常会导致不一致的行为.</p>
+<p>如果脚本被任何方式直接终止, 包括托盘菜单, <a href="commands/ExitApp.htm">ExitApp</a>, 或 <a href="commands/Exit.htm">Exit</a>(当脚本不是<a href="commands/_Persistent.htm">持续运行</a>时), 任何尚未返回的函数都没有机会返回. 因此, 这些函数的局部变量所引用的任何对象都不会被释放, 所以 __Delete 也不会被调用.</p>
+<p>当脚本退出时, 全局变量和静态变量所包含的对象会按照任意的, 实现定义的顺序自动释放. 当 __Delete 在这个过程中被调用时, 一些全局变量或静态变量可能已经被释放, 但对象本身包含的任何引用仍然有效. 因此 __Delete 最好是完全自包含的, 而不依赖于任何全局变量或静态变量.</p>
 
 <h3 id="Meta_Functions">元函数(Meta-Functions)</h3>
 <pre class="Syntax">
@@ -384,7 +387,9 @@ class <i>ClassName</i> {
 
 <i>ClassName</i> := { __Get: Func("<i>MyGet</i>"), __Set: Func("<i>MySet</i>"), __Call: Func("<i>MyCall</i>") }
 </pre>
-<p>元函数定义了向目标对象中请求不存在的键时的行为. 例如, 如果 <code>obj.key</code> 尚未赋值, 那么它会调用 <i>__Get</i> 元函数. 同样地, <code>obj.key := value</code> 调用 <i>__Set</i> 而 <code>obj.key()</code> 调用 <i>__Call</i>. 这些元函数(或方法)需要在 <code>obj.base</code>, <code>obj.base.base</code> 或类似的基中定义.</p>
+<p>元函数定义了向目标对象中请求不存在的键时的行为. 例如, 如果 <code>obj.key</code> 尚未赋值, 那么它会调用 <i>__Get</i> 元函数. 同样地, <code>obj.key := value</code> 调用 <i>__Set</i> 而 <code>obj.key()</code> 调用 <i>__Call</i>. 这些元函数(或方法) 需要在 <code>obj.base</code>, <code>obj.base.base</code> 或类似的基中定义.</p>
+<p>元函数的定义一般和方法一样, 但不遵循相同的规则(除了被脚本显式调用的时候). 它们必须在基对象中定义; 目标对象本身的任何定义都会被忽略. 适用于目标对象的 __Get, __Set 和 __Call 的每个定义都会根据下面的规则自动调用, 而且不应该调用 <code>base.__Get(key)</code> 或类似的方法. <a href="#Custom_NewDelete">__New</a> 和 <a href="#Custom_NewDelete">__Delete</a> 必须在基对象中定义, 但其他方面的行为就像方法一样.</p>
+<p class="note"><strong>注意:</strong> AutoHotkey v2 用更传统的方法替换了元函数.</p>
 <p>当脚本获取, 设置或调用目标对象中的键不存在时, 将按如下方式调用基对象:</p>
 <ul class="list_of_p">
   <li>如果此基对象定义了相应的元函数, 那么调用它. 如果元函数明确 <code>return</code>, 则把返回值作为运算的结果(不受调用元函数方式的影响) 并把控制权归还脚本. 其他情况继续按以下方法进行.
@@ -401,8 +406,8 @@ class <i>ClassName</i> {
 <p>如果元函数把匹配的键保存在对象中但未 <code>return</code>, 则行为类似于该键原本就存在于对象中. 使用 __Set 的示例, 请参阅<a href="#Subclassing_aoa">子类化数组的数组</a>.</p>
 <p>如果操作仍为得到处理, 则检查是否有内置方法或属性:</p>
 <ul>
-  <li><i>Get</i>: 如果该键是"base", 则返回对象的基.</li>
-  <li><i>Set</i>: 如果该键是"base", 则设置对象的基(如果值不是对象则移除).</li>
+  <li><i>Get</i>: 如果该键是 "base", 则返回对象的基.</li>
+  <li><i>Set</i>: 如果该键是 "base", 则设置对象的基(如果值不是对象则移除).</li>
   <li><i>Call</i>: 适用时调用<a href="objects/Object.htm">内置方法</a>.</li>
 </ul>
 <p>如果操作仍未得到处理,</p>
@@ -413,11 +418,11 @@ class <i>ClassName</i> {
 </ul>
     
 <p><b>已知限制:</b></p>
-<ul><li>由于 <code>return</code> 等同于 <code>return ""</code>, 所以可以使用 <code>return</code> 从元函数"退出"而不覆盖默认行为. (这种逻辑可能在未来的版本中改变)</li><li>请参阅 <a href="#ExitLimitation">Exit 限制</a>.</li></ul>
+<ul><li>由于 <code>return</code> 等同于 <code>return ""</code>, 所以可以使用 <code>return</code> 从元函数 "退出" 而不覆盖默认行为. (这种逻辑可能在未来的版本中改变)</li><li>请参阅 <a href="#ExitLimitation">Exit 限制</a>.</li></ul>
 
 <h4 id="Dynamic_Properties">动态属性</h4>
 <p><a href="#Custom_Classes_property">属性语法</a>可用于定义属性, 对每次读写值进行设置, 但前提是必须知道每个属性才能定义单独的脚本. 而 <em>__Get</em> 和 <em>__Set</em> 可用于管理动态属性.</p>
-<p>例如, 一个"代理"对象可通过发出网络请求来创建(或者是其他通道). 远程服务器必须回应一个属性的值, 然后代理就会返回这个值给调用者. 虽然每个属性名称都是提前知道的, 但也不必为每个属性都定义一个逻辑, 因为每个属性所做的事都一样(发送一个网络请求). 元函数接受属性名称作为参数, 所以是这种情况的最佳解决方案.</p>
+<p>例如, 一个 "代理" 对象可通过发出网络请求来创建(或者是其他通道). 远程服务器必须回应一个属性的值, 然后代理就会返回这个值给调用者. 虽然每个属性名称都是提前知道的, 但也不必为每个属性都定义一个逻辑, 因为每个属性所做的事都一样(发送一个网络请求). 元函数接受属性名称作为参数, 所以是这种情况的最佳解决方案.</p>
 <p>元函数 <em>__Get</em> 和 <em>__Set</em> 的另一种用途是用相同的逻辑处理一组相关的属性. 下面的例子实现了一个 "Color" 对象, 它拥有 R, G, B 和 RGB 属性, 但只有 RGB 属性的值是实际保存的:</p>
 <pre>red  := new Color(0xff0000), red.R -= 5
 cyan := new Color(0), cyan.G := 255, cyan.B := 255

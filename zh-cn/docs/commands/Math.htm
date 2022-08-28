@@ -15,8 +15,8 @@
 <p>用于执行各种数学运算的函数, 如四舍五入, 取幂, 平方等.</p>
 
 <h2 id="toc">目录</h2>
-<ul>
-  <li><a href="#General">一般数学</a>
+<ul class="indent">
+  <li><a href="#General">基础数学</a>:
     <ul>
       <li><a href="#Abs">Abs</a>: 返回数字的绝对值.</li>
       <li><a href="#Ceil">Ceil</a>: 返回数字向上最近的整数(向上取整).</li>
@@ -44,7 +44,7 @@
   <li><a href="#Errors">错误处理</a></li>
 </ul>
 
-<h2 id="General">一般数学</h2>
+<h2 id="General">基础数学</h2>
 
 <h3 id="Abs">Abs</h3>
 <p>返回 <em>Number</em> 的绝对值.</p>
@@ -73,13 +73,13 @@ MsgBox, % Floor(-1.2) <em>; 返回 -2</em></pre>
 <h3 id="Log">Log</h3>
 <p>返回 <em>Number</em> 的对数(10 为底).</p>
 <pre class="Syntax">Value := <span class="func">Log</span>(Number)</pre>
-<p>结果格式化为<a href="SetFormat.htm">浮点数</a>. 如果 <em>Number</em> 为负数则返回空字符串.</p>
+<p>结果格式化为<a href="SetFormat.htm#Float">浮点数</a>. 如果 <em>Number</em> 为负数则返回空字符串.</p>
 <pre class="NoIndent">MsgBox, % Log(1.2) <em>; 返回 0.079181</em></pre>
 
 <h3 id="Ln">Ln</h3>
 <p>返回 <em>Number</em> 底数为 e 的自然对数.</p>
 <pre class="Syntax">Value := <span class="func">Ln</span>(Number)</pre>
-<p>结果格式化为<a href="SetFormat.htm">浮点数</a>. 如果 <em>Number</em> 为负数则返回空字符串.</p>
+<p>结果格式化为<a href="SetFormat.htm#Float">浮点数</a>. 如果 <em>Number</em> 为负数则返回空字符串.</p>
 <pre class="NoIndent">MsgBox, % Ln(1.2) <em>; 返回 0.182322</em></pre>
 
 <h3 id="Max">Max <span class="ver">[v1.1.27+]</span></h3>
@@ -102,7 +102,7 @@ MsgBox, % Max(array*) <em>; 返回 4</em>
 MsgBox, % Min(array*) <em>; 返回 1</em></pre>
 
 <h3 id="Mod">Mod</h3>
-<p>返回 <em>Dividend</em> 除以 <em>Divisor</em> 之后的余数.</p>
+<p>取模. 返回 <em>Dividend</em> 除以 <em>Divisor</em> 之后的余数.</p>
 <pre class="Syntax">Value := <span class="func">Mod</span>(Dividend, Divisor)</pre>
 <p>返回值的正负符号总是与 Dividend 相同(而不考虑 Divisor), 例如, mod(5, 3) 和 mod(5, -3) 的结果都为 2, 但 mod(-5, 3) 和 mod(-5, -3) 的结果为 -2. 如果传入浮点数, 则返回值也是浮点数, 例如, mod(5.0, 3) 的结果为 2.0 而 mod(5, 3.5) 的结果为 1.5. 如果 Divisor 为 0, 则返回空值(空字符串).</p>
 <pre class="NoIndent">MsgBox, % Mod(7.5, 2) <em>; 返回 1.5(2 x 3 + 1.5)</em></pre>
@@ -122,12 +122,12 @@ MsgBox, % Round(345, -2) <em>; 返回 300, 因为 -2 表示 4, 所以向下取�
 <h3 id="Sqrt">Sqrt</h3>
 <p>返回 <em>Number</em> 的平方根.</p>
 <pre class="Syntax">Value := <span class="func">Sqrt</span>(Number)</pre>
-<p>结果格式化为<a href="SetFormat.htm">浮点数</a>. 如果 <em>Number</em> 为负数则函数返回空字值(空字符串).</p>
+<p>结果格式化为<a href="SetFormat.htm#Float">浮点数</a>. 如果 <em>Number</em> 为负数则函数返回空字值(空字符串).</p>
 <pre class="NoIndent">MsgBox, % Sqrt(16) <em>; 返回 4</em></pre>
 
 <h2 id="Trigonometry">三角函数</h2>
 
-<p class="note"><strong>注意</strong>: 要将弧度值转换为度数值, 可用 弧度乘以 180/pi(约为 57.29578). 要将度数值转为弧度值, 可用 读数值乘以 pi/180(约为 0.01745329252). pi 的值(约为 3.141592653589793) 为 4 乘以 1 的反正切的结果. (pi = 4 * ATan(1)).</p>
+<p class="note"><strong>注意</strong>: 要将弧度值转换为度数值, 可用弧度乘以 180/pi(约为 57.29578). 要将度数值转为弧度值, 可用 读数值乘以 pi/180(约为 0.01745329252). pi 的值(约为 3.141592653589793) 为 4 乘以 1 的反正切的结果. (pi = 4 * ATan(1)).</p>
 
 <h3 id="Sin">Sin</h3>
 <p>返回 <em>Number</em> 的正弦.</p>

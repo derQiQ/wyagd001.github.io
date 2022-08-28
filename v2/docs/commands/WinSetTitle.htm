@@ -51,6 +51,10 @@
 
 </dl>
 
+<h2 id="Error_Handling">错误处理</h2>
+<p>如果找不到窗口, 则抛出 <a href="../objects/Error.htm#TargetError">TargetError</a>.</p>
+<p>如果无法应用更改, 则抛出 <a href="../objects/Error.htm#OSError">OSError</a>.</p>
+
 <h2 id="Remarks">备注</h2>
 <p>如果拥有窗口的应用程序频繁地更改标题, 那么对窗口标题的更改可能只是暂时的.</p>
 <p>窗口标题和文本是区分大小写的. 除非 <a href="DetectHiddenWindows.htm">DetectHiddenWindows</a> 被打开, 否则不会检测隐藏窗口.</p>
@@ -58,15 +62,15 @@
 <p><a href="WinMove.htm">WinMove</a>, <a href="WinGetTitle.htm">WinGetTitle</a>, <a href="WinGetText.htm">WinGetText</a>, <a href="ControlGetText.htm">ControlGetText</a>, <a href="WinGetPos.htm">WinGetPos</a>, <a href="Win.htm">Win 函数</a></p>
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a>  更改记事本的标题.</p>
 <pre>WinSetTitle("This is a new title", "Untitled - Notepad")</pre>
 </div>
 
 <div class="ex" id="ExLastFound">
-<p><a href="#ExLastFound">#2</a>: 使用最后找到的窗口的替代方法:</p>
-<pre>Run("notepad.exe")
-WinWaitActive("Untitled - Notepad")
-WinSetTitle("This is a new title")  <em>; 使用前面 WinWaitActive 找到的窗口</em></pre>
+<p><a class="ex_number" href="#ExLastFound"></a> 打开记事本, 等到记事本处于活动状态时, 更改标题.</p>
+<pre>Run "notepad.exe"
+WinWaitActive "Untitled - Notepad"
+WinSetTitle "This is a new title" <em>; Use the window found by WinWaitActive.</em></pre>
 </div>
 
 </body>

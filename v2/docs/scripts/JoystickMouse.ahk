@@ -1,5 +1,5 @@
 ﻿; Using a Joystick as a Mouse
-; http://www.autohotkey.com
+; https://www.autohotkey.com
 ; This script converts a joystick into a three-button mouse.  It allows each
 ; button to drag just like a mouse button and it uses virtually no CPU time.
 ; Also, it will move the cursor faster depending on how far you push the joystick
@@ -40,9 +40,9 @@ JoystickNumber := 1
 #SingleInstance
 
 JoystickPrefix := JoystickNumber "Joy"
-Hotkey JoystickPrefix . ButtonLeft, "ButtonLeft"
-Hotkey JoystickPrefix . ButtonRight, "ButtonRight"
-Hotkey JoystickPrefix . ButtonMiddle, "ButtonMiddle"
+Hotkey JoystickPrefix . ButtonLeft, ClickButtonLeft
+Hotkey JoystickPrefix . ButtonRight, ClickButtonRight
+Hotkey JoystickPrefix . ButtonMiddle, ClickButtonMiddle
 
 ; Calculate the axis displacements that are needed to start moving the cursor:
 JoyThresholdUpper := 50 + JoyThreshold
@@ -52,61 +52,61 @@ if InvertYAxis
 else
     YAxisMultiplier := 1
 
-SetTimer "WatchJoystick", 10  ; Monitor the movement of the joystick.
+SetTimer WatchJoystick, 10  ; Monitor the movement of the joystick.
 
 JoyInfo := GetKeyState(JoystickNumber "JoyInfo")
 if InStr(JoyInfo, "P")  ; Joystick has POV control, so use it as a mouse wheel.
-    SetTimer "MouseWheel", WheelDelay
+    SetTimer MouseWheel, WheelDelay
 
 ; The functions below do not use KeyWait because that would sometimes trap the
 ; WatchJoystick quasi-thread beneath the wait-for-button-up thread, which would
 ; effectively prevent mouse-dragging with the joystick.
 
-ButtonLeft()
+ClickButtonLeft(*)
 {
     SetMouseDelay -1  ; Makes movement smoother.
     MouseClick "Left",,, 1, 0, "D"  ; Hold down the left mouse button.
-    SetTimer "WaitForLeftButtonUp", 10
+    SetTimer WaitForLeftButtonUp, 10
     
     WaitForLeftButtonUp()
     {
         if GetKeyState(A_ThisHotkey)
             return  ; The button is still, down, so keep waiting.
         ; Otherwise, the button has been released.
-        SetTimer, 0
+        SetTimer , 0
         SetMouseDelay -1  ; Makes movement smoother.
         MouseClick "Left",,, 1, 0, "U"  ; Release the mouse button.
     }
 }
 
-ButtonRight()
+ClickButtonRight(*)
 {
     SetMouseDelay -1  ; Makes movement smoother.
     MouseClick "Right",,, 1, 0, "D"  ; Hold down the right mouse button.
-    SetTimer "WaitForRightButtonUp", 10
+    SetTimer WaitForRightButtonUp, 10
     
     WaitForRightButtonUp()
     {
         if GetKeyState(A_ThisHotkey)
             return  ; The button is still, down, so keep waiting.
         ; Otherwise, the button has been released.
-        SetTimer, 0
+        SetTimer , 0
         MouseClick "Right",,, 1, 0, "U"  ; Release the mouse button.
     }
 }
 
-ButtonMiddle()
+ClickButtonMiddle(*)
 {
     SetMouseDelay -1  ; Makes movement smoother.
     MouseClick "Middle",,, 1, 0, "D"  ; Hold down the right mouse button.
-    SetTimer "WaitForMiddleButtonUp", 10
+    SetTimer WaitForMiddleButtonUp, 10
     
     WaitForMiddleButtonUp()
     {
         if GetKeyState(A_ThisHotkey)
             return  ; The button is still, down, so keep waiting.
         ; Otherwise, the button has been released.
-        SetTimer, 0
+        SetTimer , 0
         MouseClick "Middle",,, 1, 0, "U"  ; Release the mouse button.
     }
 

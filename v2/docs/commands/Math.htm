@@ -15,8 +15,8 @@
 <p>用于执行各种数学运算的函数, 如四舍五入, 取幂, 平方等.</p>
 
 <h2 id="toc">目录</h2>
-<ul>
-  <li><a href="#General">常规数学</a>
+<ul class="indent">
+  <li><a href="#General">常规数学</a>:
     <ul>
       <li><a href="#Abs">Abs</a>: 返回数字的绝对值.</li>
       <li><a href="#Ceil">Ceil</a>: 返回数字向上到的最近的整数.</li>
@@ -31,7 +31,7 @@
       <li><a href="#Sqrt">Sqrt</a>: 返回数字的平方根.</li>
     </ul>
   </li>
-  <li><a href="#Trigonometry">三角函数</a>
+  <li><a href="#Trigonometry">三角函数</a>:
     <ul>
       <li><a href="#Sin">Sin</a>: 返回一个数字的三角正弦值.</li>
       <li><a href="#Cos">Cos</a>: 返回数字的三角余弦值.</li>
@@ -73,13 +73,13 @@ MsgBox Floor(-1.2) <em>; 返回 -2</em></pre>
 <h3 id="Log">Log</h3>
 <p>返回 <em>Number</em> 的对数(10 为底).</p>
 <pre class="Syntax">Value := <span class="func">Log</span>(Number)</pre>
-<p>结果为浮点数. 如果 <em>Number</em> 为负数, 则抛出异常.</p>
+<p>结果为浮点数. 如果 <em>Number</em> 为负数, 则抛出 <a href="../objects/Error.htm#ValueError">ValueError</a>.</p>
 <pre class="NoIndent">MsgBox Log(1.2) <em>; 返回 0.079181</em></pre>
 
 <h3 id="Ln">Ln</h3>
 <p>返回 <em>Number</em> 的自然对数(e 为底).</p>
 <pre class="Syntax">Value := <span class="func">Ln</span>(Number)</pre>
-<p>结果为浮点数. 如果 <em>Number</em> 为负数, 则抛出异常.</p>
+<p>结果为浮点数. 如果 <em>Number</em> 为负数, 则抛出 <a href="../objects/Error.htm#ValueError">ValueError</a>.</p>
 <pre class="NoIndent">MsgBox Ln(1.2) <em>; 返回 0.182322</em></pre>
 
 <h3 id="Max">Max</h3>
@@ -87,8 +87,8 @@ MsgBox Floor(-1.2) <em>; 返回 -2</em></pre>
 <pre class="Syntax">Value := <span class="func">Max</span>(Number1 <span class="optional">, Number2, ...</span>)</pre>
 <pre class="NoIndent">MsgBox Max(2.11, -2, 0) <em>; 返回 2.11</em></pre>
 <p>你还可以指定一个<a href="../Functions.htm#Variadic">可变参数</a>来比较数组中的多个值. 例如:</p>
-<pre class="NoIndent">array := [1, 2, 3, 4]
-MsgBox Max(array*) <em>; 返回 4</em>
+<pre class="NoIndent">Numbers := [1, 2, 3, 4]
+MsgBox Max(Numbers*) <em>; 返回 4</em>
 </pre>
 
 <h3 id="Min">Min</h3>
@@ -96,13 +96,13 @@ MsgBox Max(array*) <em>; 返回 4</em>
 <pre class="Syntax">Value := <span class="func">Min</span>(Number1 <span class="optional">, Number2, ...</span>)</pre>
 <pre class="NoIndent">MsgBox Min(2.11, -2, 0) <em>; 返回 -2</em></pre>
 <p>你还可以指定一个<a href="../Functions.htm#Variadic">可变参数</a>来比较数组中的多个值. 例如:</p>
-<pre class="NoIndent">array := [1, 2, 3, 4]
-MsgBox Min(array*) <em>; 返回 1</em></pre>
+<pre class="NoIndent">Numbers := [1, 2, 3, 4]
+MsgBox Min(Numbers*) <em>; 返回 1</em></pre>
 
 <h3 id="Mod">Mod</h3>
-<p>返回 <em>Dividend</em> 除以 <em>Divisor</em> 的余数.</p>
+<p>取模运算. 返回 <em>Dividend</em> 除以 <em>Divisor</em> 的余数.</p>
 <pre class="Syntax">Value := <span class="func">Mod</span>(Dividend, Divisor)</pre>
-<p>结果的正负号总是与第一个参数相同. 如果任意一个输入是浮点数, 则结果也是浮点数. 如果第二个参数为 0, 则抛出异常.</p>
+<p>结果的正负号总是与第一个参数相同. 如果任意一个输入是浮点数, 则结果也是浮点数. 如果第二个参数为 0, 则抛出 <a href="../objects/Error.htm#ValueError">ValueError</a> .</p>
 <pre class="NoIndent">MsgBox Mod(7.5, 2) <em>; 返回 1.5 (2 x 3 + 1.5)</em></pre>
 
 <h3 id="Round">Round</h3>
@@ -120,7 +120,7 @@ MsgBox Round(345, -2) <em>; 返回 300</em></pre>
 <h3 id="Sqrt">Sqrt</h3>
 <p>返回 <em>Number</em> 的平方根.</p>
 <pre class="Syntax">Value := <span class="func">Sqrt</span>(Number)</pre>
-<p>结果为浮点数. 如果 <em>Number</em> 为负数, 则抛出异常.</p>
+<p>结果为浮点数. 如果 <em>Number</em> 为负数, 则抛出 <a href="../objects/Error.htm#ValueError">ValueError</a>.</p>
 <pre class="NoIndent">MsgBox Sqrt(16) <em>; 返回 4</em></pre>
 
 <h2 id="Trigonometry">三角函数</h2>
@@ -147,13 +147,13 @@ MsgBox Round(345, -2) <em>; 返回 300</em></pre>
 <h3 id="ASin">ASin</h3>
 <p>返回以弧度表示的反正弦值(其正弦值为 <em>Number</em>).</p>
 <pre class="Syntax">Value := <span class="func">ASin</span>(Number)</pre>
-<p>如果 <em>Number</em> 小于 -1 或大于 1, 则抛出异常.</p>
+<p>如果 <em>Number</em> 小于 -1 或大于 1, 则抛出 <a href="../objects/Error.htm#ValueError">ValueError</a>.</p>
 <pre class="NoIndent">MsgBox ASin(0.2) <em>; 返回 0.201358</em></pre>
 
 <h3 id="ACos">ACos</h3>
 <p>返回以弧度表示的反余弦值(其余弦值为 <em>Number</em>).</p>
 <pre class="Syntax">Value := <span class="func">ACos</span>(Number)</pre>
-<p>如果 <em>Number</em> 小于 -1 或大于 1, 则抛出异常.</p>
+<p>如果 <em>Number</em> 小于 -1 或大于 1, 则抛出 <a href="../objects/Error.htm#ValueError">ValueError</a>.</p>
 <pre class="NoIndent">MsgBox ACos(0.2) <em>; 返回 1.369438</em></pre>
 
 <h3 id="ATan">ATan</h3>

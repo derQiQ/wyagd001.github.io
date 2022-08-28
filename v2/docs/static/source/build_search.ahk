@@ -1,4 +1,9 @@
-; requires AHK v2 a104+ 32-bit
+#Requires AutoHotkey v2.0-a131
+if (A_PtrSize != 4)
+{
+    MsgBox "This script only works with the 32-bit version of AutoHotkey."
+    ExitApp
+}
 #Warn
 SetWorkingDir A_ScriptDir "\..\.."
 FileEncoding "UTF-8"
@@ -68,18 +73,16 @@ word_pattern := "#\p{L}{2,}+(?!::)|"
     . "(?<![\p{L}\d_])\p{Lu}[\p{L}\d_]+\.[\p{L}\d_]+(?![\p{L}\d_])|"
     . "(?<![\p{L}\d_])[\p{L}\d_]{2,}('[\p{L}\d_]+)?(?![\p{L}\d_])"  ;(-\w+)*
 
-global index, files, filewords, files_map, titles_map, titles
-
 ScanFiles()
 
 ScanFiles()
 {
-    index := Map()
-    files := []
-    filewords := []
-    files_map := Map()
-    titles_map := Map()
-    titles := Map()
+    global index := Map()
+    global files := []
+    global filewords := []
+    global files_map := Map()
+    global titles_map := Map()
+    global titles := Map()
 
     Loop Files, "*.htm", "R"
     {
@@ -180,7 +183,7 @@ ScanFile(filename)
     html := FileRead(filename)
     
     ; Index only content, not markup
-    doc := ComObjCreate("htmlfile")
+    doc := ComObject("htmlfile")
     doc.write(StrReplace(html, "<", " <"))  ; Can't remember the reason for StrReplace(). Maybe to preserve word boundaries.
     doc.close()
     Loop {
@@ -217,12 +220,8 @@ ScanFile(filename)
     h1 := Trim(h1.innerText)
     titles[file_index] := h1
     if titles_map.Has(h1_ := StrLower(h1))
-        throw Exception("Duplicate title: " h1 "`n  " files[file_index] "`n  " files[titles_map[h1_]])
+        throw Error("Duplicate title: " h1 "`n  " files[file_index] "`n  " files[titles_map[h1_]])
     titles_map[h1_] := file_index
-
-    SplitPath filename, name
-    FileDelete "test\" name
-    FileAppend text, "test\" name
 
     ScanText(text, words)
     
@@ -268,7 +267,7 @@ ScanFile(filename)
 ScanText(text, words, weight := 1)
 {
     p := 1
-    While p := RegExMatch(text, word_pattern, m, p)
+    While p := RegExMatch(text, word_pattern, &m, p)
     {
         m := StrLower(m.0)
         words[m] := (words.Has(m) ? words[m] : 0) + weight
@@ -310,11 +309,11 @@ ScanIndex()
         D("skipping index; need 32-bit to eval data_index.js")
         return
     }
-    sc := ComObjCreate("ScriptControl"), sc.Language := "JScript"
+    sc := ComObject("ScriptControl"), sc.Language := "JScript"
     sc.AddCode(FileRead("static\source\data_index.js"))
     ji := sc.Eval("indexData")
     if !(ji && ji.length)
-        throw Exception("Failed to read/parse data_index.js")
+        throw Error("Failed to read/parse data_index.js")
     
     Loop ji.length
     {
@@ -357,7 +356,7 @@ encode_number(n, length := "")
     if length
     {
         if StrLen(a) > length
-            throw Exception("Number too long",, n " => " a)
+            throw Error("Number too long",, n " => " a)
         Loop length - StrLen(a)
             a := "a" a
     }
@@ -367,5 +366,5 @@ encode_number(n, length := "")
 
 
 D(s) {  ; debug output.
-    FileAppend s "`n", "*"
+    try FileAppend s "`n", "*"
 }

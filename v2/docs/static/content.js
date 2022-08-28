@@ -1,9 +1,9 @@
 ﻿loadJQuery();
-loadIE8Polyfill();
+addPrototypeMethods();
 
 // --- Get infos about this script file ---
 
-var scriptElement = document.scripts[document.scripts.length-1];
+var scriptElement = document.querySelector('script[src$="static/content.js"]');
 var scriptDir = scriptElement.src.substr(0, scriptElement.src.lastIndexOf('/'));
 
 // --- User data ---
@@ -12,7 +12,8 @@ var user = {
   fontSize: 1.0,
   clickTab: 0,
   displaySidebar: true,
-  colorTheme: 0
+  colorTheme: 0,
+  collapseQuickRef: false
 }
 
 // --- Cached data ---
@@ -30,6 +31,7 @@ var cache = {
   clickTab: user.clickTab,
   displaySidebar: user.displaySidebar,
   sidebarWidth: '18em',
+  collapseQuickRef: user.collapseQuickRef,
   RightIsFocused: true,
   toc_clickItem: 0,
   toc_scrollPos: 0,
@@ -68,6 +70,7 @@ var cache = {
 // --- Main Execute Area ---
 
 // Set global variables:
+var forceNoScript = forceNoScript || false;
 var isCacheLoaded = cache.load();
 var workingDir = getWorkingDir();
 var relPath = location.href.replace(workingDir, '');
@@ -90,6 +93,9 @@ var structure = new ctor_structure;
 var toc = new ctor_toc;
 var index = new ctor_index;
 var search = new ctor_search;
+var features = new ctor_features;
+var translate = {dataPath: scriptDir + '/source/data_translate.js'};
+var deprecate = {dataPath: scriptDir + '/source/data_deprecate.js'};
 
 scriptElement.insertAdjacentHTML('afterend', structure.metaViewport);
 var isPhone = (document.documentElement.clientWidth <= 600);
@@ -102,7 +108,7 @@ var isPhone = (document.documentElement.clientWidth <= 600);
     return;
 
   // Exit the script on sites which doesn't need the sidebar:
-  if (/(search)\.htm/.test(location.href) || cache.forceNoScript)
+  if (forceNoScript || cache.forceNoScript)
     return;
 
   // Special treatments for pages inside a frame:
@@ -119,18 +125,13 @@ var isPhone = (document.documentElement.clientWidth <= 600);
         cache.set('toc_clickItem', 0);
       }
       normalizeParentURL(); $(window).on('hashchange', normalizeParentURL);
+      structure.setTheme(cache.colorTheme);
       structure.addShortcuts();
       structure.addAnchorFlash();
       structure.saveCacheBeforeLeaving();
       $(document).ready(function() {
         $('html').attr({ id: 'right'});
-        if (!cache.translate)
-          loadScript(structure.dataPath, function() {
-            cache.set('translate', translateData);
-            addFeatures();
-          });
-        else
-          addFeatures();
+        features.add();
       });
       $(window).on('message onmessage', function(event) {
         var data = JSON.parse(event.originalEvent.data);
@@ -148,6 +149,10 @@ var isPhone = (document.documentElement.clientWidth <= 600);
 
           case 'scrollToMatch':
           search.scrollToMatch(data[1]);
+          break;
+
+          case 'setTheme':
+          structure.setTheme(data[1]);
           break;
         }
       });
@@ -169,8 +174,8 @@ var isPhone = (document.documentElement.clientWidth <= 600);
               history.replaceState(null, null, "?frame=" + encodeURI(relPath).replace(/#/g, '%23'));
           }
           document.title = data[2];
-          if (structure.modifyOnlineTools)
-            structure.modifyOnlineTools(relPath, data[4]);
+          if (structure.modifyTools)
+            structure.modifyTools(relPath, data[4]);
           if ($('#left > div.toc li > span.selected a').attr('href') == data[1].href)
             break;
           else if (data[3]) {
@@ -183,6 +188,10 @@ var isPhone = (document.documentElement.clientWidth <= 600);
 
           case 'pressKey':
           structure.pressKey(data[1]);
+          break;
+
+          case 'updateQuickRef':
+          structure.updateQuickRef(data[1], data[2]);
           break;
         }
       });
@@ -228,7 +237,7 @@ var isPhone = (document.documentElement.clientWidth <= 600);
     $('head').append('<style>#right .area {font-size:' + cache.fontSize + 'em}</style>');
     // color theme
     if(cache.colorTheme)
-      structure.changeTheme();
+      structure.setTheme(cache.colorTheme);
   }
 
   // Load current URL into frame:
@@ -238,42 +247,13 @@ var isPhone = (document.documentElement.clientWidth <= 600);
       structure.openSite(scriptDir + '/../' + (getUrlParameter('frame') || relPath));
     });
 
-  // Get the data if needed and modify the site:
-  if (!cache.translate)
-    loadScript(structure.dataPath, function() {
-      cache.set('translate', translateData);
-      structure.modify();
-      if (!isFrameCapable)
-        $(document).ready(addFeatures);
-    });
-  else {
-    structure.modify();
-    if (!isFrameCapable)
-      $(document).ready(addFeatures);
-  }
-  if (!cache.toc_data)
-    loadScript(toc.dataPath, function() {
-      cache.set('toc_data', tocData);
-      toc.modify();
-    });
-  else
-    toc.modify();
-  if (!cache.index_data)
-    loadScript(index.dataPath, function() {
-      cache.set('index_data', indexData);
-      index.modify();
-    });
-  else
-    index.modify();
-  if (!cache.search_index || !cache.search_files || !cache.search_titles)
-    loadScript(search.dataPath, function() {
-      cache.set('search_index', SearchIndex);
-      cache.set('search_files', SearchFiles);
-      cache.set('search_titles', SearchTitles);
-      search.modify();
-    });
-  else
-    search.modify();
+  // Modify the site:
+  structure.modify();
+  if (!isFrameCapable)
+    $(document).ready(features.add);
+  toc.modify();
+  index.modify();
+  search.modify();
 })();
 
 // --- Constructor: Table of content ---
@@ -283,28 +263,54 @@ function ctor_toc()
   var self = this;
   self.dataPath = scriptDir + '/source/data_toc.js';
   self.create = function(input) { // Create and add TOC items.
-    var output = '';
-    output += '<ul>';
-    for(var i = 0; i < input.length; i++) {
-      var li = input[i][0];
-      if (input[i][1] != '')
-        li = '<a href="' + workingDir + input[i][1] + '"' + (isIE8 ? '>' + li : ' data-content="' + li + '">') + '</a>';
-      else
-        li = '<span' + (isIE8 ? '>' + li : ' data-content="' + li + '">') + '</span>';
-      li = '<span>' + li + '</span>';
-      if(input[i][2] != undefined && input[i][2].length > 0) {
-        output += '<li class ="closed" title="' + input[i][0] + '">' + li;
-        output += self.create(input[i][2]);
+    var ul = document.createElement("ul");
+    for(var i = 0; i < input.length; i++)
+    {
+      var text = input[i][0];
+      var path = input[i][1];
+      var subitems = input[i][2];
+      if (path != '')
+      {
+        var el = document.createElement("a");
+        el.href = workingDir + path;
+        if (cache.deprecate_data[path])
+          el.className = "deprecated";
       }
       else
-        output += '<li  title="' + input[i][0] + '">' + li;
-      output += '</li>';
+        var el = document.createElement("button");
+      if (isIE8)
+        el.innerHTML = text;
+      else
+      {
+        el.setAttribute("data-content", text);
+        el.setAttribute("aria-label", text);
+      }
+      var span = document.createElement("span");
+      span.innerHTML = el.outerHTML;
+      var li = document.createElement("li");
+      li.title = text;
+      if (cache.deprecate_data[path])
+        li.title += "\n\n" + T("Deprecated. New scripts should use {0} instead.").format(cache.deprecate_data[path]);
+      if (subitems != undefined && subitems.length > 0)
+      {
+        li.className = "closed";
+        li.innerHTML = span.outerHTML;
+        li.innerHTML += self.create(subitems).outerHTML;
+      }
+      else
+        li.innerHTML = span.outerHTML;
+      ul.innerHTML += li.outerHTML;
     }
-    output += '</ul>';
-    return output;
+    return ul;
   };
   // --- Modify the elements of the TOC tab ---
   self.modify = function() {
+
+    if (!retrieveData(self.dataPath, "toc_data", "tocData", self.modify))
+      return;
+    if (!retrieveData(deprecate.dataPath, "deprecate_data", "deprecateData", self.modify))
+      return;
+
     $toc = $('#left div.toc').html(self.create(cache.toc_data));
     $tocList = $toc.find('li > span');
     // --- Fold items with subitems ---
@@ -422,11 +428,25 @@ function ctor_index()
     {
       if (filter != -1 && input[i][2] != filter)
         continue;
-      output += '<a href="' + workingDir + input[i][1] + '" tabindex="-1"' + (isIE8 ? '>' + input[i][0] : ' data-content="' + input[i][0] + '">') + '</a>';
+      var a = document.createElement("a");
+      a.href = workingDir + input[i][1];
+      a.setAttribute("tabindex", "-1");
+      if (isIE8)
+        a.innerHTML = input[i][0];
+      else
+      {
+        a.setAttribute("data-content", input[i][0]);
+        a.setAttribute("aria-label", input[i][0]);
+      }
+      output += a.outerHTML;
     }
     return output;
   };
   self.modify = function() { // Modify the elements of the index tab.
+
+    if (!retrieveData(self.dataPath, "index_data", "indexData", self.modify))
+      return;
+
     var $index = $('#left div.index');
     var $indexSelect = $index.find('.select select');
     var $indexInput = $index.find('.input input');
@@ -448,14 +468,15 @@ function ctor_index()
     // Select closest index entry and show color indicator on input:
     $indexInput.on('keyup input', function(e) {
       var $this = $(this);
+      var prevInput = cache.index_input; // defaults to undefined
       var input = cache.set('index_input', $this.val().toLowerCase());
       // if no input, remove color indicator and return:
       if (!input) {
         $this.removeAttr('class');
         return;
       }
-      // Skip subsequent lines if no keyup event to prevent double execution:
-      if (e.type != "keyup")
+      // Skip subsequent index-matching if we have the same query as the last search, to prevent double execution:
+      if (input == prevInput)
         return;
       // Otherwise find the first item which matches the input value:
       var indexListChildren = $indexList.children();
@@ -511,6 +532,14 @@ function ctor_search()
   var self = this;
   self.dataPath = scriptDir + '/source/data_search.js';
   self.modify = function() { // Modify the elements of the search tab.
+
+    if (!retrieveData(self.dataPath, "search_index", "SearchIndex", self.modify))
+      return;
+    if (!retrieveData(self.dataPath, "search_files", "SearchFiles", self.modify))
+      return;
+    if (!retrieveData(self.dataPath, "search_titles", "SearchTitles", self.modify))
+      return;
+
     var $search = $('#left div.search');
     var $searchList = $search.find('div.list');
     var $searchInput = $search.find('.input input');
@@ -521,6 +550,7 @@ function ctor_search()
     // Refresh the search list and show color indicator on input:
     $searchInput.on('keyup input', function(e) {
       var $this = $(this);
+      var prevInput = cache.search_input; // defaults to undefined
       var input = cache.set('search_input', $this.val());
       // if no input, empty the search list, remove color indicator and return:
       if (!input) {
@@ -528,8 +558,8 @@ function ctor_search()
         $this.removeAttr('class');
         return;
       }
-      // Skip subsequent lines if no keyup event to prevent double execution:
-      if (e.type != "keyup")
+      // Skip subsequent search if we have the same query as the last search, to prevent double execution:
+      if (input == prevInput)
         return;
       // Otherwise fill the search list:
       cache.set('search_data', self.create(input));
@@ -568,7 +598,7 @@ function ctor_search()
     if (SearchText == '')
       return '';
     else // split and remove undefined or empty strings
-      return SearchText.split(' ').filter(function(e){return (!!e)});;
+      return $(SearchText.split(' ')).filter(function(){return (!!this)});
   }
   self.highlightWords = function(words) {
     var content = $(isInsideFrame ? 'body' : '#right .area');
@@ -732,7 +762,17 @@ function ctor_search()
     function append_results(ro) {
       var output = '';
       for (var t = 0; t < ro.length && t < RESULT_LIMIT; ++t) {
-        output += '<a href="' + workingDir + ro[t].u + '" tabindex="-1"' + (isIE8 ? '>' + ro[t].n : ' data-content="' + ro[t].n + '">') + '</a>';
+        var a = document.createElement("a");
+        a.href = workingDir + ro[t].u;
+        a.setAttribute("tabindex", "-1");
+        if (isIE8)
+          a.innerHTML = ro[t].n;
+        else
+        {
+          a.setAttribute("data-content", ro[t].n);
+          a.setAttribute("aria-label", ro[t].n);
+        }
+        output += a.outerHTML;
       }
       return output;
     }
@@ -798,14 +838,16 @@ function ctor_search()
 function ctor_structure()
 {
   var self = this;
-  self.dataPath = scriptDir + '/source/data_translate.js';
   self.metaViewport = '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">';
   self.template = '<div id="body">' +
-  '<div id="head"><div class="h-area"><div class="h-tabs"><ul><li data-translate title="Shortcut: ALT+C" data-content="C̲ontent"></li><li data-translate title="Shortcut: ALT+N" data-content="In̲dex"></li><li data-translate title="Shortcut: ALT+S" data-content="S̲earch"></li></ul></div><div class="h-tools sidebar"><ul><li class="sidebar" title="Hide/Show sidebar" data-translate>&#926;</li></ul></div><div class="h-tools online"><ul><li class="home" title="Home page" data-translate><a href="' + location.protocol + '//' + location.host + '/v2/docs/AutoHotkey.htm'  + '">&#916;</a></li><li class="language" title="Change language" data-translate=2><span data-translate data-content="en"></span><ul class="dropdown languages selected"><li><a title="&#x82F1;&#x6587;(English)" data-content="en"></a></li><li><a title="&#x5FB7;&#x6587; (German)" data-content="de"></a></li><li><a title="&#x4E2D;&#x6587; (Chinese)" data-content="zh"></a></li></ul></li><li class="version" title="Change AHK version" data-translate=2><span data-translate data-content="v1"></span><ul class="dropdown versions selected"><li><a title="AHK v1.1" data-content="v1"></a></li><li><a title="AHK v2.0" data-content="v2"></a></li></ul></li><li class="edit" title="Edit page on GitHub" data-translate=2><a data-content="E"></a></li></ul></div><div class="h-tools chm"><ul><li class="back" title="Go back" data-translate=2>&#9668;</li><li class="forward" title="Go forward" data-translate=2>&#9658;</li><li class="zoom" title="Change font size" data-translate=2 data-content="Z"></li><li class="print" title="Print current document" data-translate=2 data-content="P"></li></ul></div><div class="h-tools main visible"><ul><li class="color" title="Change to dark/light theme" data-translate=2 data-content="C"></li><li class="settings" title="Open settings" data-translate=2>&#1029;</li></ul></div></div></div>' +
-  '<div id="main"><div id="left"><div class="toc"></div><div class="index"><div class="input"><input type="search" placeholder="Search" data-translate=2 /></div><div class="select"><select size="1" class="empty"><option value="-1" class="empty" selected data-translate>Filter</option><option value="0" data-translate>Directives</option><option value="1" data-translate>Built-in Variables</option><option value="2" data-translate>Built-in Functions</option><option value="3" data-translate>Control Flow Statements</option><option value="4" data-translate>Operators</option><option value="5" data-translate>Declarations</option></select></div><div class="list"></div></div><div class="search"><div class="input"><input type="search" placeholder="Search" data-translate=2 /></div><div class="checkbox"><input type="checkbox" id="highlightWords"><label for="highlightWords" data-translate>Highlight keywords</label><div class="updown" title="Go to previous/next occurrence" data-translate><div class="up"><div class="triangle-up"></div></div><div class="down"><div class="triangle-down"></div></div></div></div><div class="list"></div></div><div class="load"><div class="lds-dual-ring"></div></div></div><div class="dragbar"></div><div id="right" tabIndex="-1">'+(isFrameCapable?'<iframe frameBorder="0" id="frame" src="">':'<div class="area">');
+    '<div id="head" role="banner"><button onclick="structure.focusContent();" class="skip-nav" data-translate aria-label="data-content" data-content="Skip navigation"></button><div class="h-area"><div class="h-tabs"><ul><li><button data-translate title="Shortcut: ALT+C" aria-label="Content tab" data-content="C̲ontent"></button></li><li><button data-translate title="Shortcut: ALT+N" aria-label="Index tab" data-content="In̲dex"></button></li><li><button data-translate title="Shortcut: ALT+S" aria-label="Search tab" data-content="S̲earch"></button></li></ul></div><div class="h-tools sidebar"><ul><li class="sidebar"><button title="Hide or show the sidebar" data-translate aria-label="title">&#926;</button></li></ul></div><div class="h-tools online"><ul><li class="home"><a href="' + location.protocol + '//' + location.host + '/v2/docs/AutoHotkey.htm" title="Go to the homepage" data-translate aria-label="title">&#916;</a></li><li class="language"><button title="Change the language" data-translate aria-label="title" data-content="en"></button><ul class="dropdown languages selected"><li><a href="#" title="English (英文)" aria-label="title" data-content="en"></a></li><li><a href="#" title="Deutsch (德文)" data-content="de" aria-label="title"></a></li><li><a href="#" title="&#xD55C;&#xAD6D;&#xC5B4 (韩文)" aria-label="title" data-content="ko"></a></li><li><a href="#" title="Português (葡萄牙语)" data-content="pt" aria-label="title"></a></li><li><a href="#" title="&#x4E2D;&#x6587; (Chinese)" aria-label="title" data-content="zh"></a></li></ul></li><li class="version"><button title="Change the version" data-translate aria-label="title" data-content="v1"></button><ul class="dropdown versions selected"><li><a href="#" title="AHK v1.1" aria-label="title" data-content="v1"></a></li><li><a href="#" title="AHK v2.0" aria-label="title" data-content="v2"></a></li></ul></li><li class="edit"><a href="#" title="Edit this document on GitHub" data-translate=2 aria-label="title" data-content="E"></a></li></ul></div><div class="h-tools chm"><ul><li class="back"><button title="Go back" data-translate=2 aria-label="title">&#9668;</button></li><li class="forward"><button title="Go forward" data-translate=2 aria-label="title">&#9658;</button></li><li class="zoom"><button title="Change the font size" data-translate=2 aria-label="title" data-content="Z"></button></li><li class="print"><button title="Print this document" data-translate=2 aria-label="title" data-content="P"></button></li><li class="browser"><a href="#" target="_blank" title="Open this document in the default browser (requires internet connection). Middle-click to copy the link address." data-translate aria-label="title">¬</a></li></ul></div><div class="h-tools main visible"><ul><li class="color"><button title="Use the dark or light theme" data-translate=2 aria-label="title" data-content="C"></button></li><li class="settings"><button title="Open the help settings" data-translate=2 aria-label="title">&#1029;</button></li></ul></div></div></div>' +
+    '<div id="main"><div id="left" role="navigation"><div class="tab toc"></div><div class="tab index"><div class="input"><input type="search" placeholder="Search" data-translate=2 /></div><div class="select"><select size="1" class="empty"><option value="-1" class="empty" selected data-translate>Filter</option><option value="0" data-translate>Directives</option><option value="1" data-translate>Built-in Variables</option><option value="2" data-translate>Built-in Functions</option><option value="3" data-translate>Control Flow Statements</option><option value="4" data-translate>Operators</option><option value="5" data-translate>Declarations</option><option value="6" data-translate>Built-in Classes</option><option value="99" data-translate>Ahk2Exe Compiler</option></select></div><div class="list"></div></div><div class="tab search"><div class="input"><input type="search" placeholder="Search" data-translate=2 /></div><div class="checkbox"><input type="checkbox" id="highlightWords"><label for="highlightWords" data-translate>Highlight keywords</label><div class="updown" title="Go to previous/next occurrence" data-translate aria-label="title"><div class="up"><div class="triangle-up"></div></div><div class="down"><div class="triangle-down"></div></div></div></div><div class="list"></div></div><div class="load"><div class="lds-dual-ring"></div></div>'+(isIE8?'':'<div class="quick"><button class="header" title="Collapse or uncollapse the quick reference" data-translate aria-label="title"><div class="chevron"></div><span data-translate data-content="Quick reference"></span></button><div class="main"></div></div>')+'</div><div class="dragbar"></div><div id="right" tabIndex="-1">'+(isFrameCapable?'<iframe frameBorder="0" id="frame" src="" role="main">':'<div class="area" role="main">');
   self.template = isIE8 ? self.template.replace(/ data-content="(.*?)">/g, '>$1') : self.template;
   self.build = function() { document.write(self.template); }; // Write HTML before DOM is loaded to prevent flickering.
   self.modify = function() { // Modify elements added via build.
+
+    if (!retrieveData(translate.dataPath, "translate_data", "translateData", self.modify))
+      return;
 
     // --- If phone, hide and overlap sidebar ---
 
@@ -831,11 +873,12 @@ function ctor_structure()
       var elContent = $this.text();
       var attrTitleValue = $this.attr('title');
       var attrPlaceholder = $this.attr('placeholder');
+      var attrAriaLabelValue = $this.attr('aria-label');
       var attrDataContentValue = $this.attr('data-content');
       var attrDataTranslateValue = $this.attr('data-translate');
       if(!attrDataTranslateValue || attrDataTranslateValue == 1)
       {
-        if(typeof elContent != '')
+        if(elContent != '')
           $this.text(T(elContent));
         if(typeof attrDataContentValue !== 'undefined')
           $this.attr('data-content', T(attrDataContentValue));
@@ -846,6 +889,11 @@ function ctor_structure()
           $this.attr('title', T(attrTitleValue));
         if (typeof attrPlaceholder !== 'undefined')
           $this.attr('placeholder', T(attrPlaceholder));
+      }
+      if (attrAriaLabelValue)
+      {
+        var value = $this.attr(attrAriaLabelValue);
+        $this.attr("aria-label", T(value || attrAriaLabelValue));
       }
     });
 
@@ -864,11 +912,17 @@ function ctor_structure()
 
     var $main = $('#head .h-tools.sidebar').add('#head .h-tools.main');
     $main.find('li.sidebar').on('click', function() {
-      self.displaySidebar(!cache.displaySidebar); });
+      self.displaySidebar(!cache.displaySidebar);
+    });
     $main.find('li.settings').on('click', function() {
       structure.openSite(scriptDir + '/../settings.htm');
     });
-    $main.find('li.color').on('click', self.changeTheme);
+    $main.find('li.color').on('click', function() {
+      cache.set('colorTheme', cache.colorTheme ? 0 : 1);
+      structure.setTheme(cache.colorTheme);
+      if (isFrameCapable)
+        postMessageToFrame('setTheme', [cache.colorTheme]);
+    });
 
     // --- Online tools (only visible if help is not CHM) ---
 
@@ -878,6 +932,8 @@ function ctor_structure()
     // language links. Keys are based on ISO 639-1 language name standard:
     var link = { 'v1': { 'en': 'https://www.autohotkey.com/docs/',
                          'de': 'https://ahkde.github.io/docs/',
+                         'ko': 'https://ahkscript.github.io/ko/docs/',
+                         'pt': 'https://ahkscript.github.io/pt/docs/',
                          'zh': 'https://wyagd001.github.io/zh-cn/docs/' },
                  'v2': { 'en': 'https://lexikos.github.io/v2/docs/',
                          'de': 'https://ahkde.github.io/v2/docs/',
@@ -886,7 +942,7 @@ function ctor_structure()
     var $langList = $online.find('ul.languages')
     var $verList = $online.find('ul.versions')
 
-    self.modifyOnlineTools = function(relPath, equivPath) {
+    self.modifyTools = function(relPath, equivPath) {
       // Bug - IE/Edge doesn't turn off list-style if element is hidden:
       $langList.add($verList).css("list-style", "none");
       // Hide currently selected language and version in the selection lists:
@@ -911,11 +967,11 @@ function ctor_structure()
         a.attr('href', thisLink + (equivPath || relPath));
       });
       // Hide dropdown list on click with left or middle mouse button:
-      $langList.add($verList).off('mouseup').on('mouseup', function(e) {
+      registerEvent($langList.add($verList), 'mouseup', '', function(e) {
         if (e.which == 1 || e.which == 2) {
           setTimeout(function() {
-          $dropdown.animate({height: 'hide'}, 100);
-          $this.removeClass('selected');
+            $dropdown.animate({height: 'hide'}, 100);
+            $this.removeClass('selected');
           }, 200);
         }
       });
@@ -924,35 +980,67 @@ function ctor_structure()
         href: T("https://github.com/Lexikos/AutoHotkey_L-Docs/edit/master/docs/") + relPath,
         target: "_blank"
       });
+
+      // --- CHM tools (only visible if help is CHM) ---
+
+      var $chm = $('#head .h-tools.chm');
+      // 'Go back' button:
+      registerEvent($chm.find('li.back'), 'click', '', function() { history.back(); });
+      // 'Go forward' button:
+      registerEvent($chm.find('li.forward'), 'click', '', function() { history.forward(); });
+      // 'Zoom' button:
+      registerEvent($chm.find('li.zoom'), 'click', '', function() {
+        cache.set('fontSize', cache.fontSize + 0.2);
+        if (cache.fontSize > 1.4)
+          cache.set('fontSize', 0.6);
+        $('#frame').contents().find('body').css('font-size', cache.fontSize + 'em');
+      });
+      // 'Print' button:
+      registerEvent($chm.find('li.print'), 'click', '', function() { window.parent.document.getElementById('frame').contentWindow.document.execCommand('print', false, null); });
+      // 'Open in default browser' button:
+      btn = $chm.find('li.browser > a').attr('href', link[ver][lang] + relPath);
+      registerEvent(btn, 'mouseup', '', function(e) {
+        if (e.which == 2) {
+          window.clipboardData.setData('Text', this.href);
+        }
+      });
+
+      // --- If help is CHM, show CHM tools, else show online tools ---
+
+      (isInsideCHM) ? $chm.show().addClass('visible') : $online.show().addClass('visible');
     };
-    self.modifyOnlineTools(relPath, equivPath);
-
-    // --- CHM tools (only visible if help is CHM) ---
-
-    var $chm = $('#head .h-tools.chm');
-    // 'Go back' button:
-    $chm.find('li.back').on('click', function() { history.back(); });
-    // 'Go forward' button:
-    $chm.find('li.forward').on('click', function() { history.forward(); });
-    // 'Zoom' button:
-    $chm.find('li.zoom').on('click', function() {
-      cache.set('fontSize', cache.fontSize + 0.2);
-      if (cache.fontSize > 1.4)
-        cache.set('fontSize', 0.6);
-      $('#frame').contents().find('body').css('font-size', cache.fontSize + 'em');
-    });
-    // 'Print' button:
-    $chm.find('li.print').on('click', function() { window.parent.document.getElementById('frame').contentWindow.document.execCommand('print', false, null); });
-
-    // --- If help is CHM, show CHM tools, else show online tools ---
-
-    (isInsideCHM) ? $chm.show().addClass('visible') : $online.show().addClass('visible');
+    self.modifyTools(relPath, equivPath);
 
     // --- Apply click events for sidebar tabs ---
 
     registerEvent($('#head div.h-tabs'), 'click', 'li', function() {
       self.showTab($(this).index());
     });
+
+    // --- Apply events for navbar's quick reference ---
+
+    if (!isIE8)
+    {
+      $quick_header = $('#left .quick .header');
+      $quick_main = $('#left .quick .main');
+      registerEvent($quick_header, 'click', function() {
+        self.collapseQuickRef(!cache.collapseQuickRef);
+      });
+      registerEvent($quick_main, 'click', 'li > span', function() {
+        self.openSite($(this).children('a').attr('href'));
+        structure.focusContent();
+        return false;
+      });
+      if (!isTouch) {
+        $quick_main.addClass('no-scroll');
+        registerEvent($quick_main, 'mouseenter', function() {
+          $(this).removeClass('no-scroll');
+        });
+        registerEvent($quick_main, 'mouseleave', function() {
+          $(this).addClass('no-scroll');
+        });
+      }
+    }
 
     // --- Apply control events ---
 
@@ -1025,7 +1113,7 @@ function ctor_structure()
         case 38:
         case 40:
           $ListBox.children('a.selected').focus();
-        processKeys($ListBox, e.which);
+          processKeys($ListBox, e.which);
         break;
 
         default:
@@ -1061,7 +1149,7 @@ function ctor_structure()
         search.scrollToMatch('prev');
     });
 
-     $('#left .checkbox .down').on('click', function() {
+    $('#left .checkbox .down').on('click', function() {
       if (isFrameCapable)
         postMessageToFrame('scrollToMatch', ['next']);
       else
@@ -1072,6 +1160,7 @@ function ctor_structure()
 
     self.showTab(cache.clickTab);
     self.displaySidebar(cache.displaySidebar);
+    self.collapseQuickRef(isIE8 ? true : cache.collapseQuickRef);
 
     // --- Resize the sidebar's width via mouse ---
 
@@ -1127,13 +1216,52 @@ function ctor_structure()
   self.showTab = function(pos) {
     cache.set('clickTab', pos);
     var $t = $('#head div.h-tabs li');
-    var $s = $('#left > div');
+    var $s = $('#left > div:not(.quick)');
     $t.removeClass('selected')
       .eq(pos).addClass('selected');
     $s.css("visibility", "hidden")
       .eq(pos).css("visibility", "inherit")
       .focus() // To make internal hotkeys work on startup.
       .find('.input input').focus();
+  };
+  // Collapse navbar's quick reference:
+  self.collapseQuickRef = function(collapse) {
+    cache.set('collapseQuickRef', collapse);
+    var $tab = $('#left .tab');
+    var $chevron = $('#left .quick .header .chevron');
+    var $main = $('#left .quick .main');
+    if (collapse) {
+      $tab.removeClass('shrinked').addClass('full');
+      $chevron.removeClass('down').addClass('right');
+      $main.hide();
+    }
+    else {
+      $tab.removeClass('full').addClass('shrinked');
+      $chevron.removeClass('right').addClass('down');
+      $main.show();
+    }
+  };
+  // Update navbar's quick reference:
+  self.updateQuickRef = function(relPath, h2s) {
+    var ul = document.createElement("ul");
+    for (var i = 0; i < h2s.length; i++) {
+      var h2 = h2s[i];
+      var el = document.createElement("a");
+      el.href = workingDir + relPath + ((h2.id) ? ('#' + h2.id) : '');
+      if (isIE8)
+        el.innerHTML = h2.innerText;
+      else {
+        el.setAttribute("data-content", h2.innerText);
+        el.setAttribute("aria-label", h2.innerText);
+      }
+      var span = document.createElement("span");
+      span.innerHTML = el.outerHTML;
+      var li = document.createElement("li");
+      li.title = h2.innerText;
+      li.innerHTML = span.outerHTML;
+      ul.innerHTML += li.outerHTML;
+    }
+    $('#left .quick .main').html(ul);
   };
   // Save cache before leaving site:
   self.saveCacheBeforeLeaving = function() {
@@ -1156,6 +1284,8 @@ function ctor_structure()
     if (isFrameCapable) {
       if (isIE || isEdge)
         $(document.getElementById('frame').contentWindow).focus();
+      else if (isFirefox)
+        setTimeout(function() {$('#frame').get(0).focus();}, 1);
       else
         $('#frame').get(0).focus();
     }
@@ -1264,27 +1394,22 @@ function ctor_structure()
       window.location = url;
     }
   }
-  // Invert colors of the website:
-  self.changeTheme = function() {
-    if($('#dark-theme').length) {
-      cache.set('colorTheme', 0);
-      $('#dark-theme').remove();
-      return;
+  // Set color theme:
+  self.setTheme = function(id) {
+    switch (id)
+    {
+      case 0:
+        $('#current-theme').remove();
+        break;
+      case 1:
+        var link = document.createElement('link');
+        link.href = workingDir + 'static/dark.css';
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.id = 'current-theme';
+        $('head').append(link);
+        break;
     }
-    cache.set('colorTheme', 1);
-    var style = document.createElement('style');
-    style.type = 'text/css';
-    style.id = 'dark-theme';
-    if(isIE) {
-      var css = ':before { content:""; position:fixed; top:50%; left:50%; z-index:9999; width:0; height:0; outline:2999px solid invert }';
-      if(isIE8)
-        style.styleSheet.cssText = '#head' + css + '\n#head { z-index:1000 }';
-      else
-        style.innerHTML = '#body' + css;
-    }
-    else
-      style.innerHTML = '#body { filter:invert(90%); }\nhtml { background:#191919 }';
-    $('head').append(style);
   };
   // Add events for ListBox items such as double-click:
   self.addEventsForListBoxItems = function(ListBox) {
@@ -1337,26 +1462,32 @@ function ctor_structure()
 
 // --- Modify elements provided by the HTML site ---
 
-function addFeatures()
+function ctor_features()
 {
-  var content = document.querySelectorAll('#right .area, #right body')[0];
-
-  $.queueFunc.add(modifyTables);
-  $.queueFunc.add(modifyHeaders);
-  $.queueFunc.add(modifyLinks);
-  $.queueFunc.add(modifyVersions);
-  $.queueFunc.add(modifyCodes);
-  addFooter();
-  $.queueFunc.add(addBackButton);
-  scrollToPos();
-  $.queueFunc.add(highlightWords);
+  var self = this;
+  self.add = function() {
+    if (!retrieveData(translate.dataPath, "translate_data", "translateData", self.add))
+      return;
+    self.content = document.querySelectorAll('#right .area, #right body')[0];
+    $.queueFunc.add(self.modifyTables);
+    $.queueFunc.add(self.modifyHeaders);
+    $.queueFunc.add(self.gatherHeadingsForQuickRef);
+    $.queueFunc.add(self.modifyExternalLinks);
+    $.queueFunc.add(self.modifyDeprecatedLinks);
+    $.queueFunc.add(self.modifyVersions);
+    $.queueFunc.add(self.modifyCodeBoxes);
+    self.addFooter();
+    $.queueFunc.add(self.addBackButton);
+    self.scrollToPos();
+    $.queueFunc.add(self.highlightWords);
+  };
 
   // --- Responsive tables (mobile) ---
 
-  function modifyTables() {
+  self.modifyTables = function() {
     if (!isPhone)
       return;
-    var tables = content.querySelectorAll('table.info');
+    var tables = self.content.querySelectorAll('table.info');
     for(var i = 0; i < tables.length; i++) {
       var table = tables[i], th = {}, newTable = "";
       var id = table.getAttribute('id');
@@ -1372,11 +1503,27 @@ function addFeatures()
         var id = tr.getAttribute('id');
         newTable += (id) ? '<tbody id="'+id+'">' : '<tbody>';
         var tds = tr.querySelectorAll('td');
+        if (tr.querySelectorAll('td[rowspan], td[colspan]').length)
+          for (var k = 0; k < tds.length; k++)
+          {
+            var td = tds[k];
+            var rowspan = td.getAttribute('rowspan');
+            var colspan = td.getAttribute('colspan');
+            if (rowspan)
+              for (var l = 1; l < rowspan; l++)
+                trs[j + l].insertCell(k).innerHTML = td.innerHTML;
+            if (colspan)
+            {
+              for (var l = 1; l < colspan; l++)
+                tr.insertCell(k + l).innerHTML = td.innerHTML;
+              tds = tr.querySelectorAll('td');
+            }
+          }
         for(var k = 0; k < tds.length; k++) {
           var td = tds[k];
           var id = td.getAttribute('id');
           newTable += (id) ? '<tr id="'+id+'">' : '<tr>';
-          var first = (th.length) ? th[k].innerHTML : ""
+          var first = (th.length) ? (th[k].abbr || th[k].innerHTML) : "";
           newTable += '<td>'+first+'</td><td>'+td.innerHTML+'</td></tr>';
         }
         newTable += '</tbody>';
@@ -1384,14 +1531,14 @@ function addFeatures()
       newTable += '</table>';
       table.outerHTML = newTable;
     }
-  }
+  };
 
   // --- Generate anchors for anchor-less head lines ---
 
-  function modifyHeaders() {
+  self.modifyHeaders = function() {
     if (isInsideCHM)
       return;
-    var hs = content.querySelectorAll('h2, h3, h4, h5, h6');
+    var hs = self.content.querySelectorAll('h2, h3, h4, h5, h6');
     for(var i = 0; i < hs.length; i++) {
       var h = hs[i];
       var id = h.getAttribute('id');
@@ -1399,7 +1546,7 @@ function addFeatures()
       if(!id) // If head line doesn't have anchor...
       {
         // As first child, try to use the id of its parent such as .methodShort:
-        if (h.parentNode != content && h.parentNode.getAttribute('id') && !$(h).prev().length)
+        if (h.parentNode != self.content && h.parentNode.getAttribute('id') && !$(h).prev().length)
           id = h.parentNode.getAttribute('id');
         // Otherwise, generate an id:
         else
@@ -1425,23 +1572,59 @@ function addFeatures()
       }
       h.innerHTML = headLink + innerHTML + '</a>';
     }
-  }
+  };
+
+  // --- Gather headings to show them in the navbar's quick reference ---
+
+  self.gatherHeadingsForQuickRef = function() {
+    if (isIE8)
+      return;
+    var hs = self.content.querySelectorAll('h2');
+    var list = [];
+    for (var i = 0; i < hs.length; i++) {
+      var h = hs[i].cloneNode(true);
+      $(h).find('.ver, .headnote').remove();
+      list.push({id: h.id, innerText: h.innerText});
+    }
+    postMessageToParent('updateQuickRef', [relPath.replace(window.location.hash, ''), list]);
+  };
 
   // --- Open external links in a new tab/window ---
 
-  function modifyLinks() {
-    var as = content.querySelectorAll("a[href^='http']");
+  self.modifyExternalLinks = function() {
+    var as = self.content.querySelectorAll("a[href^='http']");
     for(var i = 0; i < as.length; i++) {
       var a = as[i];
-      if (!a.querySelector('img'))
-        a.className = "extLink"; a.target = "_blank";
+      if (!a.querySelector('img') && a.className.indexOf('no-ext') == -1) {
+        a.className = "extLink";
+        a.target = "_blank";
+      }
     }
-  }
+  };
+
+  // --- Add "Deprecated" icon ---
+
+  self.modifyDeprecatedLinks = function() {
+    if (!retrieveData(deprecate.dataPath, "deprecate_data", "deprecateData", self.modifyDeprecatedLinks))
+      return;
+    var as = self.content.querySelectorAll("a");
+    for (var i = 0; i < as.length; i++) {
+      var a = as[i];
+      var href = a.getAttribute("href");
+      if (!href || href.charAt(0) == "#")
+        continue;
+      var path = a.href.replace(workingDir, '');
+      if (cache.deprecate_data[path]) {
+        a.className = "deprecated";
+        a.title = T("Deprecated. New scripts should use {0} instead.").format(cache.deprecate_data[path]);
+      }
+    }
+  };
 
   // --- Add links for version annotations ---
 
-  function modifyVersions() {
-    var spans = content.querySelectorAll("span.ver");
+  self.modifyVersions = function() {
+    var spans = self.content.querySelectorAll("span.ver");
     for(var i = 0; i < spans.length; i++) {
       var span = spans[i], m, title, href;
       var text = span.textContent || span.innerText;
@@ -1463,15 +1646,20 @@ function addFeatures()
       // outerHTML/innerHTML not possible here because IE8 doesn't allow nested links:
       $(span).html('<a href="' + workingDir + href + '" title="' + title + '">' + text + '</a>');
     }
-  }
+  };
 
-  // --- Useful features for code boxes ---
+  // --- Add useful features for code boxes ---
   
-  function modifyCodes() {
-    var pres = content.querySelectorAll("pre, code");
+  self.modifyCodeBoxes = function() {
+    var pres = self.content.querySelectorAll("pre, code");
+    self.addCodeBoxButtons(pres);
+    self.addSyntaxColors(pres);
+  };
 
-    // Provide select and download buttons:
-    for(var i = 0; i < pres.length; i++) {
+  // --- Add select and download buttons for code boxes ---
+
+  self.addCodeBoxButtons = function(pres) {
+    for (var i = 0; i < pres.length; i++) {
       var pre = pres[i];
       if (pre.tagName == 'CODE')
         continue;
@@ -1486,385 +1674,416 @@ function addFeatures()
       parent.appendChild(pre);
       var buttons = document.createElement('div'); buttons.className = 'buttons';
       parent.appendChild(buttons);
-      var sel = document.createElement('a'); sel.className = 'selectCode'; sel.title = T("Select code"); sel.innerHTML = 'S';
+      var sel = document.createElement('a');
+      sel.className = 'selectCode';
+      sel.title = T("Select code");
+      if (isIE8)
+        sel.innerHTML = 'S';
+      else
+        sel.setAttribute("data-content", 'S');
       buttons.appendChild(sel);
       if (!isSyntax && !isNoHighlight) {
-        var dwn = document.createElement('a'); dwn.className = 'downloadCode'; dwn.title = T("Download code"); dwn.innerHTML = '&#8595;';
+        var dwn = document.createElement('a');
+        dwn.className = 'downloadCode';
+        dwn.title = T("Download code");
+        if (isIE8)
+          dwn.innerHTML = '↓';
+        else
+          dwn.setAttribute("data-content", '↓');
         buttons.appendChild(dwn);
       }
       $(parent) // Show these buttons on hover:
-      .mouseenter(function() {
-        $(this).children('div.buttons').fadeTo(200, 0.8);
-      })
-      .mouseleave(function() {
-        $(this).children('div.buttons').fadeTo(200, 0);
-      });
+        .mouseenter(function() {
+          $(this).children('div.buttons').fadeTo(200, 0.8);
+        })
+        .mouseleave(function() {
+          $(this).children('div.buttons').fadeTo(200, 0);
+        });
       $(parent).find('div.buttons > a.selectCode') // Select the code on click:
-      .on('click', function() {
-        var doc = document
-          , text = $(this).parent().siblings('pre.origin')[0]
-          , range, selection;
-        if (doc.body.createTextRange) {
-          range = document.body.createTextRange();
-          range.moveToElementText(text);
-          range.select();
-        } else if (window.getSelection) {
-          selection = window.getSelection();
-          range = document.createRange();
-          range.selectNodeContents(text);
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
-      });
+        .on('click', function() {
+          var doc = document
+            , text = $(this).parent().siblings('pre.origin')[0]
+            , range, selection;
+          if (doc.body.createTextRange) {
+            range = document.body.createTextRange();
+            range.moveToElementText(text);
+            range.select();
+          } else if (window.getSelection) {
+            selection = window.getSelection();
+            range = document.createRange();
+            range.selectNodeContents(text);
+            selection.removeAllRanges();
+            selection.addRange(range);
+          }
+        });
       $(parent).find('div.buttons > a.downloadCode') // Download the code on click:
-      .on('click', function(e) {
-        var pre = $(this).parent().siblings('pre.origin');
-        var textToWrite = '\ufeff' + pre.text().replace(/\n/g, "\r\n");
-        var textFileAsBlob = new Blob([textToWrite], {type:'text/csv'});
-        var fileNameToSaveAs = pre.attr("filename") || location.pathname.match(/([^\/]+)(?=\.\w+$)/)[0] + "-Script.ahk";
-    
-        var downloadLink = document.createElement("a");
-        downloadLink.download = fileNameToSaveAs;
-        downloadLink.innerHTML = "Download File";
-    
-        // http://stackoverflow.com/a/9851769
-    
-        if (isIE || isEdge) {
-          navigator.msSaveBlob(textFileAsBlob, fileNameToSaveAs);
+        .on('click', function(e) {
+          var pre = $(this).parent().siblings('pre.origin');
+          var textToWrite = '\ufeff' + pre.text().replace(/\n/g, "\r\n");
+          var textFileAsBlob = new Blob([textToWrite], {type: 'text/csv'});
+          var fileNameToSaveAs = pre.attr("filename") || location.pathname.match(/([^\/]+)(?=\.\w+$)/)[0] + "-Script.ahk";
+
+          var downloadLink = document.createElement("a");
+          downloadLink.download = fileNameToSaveAs;
+          downloadLink.innerHTML = "Download File";
+
+          // http://stackoverflow.com/a/9851769
+
+          if (isIE || isEdge) {
+            navigator.msSaveBlob(textFileAsBlob, fileNameToSaveAs);
+          }
+          if (isChrome || isBlink) {
+            downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+            downloadLink.click();
+          }
+          if (isFirefox) {
+            downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+            downloadLink.style.display = "none";
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+          }
+        });
+    }
+  };
+
+  // --- Add syntax highlighting for code boxes ---
+
+  self.addSyntaxColors = function(pres) {
+    // Create lists of syntax elements by using index data to reduce code size.
+    // An index entry counts as syntax element, if its third field is one of the following digits:
+    /* 
+        0 - directive
+        1 - built-in var
+        2 - built-in function
+        3 - control flow statement
+        4 - operator
+        5 - declaration
+        6 - built-in class
+        99 - Ahk2Exe compiler
+    */
+    if (isIE8) // Exclude old browsers.
+      return;
+    if (!retrieveData(index.dataPath, "index_data", "indexData", function() {self.addSyntaxColors(pres);}))
+      return;
+    var syntax = [], entry = '', type = '';
+    var assignOp = "(?:&lt;&lt;|<<|&gt;&gt;|>>|\\/\\/|\\^|&amp;|&|\\||\\.|\\/|\\*|-|\\+|:)=";
+    for (var i = cache.index_data.length - 1; i >= 0; i--) {
+      entry = cache.index_data[i][0];
+      type = cache.index_data[i][2];
+      syntax[type] = syntax[type] || [];
+      if (typeof type !== 'undefined') {
+        if (entry.indexOf(' ... ') != -1) {
+          part = entry.split(' ... ');
+          for (k in part) {
+            syntax[type][k] = syntax[type][k] || [];
+            if (syntax[type][k].indexOf(part[k]) == -1)
+              syntax[type][k].push(part[k]);
+          }
         }
-        if (isChrome || isBlink) {
-          downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
-          downloadLink.click();
+        else
+          (syntax[type].single = syntax[type].single || []).push(entry);
+        (syntax[type].dict = syntax[type].dict || {})[entry.toLowerCase()] = i;
+      }
+    }
+    // Traverse pre elements:
+    for (var i = 0; i < pres.length; i++) {
+      var pre = pres[i], els = [];
+      els.order = [];
+      // Skip pre.no-highlight elements:
+      if (pre.className.indexOf('no-highlight') != -1)
+        continue;
+      // Temporary remove elements which interfering with syntax detection:
+      els.order.push('various'); els.various = [];
+      els.order.push('em'); els.em = [];
+      $(pre).children().each(function() {
+        if (this.tagName == 'EM') {
+          els.em.push(this.outerHTML);
+          $(this).replaceWith('<em>');
         }
-        if (isFirefox) {
-          downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
-          downloadLink.style.display = "none";
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
+        else if (this.href && this.getAttribute("href").substring(0, 4) != "http")
+          $(this).replaceWith(this.innerText);
+        else if (this.attributes.length || this.children.length) {
+          els.various.push(this.outerHTML);
+          $(this).replaceWith('<various>');
         }
       });
-    }
-
-    // Syntax highlighting:
-    if (!isIE8) {
-      if (cache.index_data) {
-          addSyntaxColors(pres);
-      } else {
-        loadScript(index.dataPath, function() { cache.set('index_data', indexData); addSyntaxColors(pres); });
-      }
-    }
-    function addSyntaxColors(pres) {
-      // Create lists of syntax elements by using index data to reduce code size.
-      // An index entry counts as syntax element, if its third field is one of the following digits:
-      /* 
-          0 - directive
-          1 - built-in var
-          2 - built-in function
-          3 - control flow statement
-          4 - operator
-          5 - declaration
-      */
-      var syntax = [], dict = {}, entry = '', type = '';
-      var assignOp = "(?:&lt;&lt;|<<|&gt;&gt;|>>|\\/\\/|\\^|&amp;|&|\\||\\.|\\/|\\*|-|\\+|:)=";
-      for (var i = cache.index_data.length - 1; i >= 0; i--) {
-        entry = cache.index_data[i][0];
-        type = cache.index_data[i][2];
-        syntax[type] = syntax[type] || [];
-        if (typeof type !== 'undefined') {
-          if (entry.indexOf(' ... ') != -1) {
-            part = entry.split(' ... ');
-            for (k in part) {
-              syntax[type][k] = syntax[type][k] || [];
-              if (syntax[type][k].indexOf(part[k]) == -1)
-                syntax[type][k].push(part[k]);
-            }
-          }
-          else
-            (syntax[type].single = syntax[type].single || []).push(entry);
-          dict[entry.toLowerCase()] = i;
-        }
-      }
-      // Traverse pre elements:
-      for (var i = 0; i < pres.length; i++) {
-        var pre = pres[i], els = [];
-        els.order = [];
-        // Skip pre.no-highlight elements:
-        if (pre.className.indexOf('no-highlight') != -1)
-          continue;
-        // Temporary remove elements which interfering with syntax detection:
-        els.order.push('various'); els.various = [];
-        els.order.push('em'); els.em = [];
-        $(pre).children().each(function() {
-          if (this.tagName == 'EM') {
-            els.em.push(this.outerHTML);
-            $(this).replaceWith('<em>');
-          }
-          else if (this.href && this.getAttribute("href").substring(0, 4) != "http")
-            $(this).replaceWith(this.innerText);
-          else if (this.attributes.length || this.children.length) {
-            els.various.push(this.outerHTML);
-            $(this).replaceWith('<various>');
-          }
-        });
-        // Store pre content into a variable to improve performance:
-        var innerHTML = pre.innerHTML;
-        // comments:
-        els.order.push('sct'); els.sct = [];
-        innerHTML = innerHTML.replace(/(\s|^)(;.*?)$/gm, function(_, PRE, COMMENT) {
-          out = wrap(COMMENT, 'cmt', false);
-          els.sct.push(out);
-          return PRE + '<sct></sct>';
-        });
-        els.order.push('mct'); els.mct = [];
-        innerHTML = innerHTML.replace(/(^\s*\/\*[\s\S]*?^\s*(\*\/|$(?![\r\n])))/gm, function(COMMENT) {
-          out = wrap(COMMENT, 'cmt', false);
-          els.mct.push(out);
-          return '<mct></mct>';
-        });
-        // escape sequences:
-        els.order.push('esc'); els.esc = [];
-        innerHTML = innerHTML.replace(/`./gm, function(SEQUENCE) {
-          out = wrap(SEQUENCE, 'esc', false);
-          els.esc.push(out);
-          return '<esc></esc>';
-        });
-        // function definitions:
-        els.order.push('fun'); els.fun = [];
-        innerHTML = innerHTML.replace(/^(\s*?)(\S*?)(?=\(.*?\)\s*(<(em|sct)><\/(em|sct)>\s*)*{)/mg, function(ASIS, PRE, DEFINITION) {
-          if (DEFINITION.match(/^(while|if)$/i))
-            return ASIS;
-          out = PRE + wrap(DEFINITION, 'fun', false);
-          els.fun.push(out);
-          return '<fun></fun>';
-        });
-        // numeric values:
-        els.order.push('num'); els.num = [];
-        innerHTML = innerHTML.replace(/\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)\b/gm, function(_, NUMBER) {
-          out = wrap(NUMBER, 'num', false);
-          els.num.push(out);
-          return '<num></num>';
-        });
-        // continuation section inside a string "(...)"
-        els.order.push('cont1'); els.cont1 = [];
-        innerHTML = innerHTML.replace(/('|")([<\/em>\s]*?^\s*\([\s\S]*?^\s*\).*?)\1/gm, function(_, QUOTE, SECTION) {
-          out = wrap(SECTION, 'str', false);
-          els.cont1.push(out);
-          return QUOTE + '<cont1></cont1>' + QUOTE;
-        });
-        // continuation section for hotstrings ::(...)
-        els.order.push('cont2'); els.cont2 = [];
-        innerHTML = innerHTML.replace(/(^\s*:.*?:.*?::)([<\/em>\s]*?^\s*\([\s\S]*?^\s*\).*?)/gm, function(_, PRE, SECTION) {
-          out = wrap(SECTION, 'str', false);
-          els.cont2.push(out);
-          return PRE + '<cont2></cont2>';
-        });
-        // strings:
-        els.order.push('str'); els.str = [];
-        innerHTML = innerHTML.replace(/(("|')[\s\S]*?\2)/gm, function(_, STRING) {
-          out = wrap(STRING, 'str', false);
-          els.str.push(out);
-          return '<str></str>';
-        });
-        // methods:
-        els.order.push('met'); els.met = [];
-        innerHTML = innerHTML.replace(/(\.)([^~`!@#$%^&*(){}\[\];:"'<,.>?\/\\|+=\-\s]+?)(?=\()/g, function(_, PRE, METHOD) {
-          out = PRE + wrap(METHOD, 'met', false);
-          els.met.push(out);
-          return '<met></met>';
-        });
-        // properties:
-        els.order.push('prp'); els.prp = [];
-        innerHTML = innerHTML.replace(/\.([^~`!@#$%^&*(){}\[\];:"'<,.>?\/\\|+=\-\s]+?)\b/g, function(_, PROPERTY) {
-          out = '.' + wrap(PROPERTY, 'prp', false);
-          els.prp.push(out);
-          return '<prp></prp>';
-        });
-        // declarations:
-        els.order.push('dec'); els.dec = [];
-        innerHTML = innerHTML.replace(new RegExp('(^\\s*)((' + syntax[5][0].join('|') + ') (\\S+) (' + syntax[5][1].join('|') + ') (\\S+)|(?:' + syntax[5].single.join('|') + ')\\b)', 'gim'), function(_, PRE, DEC, CLASS, INPUT1, EXTENDS, INPUT2) {
-          if (CLASS) {
-            var dec = cache.index_data[dict[(CLASS + ' ... ' + EXTENDS).toLowerCase()]];
-            if (dec)
-              out = PRE + wrap(CLASS, 'dec', dec[1]) + ' ' + INPUT1 + ' ' + wrap(EXTENDS, 'dec', dec[1]) + ' ' + INPUT2;
-            else
-              out = m;
-          }
-          else
-            out = PRE + wrap(DEC, 'dec', true);
-          els.dec.push(out);
-          return '<dec></dec>';
-        });
-        // ByRef:
-        els.order.push('byref'); els.byref = [];
-        innerHTML = innerHTML.replace(/(.+?)\b(byref)\b(?=(.+?)\))/gim, function(_, PRE, BYREF) {
-          out = PRE + wrap(BYREF, 'cfs', 'Functions.htm#ByRef');
-          els.byref.push(out);
-          return '<byref></byref>';
-        });
-        // built-in vars:
-        els.order.push('biv'); els.biv = [];
-        innerHTML = innerHTML.replace(new RegExp('\\b(' + syntax[1].single.join('|') + ')\\b', 'gi'), function(_, BIV) {
-          out = wrap(BIV, 'biv', true);
-          els.biv.push(out);
-          return '<biv></biv>';
-        });
-        // directives:
-        els.order.push('dir'); els.dir = [];
-        innerHTML = innerHTML.replace(new RegExp('(' + syntax[0].single.join('|') + ')\\b($|[\\s,])(.*?)(?=<(?:em|sct)></(?:em|sct)>|$)', 'gim'), function(_, DIR, SEP, PARAMS) {
-          // Get type of every parameter:
-          var types = cache.index_data[dict[DIR.toLowerCase()]][3];
+      // Store pre content into a variable to improve performance:
+      var innerHTML = pre.innerHTML;
+      // comments:
+      els.order.push('sct'); els.sct = [];
+      innerHTML = innerHTML.replace(/(\s|^)(;.*?)$/gm, function(_, PRE, COMMENT) {
+        out = wrap(COMMENT, 'cmt', null);
+        els.sct.push(out);
+        return PRE + '<sct></sct>';
+      });
+      els.order.push('mct'); els.mct = [];
+      innerHTML = innerHTML.replace(/(^\s*\/\*[\s\S]*?^\s*(\*\/|$(?![\r\n])))/gm, function(COMMENT) {
+        out = wrap(COMMENT, 'cmt', null);
+        els.mct.push(out);
+        return '<mct></mct>';
+      });
+      // escape sequences:
+      els.order.push('esc'); els.esc = [];
+      innerHTML = innerHTML.replace(/`./gm, function(SEQUENCE) {
+        out = wrap(SEQUENCE, 'esc', null);
+        els.esc.push(out);
+        return '<esc></esc>';
+      });
+      // function definitions:
+      els.order.push('fun'); els.fun = [];
+      innerHTML = innerHTML.replace(/^(\s*?)(\S*?)(?=\(.*?\)\s*(<(em|sct)><\/(em|sct)>\s*)*{)/mg, function(ASIS, PRE, DEFINITION) {
+        if (DEFINITION.match(/^(while|if)$/i))
+          return ASIS;
+        out = PRE + wrap(DEFINITION, 'fun', null);
+        els.fun.push(out);
+        return '<fun></fun>';
+      });
+      // numeric values:
+      els.order.push('num'); els.num = [];
+      innerHTML = innerHTML.replace(/\b((0(x|X)[0-9a-fA-F]*)|(([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)\b/gm, function(_, NUMBER) {
+        out = wrap(NUMBER, 'num', null);
+        els.num.push(out);
+        return '<num></num>';
+      });
+      // continuation section inside a string "(...)"
+      els.order.push('cont1'); els.cont1 = [];
+      innerHTML = innerHTML.replace(/('|")([<\/em>\s]*?^\s*\([\s\S]*?^\s*\).*?)\1/gm, function(_, QUOTE, SECTION) {
+        out = processStrParam(SECTION);
+        els.cont1.push(out);
+        return QUOTE + '<cont1></cont1>' + QUOTE;
+      });
+      // continuation section for hotstrings ::(...)
+      els.order.push('cont2'); els.cont2 = [];
+      innerHTML = innerHTML.replace(/(^\s*:.*?:.*?::)([<\/em>\s]*?^\s*\([\s\S]*?^\s*\).*?)/gm, function(_, PRE, SECTION) {
+        out = processStrParam(SECTION);
+        els.cont2.push(out);
+        return PRE + '<cont2></cont2>';
+      });
+      // built-in vars:
+      els.order.push('biv'); els.biv = [];
+      innerHTML = innerHTML.replace(new RegExp('\\b(' + syntax[1].single.join('|') + ')\\b', 'gi'), function(_, BIV) {
+        out = wrap(BIV, 'biv', 1);
+        els.biv.push(out);
+        return '<biv></biv>';
+      });
+      // strings:
+      els.order.push('str'); els.str = [];
+      innerHTML = innerHTML.replace(/(("|')[\s\S]*?\2)/gm, function(_, STRING) {
+        out = wrap(STRING, 'str', null);
+        index = els.str.push(out) - 1;
+        return '<str ' + index + '></str>';
+      });
+      // methods:
+      els.order.push('met'); els.met = [];
+      innerHTML = innerHTML.replace(/(\.)([^~`!@#$%^&*(){}\[\];:"'<,.>?\/\\|+=\-\s]+?)(?=\()/g, function(_, PRE, METHOD) {
+        out = PRE + wrap(METHOD, 'met', null);
+        els.met.push(out);
+        return '<met></met>';
+      });
+      // properties:
+      els.order.push('prp'); els.prp = [];
+      innerHTML = innerHTML.replace(/\.([^~`!@#$%^&*(){}\[\];:"'<,.>?\/\\|+=\-\s]+?)\b/g, function(_, PROPERTY) {
+        out = '.' + wrap(PROPERTY, 'prp', null);
+        els.prp.push(out);
+        return '<prp></prp>';
+      });
+      // declaration: class ... extends
+      els.order.push('dec_cls'); els.dec_cls = [];
+      innerHTML = innerHTML.replace(/(^\s*)(class)(\s+\S+\s+)(extends)\b/gim, function(_, PRE, CLASS, INPUT, EXTENDS) {
+        var link = cache.index_data[syntax[5].dict['class']][1];
+        els.dec_cls.push(wrap(CLASS, 'dec', link));
+        els.dec_cls.push(wrap(EXTENDS, 'dec', link));
+        return PRE + '<dec_cls></dec_cls>' + INPUT + '<dec_cls></dec_cls>';
+      });
+      // declarations:
+      els.order.push('dec'); els.dec = [];
+      innerHTML = innerHTML.replace(new RegExp('(^\\s*)(' + syntax[5].single.join('|') + ')\\b(?=\\s|$)', 'gim'), function(_, PRE, DEC) {
+          out = PRE + wrap(DEC, 'dec', 5);
+        els.dec.push(out);
+        return '<dec></dec>';
+      });
+      // directives:
+      els.order.push('dir'); els.dir = [];
+      innerHTML = innerHTML.replace(new RegExp('(' + syntax[0].single.join('|') + ')\\b($|[\\s,])(.*?)(?=<(?:em|sct)></(?:em|sct)>|$)', 'gim'), function(_, DIR, SEP, PARAMS) {
+        // Get type of every parameter:
+        var types = cache.index_data[syntax[0].dict[DIR.toLowerCase()]][3];
         // Skip param processing if first param is an expression:
         if (types[0] == 'E')
         {
-          out = wrap(DIR, 'dir', true);
+          out = wrap(DIR, 'dir', 0);
           els.dir.push(out);
           return '<dir></dir>' + SEP + PARAMS;
         }
-          // Temporary exclude (...), {...} and [...]:
-          sub = [];
-          PARAMS = PARAMS.replace(/[({\[].*[\]})]/g, function(c) {
-            sub.push(c);
-            return '<sub></sub>';
-          });
-          // Split params:
-          PARAMS = PARAMS.split(',');
-          // Detect smart comma handling:
-          if (PARAMS.length > types.length) // For the last param of any directive.
-            PARAMS.push(PARAMS.splice(types.length - 1).join(','));
-          // Iterate params and recompose them:
-          for (n in PARAMS) {
-            if (PARAMS[n].match(/^\s*%\s/)) // Skip forced expression parameter:
-              continue;
-            if (types[n] == 'S') // string
-              PARAMS[n] = PARAMS[n].match(/^\s*<num><\/num>\s*$/) ? PARAMS[n] : wrap(PARAMS[n], 'str', false);
-          }
-          PARAMS = PARAMS.join(',');
+        // Temporary exclude (...), {...} and [...]:
+        sub = [];
+        PARAMS = PARAMS.replace(/[({\[][^({\[]*[\]})]/g, function(c) {
+          index = sub.push(c) - 1;
+          return '<sub ' + index + '></sub>';
+        });
+        // Split params:
+        PARAMS = PARAMS.split(',');
+        // Detect smart comma handling:
+        if (PARAMS.length > types.length) // For the last param of any directive.
+          PARAMS.push(PARAMS.splice(types.length - 1).join(','));
+        // Iterate params and recompose them:
+        for (n in PARAMS) {
           // Restore (...), {...} and [...] previously excluded:
-          for (n in sub) {
-            PARAMS = PARAMS.replace('<sub></sub>', sub[n])
+          PARAMS[n] = PARAMS[n].replace(/<sub (\d+)><\/sub>/g, function(_, index) {
+            return sub[index];
+          });
+          if (PARAMS[n].match(/^\s*%\s/)) // Skip forced expression parameter:
+            continue;
+          if (types[n] == 'S') // string
+            PARAMS[n] = processStrParam(PARAMS[n]);
+        }
+        PARAMS = PARAMS.join(',');
+        out = wrap(DIR, 'dir', 0) + SEP + PARAMS;
+        els.dir.push(out);
+        return '<dir></dir>';
+      });
+      // built-in functions:
+      els.order.push('bif'); els.bif = [];
+      innerHTML = innerHTML.replace(new RegExp('\\b(' + syntax[2].single.join('|') + ')\\b(?=$|\\(|\\s(?!\\s*' + assignOp + '))', 'gi'), function(_, BIF) {
+        out = wrap(BIF, 'bif', 2);
+        els.bif.push(out);
+        return '<bif></bif>';
+      });
+      // built-in classes:
+      els.order.push('cls'); els.cls = [];
+      innerHTML = innerHTML.replace(new RegExp('\\b(' + syntax[6].single.join('|') + ')\\b', 'gi'), function(_, CLS) {
+        out = wrap(CLS, 'cls', 6);
+        els.cls.push(out);
+        return '<cls></cls>';
+      });
+      // control flow statements:
+      els.order.push('cfs'); els.cfs = [];
+      innerHTML = innerHTML.replace(new RegExp('\\b(' + syntax[3][0].join('|') + ')(\\s+(?:\\S+|\\S*(?:\\s*,\\s*\\S*)*)\\s+|\\s+)(' + syntax[3][1].join('|') + ')(\\s+.+?)(?=<(?:em|sct)></(?:em|sct)>|$|{)|\\b(' + syntax[3].single.join('|') + ')\\b($|,|{|(?=\\()|\\s(?!\\s*' + assignOp + '))(.*?)(?=<(?:em|sct)></(?:em|sct)>|$|{|\\b(' + syntax[3].single.join('|') + ')\\b)', 'gim'), function(ASIS, IF, INPUT, BETWEEN, VAL, CFS, SEP, PARAMS) {
+        if (IF) {
+          if (INPUT) {
+            var cfs = cache.index_data[syntax[3].dict[(IF + ' ... ' + BETWEEN).toLowerCase()]];
+            if (cfs)
+              out = wrap(IF, 'cfs', cfs[1]) + INPUT + wrap(BETWEEN, 'cfs', cfs[1]) + ((cfs[3][1] == "S") ? processStrParam(VAL) : VAL);
+            else
+              out = ASIS;
           }
-          out = wrap(DIR, 'dir', true) + SEP + PARAMS;
-          els.dir.push(out);
-          return '<dir></dir>';
-        });
-        // built-in functions:
-        els.order.push('bif'); els.bif = [];
-        innerHTML = innerHTML.replace(new RegExp('\\b(' + syntax[2].single.join('|') + ')\\b(?=$|\\(|\\s(?!\\s*' + assignOp + '))', 'gi'), function(_, BIF) {
-          out = wrap(BIF, 'bif', true);
-          els.bif.push(out);
-          return '<bif></bif>';
-        });
-        // control flow statements:
-        els.order.push('cfs'); els.cfs = [];
-        innerHTML = innerHTML.replace(new RegExp('\\b(' + syntax[3][0].join('|') + ') (\\S+|\\S+, \\S+) (' + syntax[3][1].join('|') + ') (.+?)(?=<(?:em|sct)></(?:em|sct)>|$|{)|\\b(' + syntax[3].single.join('|') + ')\\b($|,|{|(?=\\()|\\s(?!\\s*' + assignOp + '))(.*?)(?=<(?:em|sct)></(?:em|sct)>|$|{|\\b(' + syntax[3].single.join('|') + ')\\b)', 'gim'), function(ASIS, IF, INPUT, BETWEEN, VAL, CFS, SEP, PARAMS) {
-          if (IF) {
-            if (INPUT) {
-              var cfs = cache.index_data[dict[(IF + ' ... ' + BETWEEN).toLowerCase()]];
-              if (cfs)
-                out = wrap(IF, 'cfs', cfs[1]) + ' ' + INPUT + ' ' + wrap(BETWEEN, 'cfs', cfs[1]) + ' ' + ((cfs[3][1] == "S") ? (VAL.match(/^\s*<num><\/num>\s*$/) ? VAL : wrap(VAL, 'str', false)) : VAL);
-              else
-                out = ASIS;
-            }
-          }
-          else {
-            var cfs = CFS.toLowerCase();
+        }
+        else {
+          var cfs = CFS.toLowerCase();
           // Skip param processing if the statement uses parentheses:
-          if (SEP == '(') {
-            out = wrap(CFS, 'cfs', true);
+          if (PARAMS.charAt(0) == '(') {
+            out = wrap(CFS, 'cfs', 3);
             els.cfs.push(out);
             return '<cfs></cfs>' + SEP + PARAMS;
           }
           // Get type of every parameter:
-          var types = cache.index_data[dict[cfs]][3];
-            // Temporary exclude (...), {...} and [...]:
-            sub = [];
-            PARAMS = PARAMS.replace(/[({\[].*[\]})]/g, function(c) {
-              sub.push(c);
-              return '<sub></sub>'
-            });
-            // Split params:
-            PARAMS = PARAMS.split(',');
-            // Iterate params and recompose them:
-            for (n in PARAMS) {
-              if (PARAMS[n].match(/^\s*%\s/)) // Skip forced expression parameter:
-                continue;
-              if (types[n] == 'S') // string
-                PARAMS[n] = PARAMS[n].match(/^\s*<num><\/num>\s*$/) ? PARAMS[n] : wrap(PARAMS[n], 'str', false);
-            }
-            PARAMS = PARAMS.join(',');
-            // Restore (...), {...} and [...] previously excluded:
-            for (n in sub) {
-              PARAMS = PARAMS.replace('<sub></sub>', sub[n])
-            }
-            out = wrap(CFS, 'cfs', true) + SEP + PARAMS;
-          }
-          els.cfs.push(out);
-          return '<cfs></cfs>';
-        });
-        // hotstrings:
-        els.order.push('hotstr'); els.hotstr = [];
-        innerHTML = innerHTML.replace(/^(\s*)(:.*?:)(.*?)(::)(.*)/mg, function(_, PRE, HOTSTR1, ABBR, HOTSTR2, REPL) {
-          out = PRE + wrap(HOTSTR1, 'lab', false) + wrap(ABBR, 'str', false) + wrap(HOTSTR2, 'lab', false) + (HOTSTR1.match(/x/i) ? REPL : wrap(REPL, 'str', false));
-          els.hotstr.push(out);
-          return '<hotstr></hotstr>';
-        });
-        // hotkeys:
-        els.order.push('hotkey'); els.hotkey = [];
-        innerHTML = innerHTML.replace(/^(\s*)((([#!^+*~$]|&lt;|&gt;)*(\S+)( up)?|~?(\S+) &amp; ~?(\S+)( up)?)::)/gim, function(_, PRE, HOTKEY) {
-          out = PRE + wrap(HOTKEY, 'lab', false);
-          els.hotkey.push(out);
-          return '<hotkey></hotkey>';
-        });
-        // labels:
-        els.order.push('lab'); els.lab = [];
-        innerHTML = innerHTML.replace(/^(\s*)([^\s{(]+?:)(?=\s|$)/mg, function(_, PRE, LABEL) {
-          out = PRE + wrap(LABEL, 'lab', false);
-          els.lab.push(out);
-          return '<lab></lab>';
-        });
-        // Release changes:
-        pre.innerHTML = innerHTML;
-        // Restore elements:
-        for (var k = els.order.length - 1; k >= 0; k--) {
-          $(pre).find(els.order[k]).each(function(index) {
-            this.outerHTML = els[els.order[k]][index];
+          var types = cache.index_data[syntax[3].dict[cfs]][3];
+          // Temporary exclude (...), {...} and [...]:
+          sub = [];
+          PARAMS = PARAMS.replace(/[({\[][^({\[]*[\]})]/g, function(c) {
+            index = sub.push(c) - 1;
+            return '<sub ' + index + '></sub>';
           });
+          // Split params:
+          PARAMS = PARAMS.split(',');
+          // Iterate params and recompose them:
+          for (n in PARAMS) {
+            // Restore (...), {...} and [...] previously excluded:
+            PARAMS[n] = PARAMS[n].replace(/<sub (\d+)><\/sub>/g, function(_, index) {
+              return sub[index];
+            });
+            if (PARAMS[n].match(/^\s*%\s/)) // Skip forced expression parameter:
+              continue;
+            if (types[n] == 'S') // string
+              PARAMS[n] = processStrParam(PARAMS[n]);
+          }
+          PARAMS = PARAMS.join(',');
+          out = wrap(CFS, 'cfs', 3) + SEP + PARAMS;
         }
-      }
-      function wrap(match, type, isLink) {
-        var span = document.createElement('span');
-        span.className = type;
-        if (isLink) {
-          var a = document.createElement('a');
-          if (isLink == true)
-            a.href = scriptDir + '/../' + cache.index_data[dict[match.toLowerCase()]][1];
+        els.cfs.push(out);
+        return '<cfs></cfs>';
+      });
+      // hotstrings:
+      els.order.push('hotstr'); els.hotstr = [];
+      innerHTML = innerHTML.replace(/^(\s*)(:.*?:)(.*?)(::)(.*)/mg, function(_, PRE, HOTSTR1, ABBR, HOTSTR2, REPL) {
+        out = PRE + wrap(HOTSTR1, 'lab', null) + wrap(ABBR, 'str', null) + wrap(HOTSTR2, 'lab', null) + (HOTSTR1.match(/x/i) ? REPL : wrap(REPL, 'str', null));
+        els.hotstr.push(out);
+        return '<hotstr></hotstr>';
+      });
+      // hotkeys:
+      els.order.push('hotkey'); els.hotkey = [];
+      innerHTML = innerHTML.replace(/^(\s*)((([#!^+*~$]|&lt;|&gt;)*(\S+)( up)?|~?(\S+) &amp; ~?(\S+)( up)?)::)/gim, function(_, PRE, HOTKEY) {
+        out = PRE + wrap(HOTKEY, 'lab', null);
+        els.hotkey.push(out);
+        return '<hotkey></hotkey>';
+      });
+      // labels:
+      els.order.push('lab'); els.lab = [];
+      innerHTML = innerHTML.replace(/^(\s*)([^\s{(]+?:)(?=\s*(<(em|sct)><\/(em|sct)>|$))/mg, function(_, PRE, LABEL) {
+        out = PRE + wrap(LABEL, 'lab', null);
+        els.lab.push(out);
+        return '<lab></lab>';
+      });
+      // Release changes:
+      pre.innerHTML = innerHTML;
+      // Restore elements:
+      for (var k = els.order.length - 1; k >= 0; k--) {
+        $(pre).find(els.order[k]).each(function(index) {
+          if (this.attributes[0])
+            this.outerHTML = els[els.order[k]][this.attributes[0].name];
           else
-            a.href = scriptDir + '/../' + isLink;
-          a.innerHTML = match;
-          span.appendChild(a);
-        } else
-          span.innerHTML = match;
-        return span.outerHTML;
+            this.outerHTML = els[els.order[k]][index];
+        });
       }
     }
-  }
+    function wrap(match, className, TypeOrLink) {
+      var span = document.createElement('span');
+      span.className = className;
+      if (TypeOrLink != null) {
+        var a = document.createElement('a');
+        if (typeof TypeOrLink == 'number')
+          a.href = scriptDir + '/../' + cache.index_data[syntax[TypeOrLink].dict[match.toLowerCase()]][1];
+        else
+          a.href = scriptDir + '/../' + TypeOrLink;
+        a.innerHTML = match;
+        span.appendChild(a);
+      } else
+        span.innerHTML = match;
+      return span.outerHTML;
+    }
+    function processStrParam(param) {
+      if (param.match(/^\s*(\+|-|\^)?\s*<num><\/num>\s*$/)) // skip number
+        return param;
+      param = param.replace(/<str (\d+)><\/str>/g, function(_, index) { // resolve substring
+        return els.str[index];
+      });
+      // handle %...%:
+      var out = '', lastIndex = 0;
+      var re = /%[^,\s]+?%/g;
+      while (m = re.exec(param)) {
+        out += wrap(param.slice(lastIndex, m.index), 'str', null) + m[0];
+        lastIndex = re.lastIndex;
+      }
+      out += wrap(param.slice(lastIndex), 'str', null);
+      return out;
+    }
+  };
 
   // --- Add footer at the bottom of the site ---
 
-  function addFooter() {
+  self.addFooter = function() {
     var div = document.createElement('div');
     div.className = 'footer';
-    div.innerHTML = 'Copyright &copy; 2003-' + new Date().getFullYear() + ' ' + location.host + ' - LIC: <a href="' + scriptDir + '/../license.htm">GNU GPLv2</a>';
-    content.appendChild(div);
-  }
+    div.innerHTML = 'Copyright &copy; 2003-' + new Date().getFullYear() + ' ' + location.host + ' - LIC: <a href="' + scriptDir + '/../license.htm" class="no-ext">GNU GPLv2</a>';
+    self.content.appendChild(div);
+  };
 
   // --- Add back-to-top button ---
 
-  function addBackButton() {
+  self.addBackButton = function() {
     var div = document.createElement('div');
     div.className = 'back-to-top';
     div.title = T('Back to top');
-    content.appendChild(div);
+    self.content.appendChild(div);
 
     var isVisible = false;
     $('#right').add(window).on('scroll', function() {
@@ -1881,21 +2100,22 @@ function addFeatures()
     $('div.back-to-top').on('click', function() {
       $(document.body).add(document.documentElement).add('#right').animate({scrollTop: 0}, 100);
     });
-  }
+  };
 
   // --- Ensure setting right scroll position when traversing history ---
 
-  function scrollToPos() {
+  self.scrollToPos = function() {
     if (supportsHistory && history.state)
       document.getElementById('right').scrollTop = history.state.scrollTop;
-  }
+  };
 
   // --- Highlight search words with jQuery Highlight plugin ---
 
-  function highlightWords() {
+  self.highlightWords = function() {
     if (cache.search_highlightWords && cache.clickTab == 2)
       search.highlightWords(cache.search_input);
-  }
+  };
+
 }
 
 // --- Get the working directory of the site ---
@@ -1920,13 +2140,6 @@ function isScrolledIntoView(el, container)
   viewport.bottom = container.height() + container.offset().top;
   return ((container.offset().top < bounds.top) && (viewport.bottom > bounds.bottom));
 }
-
-// --- Apply a string method similar to printf ---
-
-String.prototype.format = function() {
-  var args = arguments;
-  return this.replace(/\{(\d+)\}/g, function(m, n) { return args[n]; });
-};
 
 // --- Load scripts dynamically ---
 
@@ -1953,10 +2166,23 @@ function loadScript(url, callback) {
     document.getElementsByTagName("head")[0].appendChild(script);
 }
 
+// --- Retrieve data if not already done ---
+
+function retrieveData(path, propName, varName, callback) {
+  if (!cache[propName]) {
+    loadScript(path, function() {
+      cache.set(propName, window[varName]);
+      callback();
+    });
+    return false;
+  }
+  return true;
+}
+
 // --- Use a translation for the given string if available ---
 
 function T(original) {
-  translation = cache.translate[original];
+  translation = cache.translate_data[original];
   if (translation == true) { translation = original; }
   return translation;
 }
@@ -2000,7 +2226,7 @@ function overwriteProps(a, b) {
 // Prevent event delegation on IE8/Edge to bypass performance issues
 // but results in longer initial load time for these browsers:
 function registerEvent(el, events, children, func) {
-  if (isIE8 || isEdge)
+  if (children && (isIE8 || isEdge))
   {
     var ElChildren = el.find(children);
     ElChildren.off(events);
@@ -2056,7 +2282,8 @@ padding:"inner"+a,content:b,"":"outer"+a},function(c,d){n.fn[d]=function(d,e){va
   };
 }
 
-function loadIE8Polyfill() {
+function addPrototypeMethods() {
+  // IE8 polyfill
   if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function(searchElement, fromIndex) {
       // Use string search instead of looping the array to avoid long-running-script warning:
@@ -2067,6 +2294,12 @@ function loadIE8Polyfill() {
         return -1;
     };
   }
+  // Apply a string method similar to printf
+  String.prototype.format = function()
+  {
+    var args = arguments;
+    return this.replace(/\{(\d+)\}/g, function(m, n) {return args[n];});
+  };
 }
 
 function CaoNiMaDeUc(){

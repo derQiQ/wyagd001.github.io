@@ -16,7 +16,7 @@
 <p>根据格式字串的定义, 将若干个输入值格式化为指定格式.</p>
 
 <pre class="Syntax">String := <span class="func">Format</span>(FormatStr <span class="optional">, Values...</span>)</pre>
-<h2>参数</h2>
+<h2 id="Parameters">参数</h2>
 <dl>
 
   <dt>FormatStr</dt>
@@ -42,7 +42,7 @@ MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
 <h2 id="FormatSpec">Format Specifiers(格式说明符)</h2>
 <p>每个格式说明符可按序包含如下几组类型(不含空格):</p>
 <pre class="Syntax">Flags Width .Precision ULT Type</pre>
-<p><a href="#Flags"><strong>Flags</strong></a> 决定输出字符的对齐方式和前缀: <code>-</code> <code>+</code> <code class="no-highlight">0</code> <code>&nbsp;</code> <code>#</code></p>
+<p><strong>Flags</strong></a> : 从下面的<a href="#Flags">标志表</a>选择零个或多个标志来影响输出的对齐和前缀.</p>
 <p><strong>Width</strong>: 整数. 控制格式化后的值的最小宽度. 对于字符, 默认的是右对齐并以空格填充, 可使用 <code>-</code>(左对齐) 和 <code class="no-highlight">0</code>(前缀 0) 等标志加以改变</p>
 <p><strong>.Precision</strong>: 整数. 控制字符串, 整数位数或有效数字的最大位数; 输出结果由所定义的输出类型决定, 输出类型(Type) 的最前面必须是小数点, 指定精度会改变输出值进行截断(四舍五入) 或补全的方式. 输出类型以及每种类型如何受到精度值的影响如下(参见下表, 以了解不同输出类型的解释):</p>
 <ul>
@@ -52,10 +52,11 @@ MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
   <li>对于整数型(<code>d</code>, <code>i</code>, <code>u</code>, <code>x</code>, <code>X</code>, <code>o</code>), <em>精度</em> 的作用类似于带前导 <code class="no-highlight">0</code> 的 <em>Width</em>, 默认宽度是 1.</li>
 </ul>
 <p id="ULT"><b>ULT</b> <span class="ver">[v1.1.20+]</span>: 为字串值指定一个形式转换 -- <b>U</b>pper, <b>L</b>ower 或 <b>T</b>itle(大写, 小写, 首字母大写(标题)), ULT 仅适用 <code>s</code> 类型, 例如 <code>{:U}</code> 或 <code>{:.20Ts}</code>, L T 也可以写成小写的 <code>l</code> <code>t</code>, 但小写的 <code>u</code>, 则是为无符号整数保留的.</p>
-<p><a href="#Types"><strong>Type</strong></a>: 一个指示输入值将被如何解析的字符, 如果省略则默认是 <code>s</code>.</p>
+<p><strong>Type</strong></a>: 下面<a href="#Types">类型表格</a>中一个指示输入值将被如何解析的字符, 如果省略则默认是 <code>s</code>.</p>
 
-<table class="info" id="Flags">
-  <tr><th>标志</th><th>含义</th></tr>
+<h2 id="Flags">Flags</h2>
+<table class="info">
+  <tr><th style="min-width:5em">标志</th><th>含义</th></tr>
   <tr>
     <td><code>-</code></td>
     <td>
@@ -80,7 +81,7 @@ MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
   <tr>
     <td><code>&nbsp;</code>(空格)</td>
     <td>
-      <p>当输出值是有符号数且为正数时, 以空格为前缀来修饰. 如果空格 <code>&nbsp;</code> 和 <code>+</code> 同时出现时, 空格将被忽略. 例如, <code>Format("{:&nbsp;10}", 1)</code> 返回 <code class="no-highlight" style="white-space: pre">         1</code>.</p>
+      <p>当输出值是有符号数且为正数时, 以 <em>单个</em> 空格为前缀来修饰. 如果空格 <code>&nbsp;</code> 和 <code>+</code> 同时出现时, 空格将被忽略. 例如, <code>Format("{:&nbsp;05d}", 1)</code> 返回 <code class="no-highlight" style="white-space: pre"> 0001</code>.</p>
       <p>如果省略, 无空格.</p>
     </td>
   </tr>
@@ -94,8 +95,9 @@ MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
     </td>
   </tr>
 </table>
-<table class="info" id="Types">
-  <tr><th style="min-width:5em">类型字符</th><th style="min-width:7em">参数类型</th><th>输出格式</th></tr>
+<h2 id="Types">Types</h2>
+<table class="info">
+  <tr><th abbr="Type Char" style="min-width:5em">类型字符</th><th style="min-width:7em">参数类型</th><th abbr="Out format">输出格式</th></tr>
   <tr>
     <td><code>d</code> 或 <code>i</code></td>
     <td>整数型</td>
@@ -168,15 +170,15 @@ MsgBox % Format("{2:x}{1:02x}", arr*)</pre>
   </tr>
 </table>
 
-<h2>备注</h2>
+<h2 id="Remarks">备注</h2>
 <p>不同于 <a href="httpS://docs.microsoft.com/en-us/cpp/c-runtime-library/format-specification-syntax-printf-and-wprintf-functions">printf</a>, Format() 不支持大小指示. 所有的整数型和浮点型输入值都是 64-bit(64 位). </p>
 
-<h2>相关</h2>
+<h2 id="Related">相关</h2>
 <p><a href="SetFormat.htm">SetFormat</a>, <a href="FormatTime.htm">FormatTime</a></p>
 
-<h2>示例</h2>
+<h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a> 演示不同的用法.</p>
 <pre>
 <em>; 简单替换</em>
 s .= Format("{2}, {1}!`r`n", "World", "Hello")

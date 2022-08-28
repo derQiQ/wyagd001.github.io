@@ -56,39 +56,40 @@
 <h2 id="Examples">示例</h2>
 
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a>: 启动记事本, 将其优先级设置为 "High" 并显示其当前的 PID:</p>
-<pre>Run "notepad.exe", , , NewPID
+<p><a class="ex_number" href="#ExBasic"></a> 启动记事本, 将其优先级设置为 "High" 并显示其当前的 PID.</p>
+<pre>Run "notepad.exe", , , &amp;NewPID
 ProcessSetPriority "High", NewPID
 MsgBox "The newly launched Notepad's PID is " NewPID</pre>
 </div>
 
-<h3 id="ex2">示例 #2</h3>
-<p><a href="#ExHotkey">#2</a>: 一个改变活动窗口进程优先级的热键:</p>
+<div class="ex" id="ExHotkey">
+<p><a class="ex_number" href="#ExHotkey"></a> 按下热键改变活动窗口进程优先级.</p>
 <pre>#z:: <em>; Win+Z 热键</em>
-Gui := GuiCreate(, "Set Priority")
-Gui.Add("Text",, "
-(
-    Press Escape to cancel, or double-click a new
-    priority level for the following window:
-)")
-Gui.Add("Text", "wp", WinGetTitle("A"))
-LB := Gui.Add("ListBox", "r5 vLB", "Normal||High|Low|BelowNormal|AboveNormal")
-SetPriority := Func("SetPriority").bind(WinGetPID("A"))
-LB.OnEvent("DoubleClick", SetPriority)
-Gui.Add("Button", "default", "OK").OnEvent("Click", SetPriority)
-Gui.OnEvent("Escape", (*) =&gt; Gui.Destroy())
-Gui.OnEvent("Close", (*) =&gt; Gui.Destroy())
-Gui.Show()
-return
-
-SetPriority(PID, this, *)
 {
-    LB := this.Gui["LB"]
-    if ProcessSetPriority(LB.Text, PID)
-        MsgBox "Success: Its priority was changed to '" LB.Text "'."
-    else
-        MsgBox "Error: Its priority could not be changed to '" LB.Text "'."
-    WinClose()
+    active_pid := WinGetPID("A")
+    active_title := WinGetTitle("A")
+    MyGui := Gui(, "Set Priority")
+    MyGui.Add("Text",, "
+    (
+        Press Escape to cancel, or double-click a new
+        priority level for the following window:
+    )")
+    MyGui.Add("Text", "wp", active_title)
+    LB := MyGui.Add("ListBox", "r5 Choose1", ["Normal","High","Low","BelowNormal","AboveNormal"])
+    LB.OnEvent("DoubleClick", SetPriority)
+    MyGui.Add("Button", "default", "OK").OnEvent("Click", SetPriority)
+    MyGui.OnEvent("Escape", (*) =&gt; MyGui.Destroy())
+    MyGui.OnEvent("Close", (*) =&gt; MyGui.Destroy())
+    MyGui.Show()
+
+    SetPriority(*)
+    {
+        MyGui.Destroy()
+        if ProcessSetPriority(LB.Text, active_pid)
+            MsgBox "Success: Its priority was changed to '" LB.Text "'."
+        else
+            MsgBox "Error: Its priority could not be changed to '" LB.Text "'."
+    }
 }</pre>
 </div>
 

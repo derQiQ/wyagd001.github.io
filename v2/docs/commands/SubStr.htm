@@ -28,7 +28,7 @@
   <dt>StartingPos</dt>
   <dd>
     <p>类型: <a href="../Concepts.htm#numbers">整数</a></p>
-    <p>指定 1 从首个字符开始, 2 从第二个开始, 依此类推(如果  <em>StartingPos</em> 为 0 或 超过了 <em>String</em> 的长度, 则返回空字符串).</p>
+    <p>指定 1 从首个字符开始, 2 从第二个开始, 依此类推(如果  <em>StartingPos</em> 为 0 或超过了 <em>String</em> 的长度, 则返回空字符串).</p>
     <p>指定一个负的 <em>StartingPos</em> 以从右边的那个位置开始. 例如, -1 提取最后一个字符, 而 -2 提取最后两个字符(但是, 如果 <em>StartingPos</em> 试图超出字符串的左端, 提取将从第一个字符开始).</p>
   </dd>
 
@@ -49,15 +49,15 @@
 
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a> 在第 4 的位置检索一个长度为 3 个字符的子串.</p>
 <pre>MsgBox SubStr("123abc789", 4, 3) <em>; 返回 abc</em></pre>
 </div>
 
-<div class="ex" id="ExEnd">
-<p><a href="#ExEnd">#2</a></p>
-<pre>String := "The Quick Brown Fox Jumps Over the Lazy Dog"
-MsgBox SubStr(String, 1, 19)  <em>; 返回 "The Quick Brown Fox"</em>
-MsgBox SubStr(String, -8)  <em>; 返回 "Lazy Dog"</em>
+<div class="ex" id="ExStartEnd">
+<p><a class="ex_number" href="#ExStartEnd"></a> 分别从一个字符串的开头和结尾处开始检索一个子串.</p>
+<pre>Str := "The Quick Brown Fox Jumps Over the Lazy Dog"
+MsgBox SubStr(Str, 1, 19)  <em>; 返回 "The Quick Brown Fox"</em>
+MsgBox SubStr(Str, -8)  <em>; 返回 "Lazy Dog"</em>
 </pre>
 </div>
 

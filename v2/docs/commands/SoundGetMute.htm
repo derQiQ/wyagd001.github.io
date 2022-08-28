@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <title>SoundGetMute - 语法 &amp; 使用 | AutoHotkey v2</title>
-<meta name="description" content="The SoundGetMute function retrieves a mute setting from a sound device." />
+<meta name="description" content="The SoundGetMute function retrieves a mute setting of a sound device." />
 <meta name="ahk:equiv-v1" content="commands/SoundGet.htm" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -14,7 +14,7 @@
 
 <h1>SoundGetMute</h1>
 
-<p>从声音设备检索静音设置.</p>
+<p>检索声音设备的静音设置.</p>
 
 <pre class="Syntax">Setting := <span class="func">SoundGetMute</span>(<span class="optional">Component, Device</span>)</pre>
 <h2 id="Parameters">参数</h2>
@@ -40,17 +40,17 @@
 
 <h2 id="Return_Value">返回值</h2>
 <p>类型: <a href="../Concepts.htm#boolean">整数(布尔值)</a>或<a href="../Concepts.htm#nothing">字符串(空值)</a></p>
-<p>成功时, 返回值为 0(未静音) 或 1(静音).</p>
-<p>失败时, 返回值为空字符串.</p>
+<p>函数返回 0(未静音) 或 1(静音).</p>
 
-<h2>ErrorLevel</h2>
-<p>如果函数成功, <a href="../misc/ErrorLevel.htm">ErrorLevel</a> 设置为 0, 否则, 它被设置为以下短语之一:</p>
-<ul>
-    <li>Device Not Found(无法找到设备)</li>
-    <li>Component Not Found(无法找到组件)</li>
-    <li>Component Doesn't Support This Control Type(组件不支持此控件类型)</li>
-    <li>Can't Get Current Setting(无法获取当前设置)</li>
-</ul>
+<h2 id="Error_Handling">错误处理</h2>
+<p>失败时可能会抛出以下异常之一:</p>
+<table class="info">
+  <tr><th abbr="Class">Error 类</th><th>消息</th></tr>
+  <tr><td rowspan="3"><a href="../objects/Error.htm#TargetError">TargetError</a></td><td>Device not found(无法找到设备)</td></tr>
+  <tr><td>Component not found(无法找到组件)</td></tr>
+  <tr><td>Component doesn't support this control type(组件不支持此控件类型)</td></tr>
+  <tr><td><a href="../objects/Error.htm#OSError">OSError</a></td><td><em>System-generated.(由系统生成)</em></td></tr>
+</table>
 
 <h2 id="Remarks">备注</h2>
 <p>要发现系统上安装的声音设备的功能 -- 比如名称和可用的组件 -- 请运行这个<a href="Sound.htm#ExSoundcard">声卡分析脚本</a>.</p>
@@ -59,18 +59,24 @@
 <p><a href="Sound.htm">Sound 函数</a></p>
 
 <h2 id="Examples">示例</h2>
-<div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<div class="ex" id="ExMasterMute">
+<p><a class="ex_number" href="#ExMasterMute"></a> 确认默认的播放设备是否处于静音状态.</p>
 <pre>master_mute := SoundGetMute()
 if master_mute
     MsgBox "The default playback device is muted."
 else
-    MsgBox "The default playback device is not muted."
+    MsgBox "The default playback device is not muted."</pre>
+</div>
 
-if SoundGetMute("Line In") = 0
-    MsgBox "Line In pass-through is not muted."
+<div class="ex" id="ExLineInMute">
+<p><a class="ex_number" href="#ExLineInMute"></a> 确认 "Line In pass-through" 是否处于静音状态.</p>
+<pre>if SoundGetMute("Line In") = 0
+    MsgBox "Line In pass-through is not muted."</pre>
+</div>
 
-if SoundGetMute( , "Microphone") = 0
+<div class="ex" id="ExMicRecordMute">
+<p><a class="ex_number" href="#ExMicRecordMute"></a> 确认麦克风(录音) 是否静音.</p>
+<pre>if SoundGetMute( , "Microphone") = 0
     MsgBox "The microphone (recording) is not muted."</pre>
 </div>
 

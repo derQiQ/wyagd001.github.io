@@ -1,5 +1,5 @@
-﻿; IntelliSense -- by Rajat
-; http://www.autohotkey.com
+﻿; IntelliSense (based on the v1 script by Rajat)
+; https://www.autohotkey.com
 ; This script watches while you edit an AutoHotkey script.  When it sees you
 ; type a command followed by a comma or space, it displays that command's
 ; parameter list to guide you.  In addition, you can press Ctrl+F1 (or
@@ -10,19 +10,19 @@
 
 ; The hotkey below is pressed to display the current command's page in the
 ; help file:
-I_HelpHotkey := "^F1"
+g_HelpHotkey := "^F1"
 
 ; The string below must exist somewhere in the active window's title for
 ; IntelliSense to be in effect while you're typing.  Make it blank to have
 ; IntelliSense operate in all windows.  Make it Pad to have it operate in
 ; editors such as Metapad, Notepad, and Textpad.  Make it .ahk to have it
 ; operate only when a .ahk file is open in Notepad, Metapad, etc.
-I_Editor := "pad"
+g_Editor := ".ahk"
 
 ; If you wish to have a different icon for this script to distinguish it from
 ; other scripts in the tray, provide the filename below (leave blank to have
 ; no icon). For example: E:\stuff\Pics\icons\GeoIcons\Information.ico
-I_Icon := ""
+g_Icon := ""
 
 ; END OF CONFIGURATION SECTION (do not make changes below this point unless
 ; you want to change the basic functionality of the script).
@@ -30,17 +30,24 @@ I_Icon := ""
 SetKeyDelay 0
 #SingleInstance
 
-if I_HelpHotkey != ""
-    Hotkey I_HelpHotkey, "I_HelpHotkey"
+g_ThisCmd := ""
+g_HelpOn := ""
+g_Cmds := []
+g_FullCmds := []
+g_Word := ""
+
+if g_HelpHotkey != ""
+    Hotkey g_HelpHotkey, HelpHotkey
 
 ; Change tray icon (if one was specified in the configuration section above):
-if I_Icon != ""
-    if FileExist(I_Icon)
-        Menu "Tray", "Icon", I_Icon
+if g_Icon != ""
+    if FileExist(g_Icon)
+        TraySetIcon g_Icon
 
 ; Determine AutoHotkey's location:
-ahk_dir := RegRead("HKEY_LOCAL_MACHINE\SOFTWARE\AutoHotkey", "InstallDir")
-if ErrorLevel  ; Not found, so look for it in some other common locations.
+try
+    ahk_dir := RegRead("HKEY_LOCAL_MACHINE\SOFTWARE\AutoHotkey", "InstallDir")
+catch  ; Not found, so look for it in some other common locations.
 {
     if A_AhkPath
         SplitPath A_AhkPath,, ahk_dir
@@ -55,42 +62,42 @@ if ErrorLevel  ; Not found, so look for it in some other common locations.
     }
 }
 
-ahk_help_file := ahk_dir "\AutoHotkey.chm"
+g_AhkHelpFile := ahk_dir "\AutoHotkey.chm"
 
 ; Read command syntaxes; can be found in AHK Basic, but it's outdated:
 Loop Read, ahk_dir "\Extras\Editors\Syntax\Commands.txt"
 {
-    I_FullCmd := A_LoopReadLine
+    FullCmd := A_LoopReadLine
 
     ; Directives have a first space instead of a first comma.
     ; So use whichever comes first as the end of the command name:
-    I_cPos := InStr(I_FullCmd, ",")
-    I_sPos := InStr(I_FullCmd, "`s")
-    if (!I_cPos or (I_cPos > I_sPos and I_sPos))
-        I_EndPos := I_sPos
+    cPos := InStr(FullCmd, "(")
+    sPos := InStr(FullCmd, "`s")
+    if (!cPos or (cPos > sPos and sPos))
+        EndPos := sPos
     else
-        I_EndPos := I_cPos
+        EndPos := cPos
 
-    if I_EndPos
-        I_CurrCmd := SubStr(I_FullCmd, 1, I_EndPos - 1)
+    if EndPos
+        CurrCmd := SubStr(FullCmd, 1, EndPos - 1)
     else  ; This is a directive/command with no parameters.
-        I_CurrCmd := A_LoopReadLine
+        CurrCmd := A_LoopReadLine
     
-    I_CurrCmd := StrReplace(I_CurrCmd, "[")
-    I_CurrCmd := StrReplace(I_CurrCmd, "`s")
-    I_FullCmd := StrReplace(I_FullCmd, "``n", "`n")
-    I_FullCmd := StrReplace(I_FullCmd, "``t", "`t")
+    CurrCmd := StrReplace(CurrCmd, "[")
+    CurrCmd := StrReplace(CurrCmd, "`s")
+    FullCmd := StrReplace(FullCmd, "``n", "`n")
+    FullCmd := StrReplace(FullCmd, "``t", "`t")
     
     ; Make arrays of command names and full cmd syntaxes:
-    I_Cmd%A_Index% := I_CurrCmd
-    I_FullCmd%A_Index% := I_FullCmd
+    g_Cmds.Push(CurrCmd)
+    g_FullCmds.Push(FullCmd)
 }
 
-; Use the Input command to watch for commands that the user types:
+; Use the Input function to watch for commands that the user types:
 Loop
 {
     ; Editor window check:
-    if !InStr(WinGetTitle("A"), I_Editor)
+    if !WinActive(g_Editor)
     {
         ToolTip
         Sleep 500
@@ -98,87 +105,102 @@ Loop
     }
     
     ; Get all keys till endkey:
-    I_Word := Input("V", "{Enter}{Escape}{Space},")
-    I_EndKey := ErrorLevel
+    Hook := Input("V", "{Enter}{Escape}{Space},")
+    g_Word := Hook.Input
+    EndKey := Hook.EndKey
     
     ; ToolTip is hidden in these cases:
-    if I_EndKey = "EndKey:Enter" or I_EndKey = "EndKey:Escape"
+    if EndKey = "Enter" or EndKey = "Escape"
     {
         ToolTip
         Continue
     }
 
     ; Editor window check again!
-    if !InStr(WinGetTitle("A"), I_Editor)
+    if !WinActive(g_Editor)
     {
         ToolTip
         Continue
     }
 
     ; Compensate for any indentation that is present:
-    I_Word := StrReplace(I_Word, "`s")
-    I_Word := StrReplace(I_Word, "`t")
-    if I_Word = ""
+    g_Word := StrReplace(g_Word, "`s")
+    g_Word := StrReplace(g_Word, "`t")
+    if g_Word = ""
         Continue
     
     ; Check for commented line:
-    I_Check := SubStr(I_Word, 1, 1)
-    if (I_Check = ";" or I_Word = "If")  ; "If" seems a little too annoying to show tooltip for.
+    Check := SubStr(g_Word, 1, 1)
+    if (Check = ";" or g_Word = "If")  ; "If" seems a little too annoying to show tooltip for.
         Continue
 
     ; Match word with command:
-    I_Index := ""
-    Loop
+    Index := ""
+    for Cmd in g_Cmds
     {
-        ; It helps performance to resolve dynamic variables only once.
-        ; In addition, the value put into I_ThisCmd is also used by the
-        ; I_HelpHotkey subroutine:
-        I_ThisCmd := I_Cmd%A_Index%
-        if I_ThisCmd = ""
-            break
-        if (I_Word = I_ThisCmd)
+        ; The value put into g_ThisCmd is also used by the HelpHotkey function:
+        g_ThisCmd := Cmd
+        if (g_Word = g_ThisCmd)
         {
-            I_Index := A_Index
-            I_HelpOn := I_ThisCmd
+            Index := A_Index
+            g_HelpOn := g_ThisCmd
             break
         }
     }
     
     ; If no match then resume watching user input:
-    if I_Index = ""
+    if Index = ""
         Continue
     
     ; Show matched command to guide the user:
-    I_ThisFullCmd := I_FullCmd%I_Index%
-    ToolTip I_ThisFullCmd, A_CaretX, A_CaretY + 20
+    ThisFullCmd := g_FullCmds[Index]
+    CaretGetPos &CaretX, &CaretY
+    ToolTip ThisFullCmd, CaretX, CaretY + 20
 }
 
 
 
-I_HelpHotkey:
-if !InStr(WinGetTitle("A"), I_Editor)
-    return
+; This script was originally written for AutoHotkey v1.
+; Input() is a rough reproduction of the Input command.
+Input(Options:="", EndKeys:="", MatchList:="") {
+    static ih
+    if IsSet(ih) && ih.InProgress
+        ih.Stop()
+    ih := InputHook(Options, EndKeys, MatchList)
+    ih.Start()
+    ih.Wait()
+    return ih
+}
 
-ToolTip  ; Turn off syntax helper since there is no need for it now.
 
-SetTitleMatchMode 1  ; In case it's 3. This setting is in effect only for this thread.
-if !WinExist("AutoHotkey Help")
+
+HelpHotkey(*)
 {
-    if !FileExist(ahk_help_file)
-    {
-        MsgBox "Could not find the help file: " ahk_help_file
+    global g_ThisCmd  ; Declared because this function modifies it.
+    
+    if !WinActive(g_Editor)
         return
+
+    ToolTip  ; Turn off syntax helper since there is no need for it now.
+
+    SetTitleMatchMode 1  ; In case it's 3. This setting is in effect only for this thread.
+    if !WinExist("AutoHotkey Help")
+    {
+        if !FileExist(g_AhkHelpFile)
+        {
+            MsgBox "Could not find the help file: " g_AhkHelpFile
+            return
+        }
+        Run g_AhkHelpFile
+        WinWait "AutoHotkey Help"
     }
-    Run ahk_help_file
-    WinWait "AutoHotkey Help"
+
+    if g_ThisCmd = ""  ; Instead, use what was most recently typed.
+        g_ThisCmd := g_Word
+
+    ; The above has set the "last found" window which we use below:
+    WinActivate
+    WinWaitActive
+    g_ThisCmd := StrReplace(g_ThisCmd, "#", "{#}")  ; Replace leading #, if any.
+    Send "!n{home}+{end}" g_HelpOn "{enter}"
 }
-
-if I_ThisCmd = ""  ; Instead, use what was most recently typed.
-    I_ThisCmd := I_Word
-
-; The above has set the "last found" window which we use below:
-WinActivate
-WinWaitActive
-I_ThisCmd := StrReplace(I_ThisCmd, "#", "{#}")  ; Replace leading #, if any.
-Send "!n{home}+{end}" I_HelpOn "{enter}"
-return

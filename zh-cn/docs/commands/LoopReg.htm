@@ -28,18 +28,21 @@
       <p>必须以 HKEY_LOCAL_MACHINE, HKEY_USERS, HKEY_CURRENT_USER, HKEY_CLASSES_ROOT 或 HKEY_CURRENT_CONFIG(或这些的缩写, 如 HKLM) 开始. 要访问<a href="#remote">远程注册表</a>, 请在前面加上计算机名和冒号, 就像在本例中一样: \\workstation01:HKEY_LOCAL_MACHINE</p></dd>
 
   <dt>Mode</dt>
-  <dd><p>零个或多个下列字母:</p>
-      <p><code>K</code>: 包含键名.<br>
-      <code>V</code>: 包含键值. K 和 V 都被省略时, 默认包含键值.<br>
-      <code>R</code>: 递归子键. 若省略 R, <em>KeyName</em> 下的子键中的键名和键值都不会被包含.</p></dd>
-
+  <dd><p>如果为空或省略, 则只包含值且不递归子键. 否则, 指定一个或多个下列字母:</p>
+    <ul>
+      <li>K = 包含键名.</li>
+      <li>V = 包含键值. K 和 V 都被省略时, 默认包含键值.</li>
+      <li>R = 递归子键. 若省略 R, <em>KeyName</em> 下的子键中的键名和键值都不会被包含.</li>
+    </ul>
+  </dd>
+  
 </dl>
 
 <h2 id="old">传统语法</h2>
-<p class="warning"><strong>不推荐:</strong> 不推荐在新脚本中使用此语法. 而是使用<a href="#new">新语法</a>.</p>
+<p class="warning"><strong>过时的:</strong> 不推荐在新脚本中使用此语法. 而是使用<a href="#new">新语法</a>.</p>
 <pre class="Syntax"><span class="func">Loop</span>, RootKey <span class="optional">, Key, IncludeSubkeys?, Recurse?</span></pre>
 
-<h3>参数</h3>
+<h3 id="Old_Parameters">参数</h3>
 <dl>
 
   <dt>RootKey</dt>
@@ -50,20 +53,30 @@
   <dd><p>键名(例如 Software\SomeApplication). 如果为空或省略, 将获取 <em>根键</em> 的内容.</p></dd>
   
   <dt>IncludeSubkeys?</dt>
-  <dd><p>0(默认值) 不获取 <em>Key</em> 中包含的子键(仅获取值).<br>
-      1 获取所有的值和子键.<br>
-      2 仅获取子键 (不获取值).</p></dd>
-
+  <dd><p>如果为空或省略, 则默认为 0(只获取值). 否则, 指定下列数字之一:</p>
+    <ul>
+      <li>0 = 不获取 <em>Key</em> 中包含的子键(仅获取值).</li>
+      <li>1 = 获取所有的值和子键.</li>
+      <li>2 = 仅获取子键(不获取值).</li>
+    </ul>
+  </dd>
+  
   <dt>Recurse?(递归?)</dt>
-  <dd>0(默认值) 不对子键进行递归.<br>
-      1 对子键进行递归, 以便获取包含在其中的所有值和子键.</dd>
-
+    <ul>
+      <li>0 = 不对子键进行递归.</li>
+      <li>1 = 对子键进行递归, 以便获取包含在其中的所有值和子键.</li>
+    </ul>
+  </dd>
 </dl>
 
-<h2>备注</h2>
+<h2 id="Remarks">备注</h2>
 <p>当您想对注册表值或子键集合中的项逐个进行操作时, 注册表循环很有用. 值和子键以逆序获取(自下而上), 这样在循环中使用 <a href="RegDelete.htm">RegDelete</a> 不会扰乱循环自身.</p>
-<p id="vars">下列变量存在于任何注册表循环中.如果一个内层注册表循环包含在一个外层注册表循环中,那么最内层循环的注册表项将具有优先权:</p>
+<p id="vars">下列变量存在于任何注册表循环中. 如果一个内层注册表循环包含在一个外层注册表循环中, 那么最内层循环的注册表项将具有优先权:</p>
 <table class="info">
+  <tr>
+    <th abbr="Var">变量</th>
+    <th abbr="Descr">描述</th>
+  </tr>
   <tr>
     <td>A_LoopRegName</td>
     <td>当前获取项的名称, 可以是值名或子键名. 在 Windows 注册表编辑器中, 值名为 "(默认)" 的项如果分配了值,  那么也会获取它的值, 不过此时相应的 A_LoopRegName 将是空的.</td>
@@ -82,28 +95,32 @@
   </tr>
   <tr>
     <td>A_LoopRegTimeModified</td>
-    <td>当前子键或其中任何一个值的上次修改时间. 格式为 <a href="FileSetTime.htm">YYYYMMDDHH24MISS</a>. 当前获取项不是子键(即 <em>A_LoopRegType</em> 不是单词 KEY) 时,此变量将为空.</td>
+    <td>当前子键或其中任何一个值的上次修改时间. 格式为 <a href="FileSetTime.htm">YYYYMMDDHH24MISS</a>. 当前获取项不是子键(即 <em>A_LoopRegType</em> 不是单词 KEY) 时, 此变量将为空.</td>
   </tr>
 </table>
 <p>在注册表循环中使用下列命令时, 可以以一种简化的方式来操作当前获取项:</p>
 <table class="info">
   <tr>
-    <td style="width:21%"><a href="RegRead.htm">RegRead</a>, OutputVar</td>
+    <th style="min-width: 11em;">语法</th>
+    <th abbr="Descr">描述</th>
+  </tr>
+  <tr>
+    <td><code><a href="RegRead.htm">RegRead</a>, OutputVar</code></td>
     <td>读取当前项. 如果当前项为键, ErrorLevel 将被置为 1 且 <em>OutputVar</em> 将被置空.</td>
   </tr>
   <tr>
-    <td><a href="RegWrite.htm">RegWrite</a> [, Value]</td>
+    <td><code><a href="RegWrite.htm">RegWrite</a>, Value</code><br><code><a href="RegWrite.htm">RegWrite</a></code></td>
     <td>写入到当前项. 如果省略 <em>Value</em>, 根据不同的类型当前项可能被置为 0 或空. 如果当前项为键, ErrorLevel 将被置为 1 且没有其他效果.</td>
   </tr>
   <tr>
-    <td><a href="RegDelete.htm">RegDelete</a></td>
+    <td><code><a href="RegDelete.htm">RegDelete</a></code></td>
     <td>删除当前项. 如果当前项为键, 它以及它所包含的所有子键和值都将被删除.</td>
   </tr>
 </table>
 <p id="remote">访问远程注册表时(通过上面描述的 <em>RootKey</em> 或 <em>KeyName</em> 参数), 需要注意以下事项:</p>
 <ul>
   <li>目标机器上必须正在运行远程注册表服务.</li>
-  <li>如果您和目标计算机不在相同的域或者本地或远程用户名缺乏足够的权限(然而,请参阅下文了解可能的解决方法) 时,访问远程注册表可能失败.</li>
+  <li>如果您和目标计算机不在相同的域或者本地或远程用户名缺乏足够的权限(然而, 请参阅下文了解可能的解决方法) 时, 访问远程注册表可能失败.</li>
   <li>在尝试访问远程注册表之前, 根据您的用户名所在的域, 工作组和/或权限, 您可能必须连接到共享设备, 例如通过映射驱动器. 建立这样的连接 -- 使用拥有访问或编辑注册表权限的远程用户名和密码 -- 也许可以顺带启用远程注册表访问.</li>
   <li>如果您已经作为另一个用户连接到目标计算机(例如, 通过 Guest 用户映射驱动器), 您可能必须终止这个连接, 以允许远程注册表功能使用您当前登录的用户名重新连接和认证.</li>
   <li>对于 Windows Server 2003 和 Windows XP 专业版, MSDN 中声明: "如果 [注册表服务器] 所在的计算机加入了工作组且启用了 <em>强制以本地账户的来宾身份进行网络登录验证</em> 策略, 此功能无效. 请注意如果计算机加入了工作组, 那么这项策略默认是启用的."</li>
@@ -111,18 +128,18 @@
 </ul>
 <p>请参阅 <a href="Loop.htm">Loop</a> 了解关于<a href="Block.htm">区块</a>, <a href="Break.htm">Break</a>, <a href="Continue.htm">Continue</a> 和 A_Index 变量(其存在于各种类型的循环中) 的相关信息.</p>
 
-<h2>相关</h2>
+<h2 id="Related">相关</h2>
 <p><a href="Loop.htm">Loop</a>, <a href="Break.htm">Break</a>, <a href="Continue.htm">Continue</a>, <a href="Block.htm">区块</a>, <a href="RegRead.htm">RegRead</a>, <a href="RegWrite.htm">RegWrite</a>, <a href="RegDelete.htm">RegDelete</a>, <a href="SetRegView.htm">SetRegView</a></p>
 
-<h2>示例</h2>
+<h2 id="Examples">示例</h2>
 <div class="ex" id="ExRegDelete">
-<p><a href="#ExRegDelete">#1</a>: 删除用户输入的 Internet Explorer 的 URL 历史:</p>
+<p><a class="ex_number" href="#ExRegDelete"></a> 删除用户输入的 Internet Explorer 的 URL 历史.</p>
 <pre>Loop, HKEY_CURRENT_USER, Software\Microsoft\Internet Explorer\TypedURLs
     RegDelete</pre>
 </div>
 
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#2</a>: 有效的测试脚本:</p>
+<p><a class="ex_number" href="#ExBasic"></a> 有效的测试脚本.</p>
 <pre>Loop, Reg, HKEY_CURRENT_USER\Software\Microsoft\Windows, KVR
 {
     if (A_LoopRegType = "key")
@@ -139,7 +156,7 @@
 </div>
 
 <div class="ex" id="ExRegSearch">
-<p><a href="#ExRegSearch">#3</a>: 用于在整个注册表中递归搜索特殊值的可运行示例.</p>
+<p><a class="ex_number" href="#ExRegSearch"></a> 在整个注册表中递归搜索特殊值.</p>
 <pre>SetBatchLines -1  <em>; 让搜索以最快速度进行.</em>
 RegSearchTarget := "Notepad"  <em>; 告知子程序搜索的目标.</em>
 Gosub, RegSearch

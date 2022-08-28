@@ -20,27 +20,22 @@
     ["标签","misc/Labels.htm"],
     ["线程","misc/Threads.htm"],
     ["调试客户端(DBGp)","AHKL_DBGPClients.htm"],
-    ["对象","Objects.htm",
-    [
-      ["基本用法","Objects.htm#Usage"],
-      ["扩展用法","Objects.htm#Extended_Usage"],
-      ["自定义对象","Objects.htm#Custom_Objects"],
-      ["默认基对象","Objects.htm#Default_Base_Object"],
-      ["实现","Objects.htm#Implementation"]
-    ]]
+    ["编译器指令","misc/Ahk2ExeDirectives.htm"],
+    ["对象","Objects.htm"]
   ]],
-  ["迁移到 AutoHotkey_L 1.1","", 
+  ["迁移到 AutoHotkey_L 1.1","",
   [
     ["AutoHotkey_L 新特性","AHKL_Features.htm"],
     ["脚本兼容性","Compat.htm"]
   ]],
-  ["环境变量管理","",
+  ["环境变量","",
   [
     ["ClipWait","commands/ClipWait.htm"],
     ["EnvGet","commands/EnvGet.htm"],
     ["EnvSet","commands/EnvSet.htm"],
     ["EnvUpdate","commands/EnvUpdate.htm"],
-    ["OnClipboardChange","commands/OnClipboardChange.htm"],
+    ["OnClipboardChange","commands/OnClipboardChange.htm#label"],
+    ["OnClipboardChange()","commands/OnClipboardChange.htm#function"],
     ["SysGet","commands/SysGet.htm"]
   ]],
   ["外部接口调用","",
@@ -67,7 +62,7 @@
       ["ObjAddRef() / ObjRelease()","commands/ObjAddRef.htm"]
     ]]
   ]],
-  ["文件,目录和磁盘管理","",
+  ["文件,目录和磁盘","",
   [
     ["Drive","commands/Drive.htm"],
     ["DriveGet","commands/DriveGet.htm"],
@@ -133,8 +128,8 @@
       ["If[Not]Exist","commands/IfExist.htm"],
       ["If[Not]InString","commands/IfInString.htm"],
       ["IfMsgBox","commands/IfMsgBox.htm"],
-      ["IfWin[Not]Active","commands/WinActive.htm"],
-      ["IfWin[Not]Exist","commands/WinExist.htm"]
+      ["IfWin[Not]Active","commands/IfWinActive.htm"],
+      ["IfWin[Not]Exist","commands/IfWinExist.htm"]
     ]],
     ["Loop 命令","commands/Loop.htm",
     [
@@ -145,7 +140,8 @@
       ["Loop (注册表)","commands/LoopReg.htm"]
     ]],
     ["OnError()","commands/OnError.htm"],
-    ["OnExit","commands/OnExit.htm"],
+    ["OnExit","commands/OnExit.htm#command"],
+    ["OnExit()","commands/OnExit.htm#function"],
     ["Pause","commands/Pause.htm"],
     ["Reload","commands/Reload.htm"],
     ["Return","commands/Return.htm"],
@@ -181,7 +177,7 @@
     ["OnMessage()","commands/OnMessage.htm"],
     ["Progress","commands/Progress.htm"],
     ["SplashImage","commands/Progress.htm"],
-    ["SplashTextOn/SplashTextOff","commands/SplashTextOn.htm"],
+    ["SplashTextOn/Off","commands/SplashTextOn.htm"],
     ["Standard Windows Fonts","misc/FontsStandard.htm"],
     ["Styles for a window/control","misc/Styles.htm"],
     ["ToolTip","commands/ToolTip.htm"],
@@ -244,7 +240,8 @@
     ["CoordMode","commands/CoordMode.htm"],
     ["GetKeyName()","commands/GetKey.htm"],
     ["GetKeySC()","commands/GetKey.htm"],
-    ["GetKeyState","commands/GetKeyState.htm"],
+    ["GetKeyState","commands/GetKeyState.htm#command"],
+    ["GetKeyState()","commands/GetKeyState.htm#function"],
     ["GetKeyVK()","commands/GetKey.htm"],
     ["按键列表","KeyList.htm"],
     ["KeyHistory","commands/KeyHistory.htm"],
@@ -266,7 +263,7 @@
     ["SetScrollLockState","commands/SetNumScrollCapsLockState.htm"],
     ["SetStoreCapsLockMode","commands/SetStoreCapslockMode.htm"]
   ]],
-  ["杂项命令","",
+  ["杂项","",
   [
     ["AutoTrim","commands/AutoTrim.htm"],
     ["Edit","commands/Edit.htm"],
@@ -282,7 +279,7 @@
     ["URLDownloadToFile","commands/URLDownloadToFile.htm"],
     ["VarSetCapacity()","commands/VarSetCapacity.htm"]
   ]],
-  ["对象管理","",
+  ["对象类型","",
    [
     ["对象","objects/Object.htm"],
     ["枚举器对象","objects/Enumerator.htm"],
@@ -290,16 +287,17 @@
     ["文件对象","objects/File.htm"],
     ["Func 对象","objects/Func.htm"],
     ["函数对象","objects/Functor.htm"],
+    ["InputHook Object","commands/InputHook.htm#object"],
     ["匹配对象","commands/RegExMatch.htm#MatchObject"]
    ]],
-  ["进程管理","",
+  ["进程","",
   [
     ["Process","commands/Process.htm"],
     ["Run[Wait]","commands/Run.htm"],
     ["RunAs","commands/RunAs.htm"],
     ["Shutdown","commands/Shutdown.htm"]
   ]],
-  ["注册表管理","",
+  ["注册表","",
   [
     ["Loop (注册表)","commands/LoopReg.htm"],
     ["RegDelete","commands/RegDelete.htm"],
@@ -307,13 +305,13 @@
     ["RegWrite","commands/RegWrite.htm"],
     ["SetRegView","commands/SetRegView.htm"]
   ]],
-  ["屏幕管理","",
+  ["屏幕","",
   [
     ["ImageSearch","commands/ImageSearch.htm"],
     ["PixelGetColor","commands/PixelGetColor.htm"],
     ["PixelSearch","commands/PixelSearch.htm"]
   ]],
-  ["声音管理","",
+  ["声音","",
   [
     ["SoundBeep","commands/SoundBeep.htm"],
     ["SoundGet","commands/SoundGet.htm"],
@@ -322,7 +320,7 @@
     ["SoundSet","commands/SoundSet.htm"],
     ["SoundSetWaveVolume","commands/SoundSetWaveVolume.htm"]
   ]],
-  ["字符串命令","",
+  ["字符串","",
   [
     ["Asc()","commands/Asc.htm"],
     ["Chr()","commands/Chr.htm"],
@@ -336,27 +334,27 @@
     ["RegEx Quick Reference","misc/RegEx-QuickRef.htm"],
     ["RegExMatch()","commands/RegExMatch.htm"],
     ["RegExReplace()","commands/RegExReplace.htm"],
-    ["SetEnv (var = value)","commands/SetEnv.htm"],
+    ["SetEnv (Var = Value)","commands/SetEnv.htm"],
     ["SetFormat","commands/SetFormat.htm"],
     ["Sort","commands/Sort.htm"],
     ["StringCaseSense","commands/StringCaseSense.htm"],
     ["StringGetPos","commands/StringGetPos.htm"],
-    ["StringLeft/StringRight","commands/StringLeft.htm"],
+    ["StringLeft/Right","commands/StringLeft.htm"],
     ["StringLen","commands/StringLen.htm"],
-    ["StringLower/StringUpper","commands/StringLower.htm"],
+    ["StringLower/Upper","commands/StringLower.htm"],
     ["StringMid","commands/StringMid.htm"],
     ["StringReplace","commands/StringReplace.htm"],
     ["StringSplit","commands/StringSplit.htm"],
-    ["StringTrimLeft/StringTrimRight","commands/StringTrimLeft.htm"],
+    ["StringTrimLeft/Right","commands/StringTrimLeft.htm"],
     ["StrGet()","commands/StrGet.htm"],
-    ["StrLen()","commands/StringLen.htm"],
+    ["StrLen()","commands/StrLen.htm"],
     ["StrPut()","commands/StrPut.htm"],
-    ["StrReplace()","commands/StringReplace.htm"],
-    ["StrSplit()","commands/StringSplit.htm"],
+    ["StrReplace()","commands/StrReplace.htm"],
+    ["StrSplit()","commands/StrSplit.htm"],
     ["SubStr()","commands/SubStr.htm"],
     ["Trim() / LTrim() / RTrim()","commands/Trim.htm"]
   ]],
-  ["窗口管理","",
+  ["窗口","",
   [
     ["控件操作","",
     [
@@ -386,8 +384,8 @@
     ["#WinActivateForce","commands/_WinActivateForce.htm"],
     ["DetectHiddenText","commands/DetectHiddenText.htm"],
     ["DetectHiddenWindows","commands/DetectHiddenWindows.htm"],
-    ["IfWin[Not]Active","commands/WinActive.htm"],
-    ["IfWin[Not]Exist","commands/WinExist.htm"],
+    ["IfWin[Not]Active","commands/IfWinActive.htm"],
+    ["IfWin[Not]Exist","commands/IfWinExist.htm"],
     ["SetTitleMatchMode","commands/SetTitleMatchMode.htm"],
     ["SetWinDelay","commands/SetWinDelay.htm"],
     ["StatusBarGetText","commands/StatusBarGetText.htm"],
@@ -446,6 +444,7 @@
     ["#NoEnv","commands/_NoEnv.htm"],
     ["#NoTrayIcon","commands/_NoTrayIcon.htm"],
     ["#Persistent","commands/_Persistent.htm"],
+    ["#Requires","commands/_Requires.htm"],
     ["#SingleInstance","commands/_SingleInstance.htm"],
     ["#UseHook","commands/_UseHook.htm"],
     ["#Warn","commands/_Warn.htm"],

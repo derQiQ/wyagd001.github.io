@@ -26,6 +26,7 @@
       <p>类型: <a href="../Concepts.htm#strings">字符串</a></p>
       <p><a href="FileSetTime.htm#YYYYMMDD">YYYYMMDDHH24MISS</a> 格式的日期-时间戳.</p>
       <p>如果 <em>DateTime1</em> 早于 <em>DateTime2</em>, 则结果为负数.</p>
+      <p>If either parameter is an empty string, the current local date and time (<a href="../Variables.htm#Now">A_Now</a>) is used.</p>
   </dd>
 
   <dt>TimeUnits</dt>
@@ -44,13 +45,13 @@
 <p>内置变量 <strong>A_Now</strong> 包含了 <a href="FileSetTime.htm#YYYYMMDD">YYYYMMDDHH24MISS</a> 格式的当前本地时间.</p>
 <p>要精确地测出两个事件之间所经过的时间, 请使用 <a href="../Variables.htm#TickCount">A_TickCount 方法</a>, 因为它提供了毫秒级的精度.</p>
 <p>要从时间戳中添加或减去特定的 Seconds(秒), Minutes(分), Hours(小时) 或 Days(天), 可以使用 <a href="DateAdd.htm">DateAdd</a>(减法是通过加上负数来实现的).</p>
-<p>如果 <em>DateTime</em> 包含一个无效的时间戳或 年份早于 1601, 则抛出异常.</p>
+<p>如果 <em>DateTime</em> 包含一个无效的时间戳或年份早于 1601, 则抛出 <a href="../objects/Error.htm#ValueError">ValueError</a>.</p>
 
 <h2 id="Related">相关</h2>
 <p><a href="DateAdd.htm">DateAdd</a>, <a href="FileGetTime.htm">FileGetTime</a>, <a href="FormatTime.htm">FormatTime</a></p>
 <h2 id="Examples">示例</h2>
 <div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
+<p><a class="ex_number" href="#ExBasic"></a> 计算两个时间戳之间的天数, 并报告结果.</p>
 <pre>var1 := "20050126"
 var2 := "20040126"
 MsgBox DateDiff(var1, var2, "days")  <em>; 结果将是 366, 因为 2004 是个闰年.</em>

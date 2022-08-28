@@ -45,8 +45,7 @@
 </dl>
 
 <h2 id="Error_Handling">错误处理</h2>
-<p><a href="../misc/ErrorLevel.htm">ErrorLevel</a> 被设置为由于错误而无法复制的文件数, 否则为 0.</p>
-<p>在任何一种情况下, 如果源文件为单个文件(没有通配符) 且此文件不存在, 则 ErrorLevel 设置为 0. 要判断这种情况, 请在复制前对源文件使用 <a href="FileExist.htm">FileExist</a>.</p>
+<p>如果有文件复制失败, 则抛出 <a href="../objects/Error.htm">Error</a>, 并且它的 <a href="../objects/Error.htm#Extra">Extra</a> 属性设置为失败次数. 如果没有找到文件, 只有当 <em>SourcePattern</em> 缺少通配符 <code>*</code> 和 <code>?</code> 时, 才会抛出错误. 换句话说, 复制一个通配符模式, 如 <code>"*.txt"</code>, 当它不与任何文件匹配时, 被视为成功.</p>
 <p>与 <a href="FileMove.htm">FileMove</a> 不同, 即使在覆盖模式生效的情况下, 复制一个文件来覆盖它自己始终被视为错误.</p>
 <p>如果找到了文件, 则 <a href="../Variables.htm#LastError">A_LastError</a> 会被设置为 0(零) 或最近一次操作失败时调用操作系统 GetLastError() 函数的结果. 否则 A_LastError  包含了没有找到文件原因的错误码.</p>
 
@@ -56,16 +55,24 @@
 <h2 id="Related">相关</h2>
 <p><a href="FileMove.htm">FileMove</a>, <a href="DirCopy.htm">DirCopy</a>, <a href="DirMove.htm">DirMove</a>, <a href="FileDelete.htm">FileDelete</a></p>
 <h2 id="Examples">示例</h2>
-<div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
-<pre>FileCopy "C:\My Documents\List1.txt", "D:\Main Backup\"  <em>; 复制文件并保留原来的文件名.</em>
-FileCopy "C:\My File.txt", "C:\My File New.txt"  <em>; 复制文件到同一个文件夹并改变文件名.</em>
-FileCopy "C:\Folder1\*.txt", "D:\New Folder\*.bkp"  <em>;  复制到新位置并改变扩展名.</em></pre>
+<div class="ex" id="ExKeepOrigName">
+<p><a class="ex_number" href="#ExKeepOrigName"></a> 复制文件并保留原来的文件名.</p>
+<pre>FileCopy "C:\My Documents\List1.txt", "D:\Main Backup\"</pre>
+</div>
+
+<div class="ex" id="ExNewName">
+<p><a class="ex_number" href="#ExNewName"></a> 复制文件到同一个文件夹并改变文件名.</p>
+<pre>FileCopy "C:\My File.txt", "C:\My File New.txt"</pre>
+</div>
+
+<div class="ex" id="ExNewExt">
+<p><a class="ex_number" href="#ExNewExt"></a> 复制文本文件到新位置并改变扩展名.</p>
+<pre>FileCopy "C:\Folder1\*.txt", "D:\New Folder\*.bkp"</pre>
 </div>
 
 <div class="ex" id="ExCopyAll">
-<p><a href="#ExCopyAll">#2</a>: 下面的例子复制一个文件夹中所有文件和文件夹到另一个文件夹中:</p>
-<pre>ErrorCount := CopyFilesAndFolders(&quot;C:\My Folder\*.*&quot;, &quot;D:\Folder to receive all files &amp; folders&quot;)
+<p><a class="ex_number" href="#ExCopyAll"></a> 复制一个文件夹中所有文件和文件夹到另一个文件夹中.</p>
+<pre>ErrorCount := CopyFilesAndFolders("C:\My Folder\*.*", "D:\Folder to receive all files &amp; folders")
 if ErrorCount != 0
     MsgBox ErrorCount " files/folders could not be copied."
 
@@ -73,16 +80,23 @@ CopyFilesAndFolders(SourcePattern, DestinationFolder, DoOverwrite := false)
 <em>; 复制匹配 SourcePattern 的所有文件和文件夹到 DestinationFolder 文件夹中且
 ; 返回无法复制的文件/文件夹的数目.</em>
 {
+    ErrorCount := 0
     <em>; 首先复制所有文件(不是文件夹):</em>
-    FileCopy SourcePattern, DestinationFolder, DoOverwrite
-    ErrorCount := ErrorLevel
+    try
+        FileCopy SourcePattern, DestinationFolder, DoOverwrite
+    catch as Err
+        ErrorCount := Err.Extra
     <em>; 现在复制所有文件夹:</em>
-    Loop Files, SourcePattern, "D"  <em>; D 表示 &quot;只检索文件夹&quot;.</em>
+    Loop Files, SourcePattern, "D"  <em>; D 表示 "只检索文件夹".</em>
     {
-        DirCopy A_LoopFilePath, DestinationFolder "\" A_LoopFileName, DoOverwrite
-        ErrorCount += ErrorLevel
-        if ErrorLevel  <em>; 报告每个出现问题的文件夹名称.</em>
+        try
+            DirCopy A_LoopFilePath, DestinationFolder "\" A_LoopFileName, DoOverwrite
+        catch
+        {
+            ErrorCount += 1
+            <em>; 报告每个出现问题的文件夹名称.</em>
             MsgBox "Could not copy " A_LoopFilePath " into " DestinationFolder
+        }
     }
     return ErrorCount
 }</pre>

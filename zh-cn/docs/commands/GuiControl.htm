@@ -17,7 +17,7 @@
 <p>对 GUI 窗口中的控件进行各种设置.</p>
 <pre class="Syntax"><span class="func">GuiControl</span>, <a href="#SubCommands">SubCommand</a>, ControlID <span class="optional">, Value</span></pre>
 
-<h2>参数</h2>
+<h2 id="Parameters">参数</h2>
 <dl>
   <dt>SubCommand, Value</dt>
   <dd>它们相互依赖, 其用法描述<a href="#SubCommands">如下</a>.</dd>
@@ -27,7 +27,7 @@
   <p>或者 <em>ControlID</em> 可以是 ClassNN(控件的类名和实例编号) 或控件的文本, 它们都可以通过 Window Spy 获取. 使用文本时, 匹配行为由 <a href="SetTitleMatchMode.htm">SetTitleMatchMode</a> 决定.</p>
 <p class="note"><strong>注意</strong>: 图片控件的文件名(和控件创建时指定的一样) 可以作为 <em>ControlID</em> 使用.</p>
   <p><span class="ver">[v1.1.04+]:</span> <em>ControlID</em> 可以是控件的 <a href="Gui.htm#HwndOutputVar">HWND</a></p>
-  <p>如果控件不在默认 GUI 中, <strong>那么还必须指定 GUI 的名称或 HWND</strong> -- 除非 <span class="ver">[v1.1.20+]</span> <em>ControlID</em> 是一个 HWND 值, 因为每个 HWND 都是唯一值. 见<a href="#Remarks">备注</a>中的详细解释.</p>
+  <p>如果控件不在默认 GUI 中, <strong>那么还必须指定 GUI 的名称或 HWND</strong> -- 除非 <span class="ver">[v1.1.20+]</span> <em>ControlID</em> 是一个 HWND 值, 因为每个 HWND 都是唯一值. 详情参见<a href="#Remarks">备注</a>.</p>
   </dd>
 </dl>
 
@@ -54,17 +54,17 @@
 <p>将新内容放入控件.</p>
 <pre class="Syntax"><span class="func">GuiControl</span>,, ControlID <span class="optional">, Value</span></pre>
 <p>将 <em>SubCommand</em> 留空, 通过 <em>Value</em> 将新内容放入控件中. 具体地:</p>
-<p><a href="GuiControls.htm#Picture">Picture</a>: <em>Value</em> 为要加载的新图像的文件名(或<a href="../misc/ImageHandles.htm">句柄</a>)(请参阅 <a href="GuiControls.htm#Picture">Gui Picture</a> 了解支持的文件类型). 在文件名的前面可以指定零个或多个下列选项: <code>*wN</code>(宽度 N), <code>*hN</code>(高度 N) 以及<code>*IconN</code>(在 DLL 或 EXE 文件中的图标组编号 N). 在下面的例子中, 将加载第二个图标组中的默认图标, 设置宽度为 100 以及通过&quot;保持高宽比&quot;自动设置高度: <code>GuiControl,, MyPic, *icon2 *w100 *h-1 C:\My Application.exe</code>. 指定 <code>*w0 *h0</code> 使用图像的实际宽度和高度. 如果同时省略 <code>*w</code> 和 <code>*h</code>, 则调整图像以适应控件当前的大小. 从多图标的 .ICO 文件中加载时, 指定宽度和高度也决定了加载哪个图标.</p>
+<p><a href="GuiControls.htm#Picture">Picture</a>: <em>Value</em> 为要加载的新图像的文件名(或<a href="../misc/ImageHandles.htm">句柄</a>)(请参阅 <a href="GuiControls.htm#Picture">Gui Picture</a> 了解支持的文件类型). 在文件名的前面可以指定零个或多个下列选项: <code>*wN</code>(宽度 N), <code>*hN</code>(高度 N) 以及<code>*IconN</code>(在 DLL 或 EXE 文件中的图标组编号 N). 在下面的例子中, 将加载第二个图标组中的默认图标, 设置宽度为 100 以及通过 "保持高宽比" 自动设置高度: <code>GuiControl,, MyPic, *icon2 *w100 *h-1 C:\My Application.exe</code>. 指定 <code>*w0 *h0</code> 使用图像的实际宽度和高度. 如果同时省略 <code>*w</code> 和 <code>*h</code>, 则调整图像以适应控件当前的大小. 从多图标的 .ICO 文件中加载时, 指定宽度和高度也决定了加载哪个图标.</p>
 <p class="note"><strong>注意</strong>: 在最后一个选项和文件名之间只能含有一个空格或 tab; 其他任何空格或 tab 都会被视为文件名的一部分.</p>
 <p><a href="GuiControls.htm#Text">Text</a>/<a href="GuiControls.htm#Button">Button</a>/<a href="GuiControls.htm#GroupBox">GroupBox</a>/<a href="GuiControls.htm#StatusBar">StatusBar</a>/<a href="GuiControls.htm#Link">Link</a>: 指定 <em>Value</em> 为控件的新文本. 因为控件不会自动进行扩展, 所以如果需要加宽控件请使用 <code><a href="#Move">GuiControl, Move</a>, MyText, W300</code>. 对于 <a href="GuiControls.htm#StatusBar">StatusBar</a>, 这里只设置了第一部分的文本(使用 <a href="GuiControls.htm#SB_SetText">SB_SetText()</a> 会更灵活).</p>
 <p><a href="GuiControls.htm#Edit">Edit</a>: <em>Value</em> 中任何没有前导回车符(`r) 的换行符(`n) 都会自动转换成 CR+LF(`r`n) 以使它们正确显示. 然而, 通常不需要担心, 因为 <code>Gui Submit</code> 和 <code>GuiControlGet OutputVar</code> 命令会自动将 CR+LF 替换为 LF(`n) 来撤销这种转换.</p>
-<p><a href="GuiControls.htm#Hotkey">Hotkey</a>: <em>Value</em> 为空来清空控件, 或键名和修饰符的集合. 例如: <code>^!c</code>, <code>^Numpad1</code>, <code>+Home</code>. 支持的修饰符仅包含 ^(<kbd>Control</kbd>), !(<kbd>Alt</kbd>) 和 +(<kbd>Shift</kbd>). 请参阅<a href="../KeyList.htm">按键列表</a>了解可用的按键名称.</p>
+<p><a href="GuiControls.htm#Hotkey">Hotkey</a>: <em>Value</em> 为空来清空控件, 或键名和修饰符的集合. 例如: <code>^!c</code>, <code>^Numpad1</code>, <code>+Home</code>. 支持的修饰符仅包含 ^(<kbd>Ctrl</kbd>), !(<kbd>Alt</kbd>) 和 +(<kbd>Shift</kbd>). 请参阅<a href="../KeyList.htm">按键列表</a>了解可用的按键名称.</p>
 <p><a href="GuiControls.htm#Checkbox">Checkbox</a>: <em>Value</em> 为 0 来取消选中按钮, 1 来选中它, 或 -1 来设置灰色的选中标记. 否则, <em>Value</em> 被视为控件的新标题/文本. 请参阅下面的 <a href="#Text">Text</a> 子命令来了解如何覆盖这种行为.</p>
 <p><a href="GuiControls.htm#Radio">Radio</a>: 与上面的 Checkbox 相同. 然而, 如果单选按钮已经被选中(打开) 且它是多个单选按钮组成的组中的成员, 那么这个组中其他的单选按钮会自动取消选中. 要选中只含有一个变量的单选按钮组中的新按钮, 如果这个新按钮没有直接关联的变量, 则请在 <em>ControlID</em> 中指定它的名称/文本.</p>
 <p><a href="GuiControls.htm#DateTime">DateTime</a>/<a href="GuiControls.htm#MonthCal">MonthCal</a>: 指定 <em>Value</em> 为 <a href="FileSetTime.htm#YYYYMMDD">YYYYMMDDHH24MISS</a> 格式的时间戳. 指定 <code>%A_Now%</code> 来使用当前本地日期和时间(当天). 对于 DateTime 控件, 可以省略 <em>Value</em> 来让控件不预选日期/时间(如果它在创建时含有<a href="GuiControls.htm#ChooseNone">这个能力</a>). 对于 MonthCal 控件, 如果控件是<a href="GuiControls.htm#MonthCalMulti">多选的</a>, 则可以指定一个日期范围.</p>
 <p><a href="GuiControls.htm#UpDown">UpDown</a>/<a href="GuiControls.htm#Slider">Slider</a>/<a href="GuiControls.htm#Progress">Progress</a>: 指定 <em>Value</em> 为控件的新位置. 如果 <em>Value</em> 的首个字符是加号, 则这个数字会被认为是相对于当前位置的偏移. 例如, <code>+10</code> 会给当前位置加上 10 而 <code>+-10</code>(加减十) 会减去 10. 如果新位置在控件的范围之外, 则控件一般会被设置为最接近的有效值.</p>
-<p><a href="GuiControls.htm#Tab">Tab</a>/<a href="GuiControls.htm#DropDownList">DropDownList</a>/<a href="GuiControls.htm#ComboBox">ComboBox</a>/<a href="GuiControls.htm#ListBox">ListBox</a>: 指定 <em>Value</em> 为要附加到控件列表末尾的管道符分隔的条目列表. 要替换(覆盖)这个列表, 请加上管道符作为首个字符(例如 <code>|Red|Green|Blue</code>). 要将控件内容清空, 请只指定一个管道符(|). 要预选其中的某个条目, 请在这个条目后包含两个管道符(例如 <code>Red|Green||Blue</code>). 字段间的分隔符可以改变为管道符外的其他字符. 例如 <code><a href="Gui.htm#Delimiter">Gui +Delimiter`n</a></code> 将改变分隔符为换行符而 <code>Gui +DelimiterTab</code> 将改变为 tab(`t).</p>
-<p><a href="GuiControls.htm#Tab">Tab 控件</a>: 除了上面段落中描述的行为, 一个选项卡的子控件和它们原始的选项卡编号保持关联; 即它们不会和它们选项卡的实际显示名称关联. 因此, 重命名或移除一个选项卡不会改变子控件所属的选项卡编号. 例如, 如果有三个选项卡"Red|Green|Blue", 使用 <code>GuiControl,, MyTab, |Red|Blue</code> 移除第二个选项卡, 则原来和 Green 关联的子控件现在和 Blue 关联. 由于这种特性, 通常只应该移除默认的选项卡. 使用这种方法移除的选项卡以后还可以添加回来, 此时它们会要回原来的控件集合.</p>
+<p><a href="GuiControls.htm#Tab">Tab</a>/<a href="GuiControls.htm#DropDownList">DropDownList</a>/<a href="GuiControls.htm#ComboBox">ComboBox</a>/<a href="GuiControls.htm#ListBox">ListBox</a>: 指定 <em>Value</em> 为要附加到控件列表末尾的管道符分隔的条目列表. 要替换(覆盖) 这个列表, 请加上管道符作为首个字符(例如 <code>|Red|Green|Blue</code>). 要将控件内容清空, 请只指定一个管道符(|). 要预选其中的某个条目, 请在这个条目后包含两个管道符(例如 <code>Red|Green||Blue</code>). 字段间的分隔符可以改变为管道符外的其他字符. 例如 <code><a href="Gui.htm#Delimiter">Gui +Delimiter`n</a></code> 将改变分隔符为换行符而 <code>Gui +DelimiterTab</code> 将改变为 tab(`t).</p>
+<p><a href="GuiControls.htm#Tab">Tab 控件</a>: 除了上面段落中描述的行为, 一个选项卡的子控件和它们原始的选项卡编号保持关联; 即它们不会和它们选项卡的实际显示名称关联. 因此, 重命名或移除一个选项卡不会改变子控件所属的选项卡编号. 例如, 如果有三个选项卡 "Red|Green|Blue", 使用 <code>GuiControl,, MyTab, |Red|Blue</code> 移除第二个选项卡, 则原来和 Green 关联的子控件现在和 Blue 关联. 由于这种特性, 通常只应该移除默认的选项卡. 使用这种方法移除的选项卡以后还可以添加回来, 此时它们会要回原来的控件集合.</p>
 <p><a href="ListView.htm">ListView</a> 和 <a href="TreeView.htm">TreeView</a>: 当 <em>SubCommand</em> 为空时不支持它们. 作为替代, 请使用内置的 <a href="ListView.htm#BuiltIn">ListView 函数</a>和 <a href="TreeView.htm#BuiltIn">TreeView 函数</a>.</p>
 
 <h3 id="Text">Text</h3>
@@ -132,11 +132,11 @@ GuiControl, Choose, ListBox1, 0  <em>; 取消选择所有项目(需要 <span cla
 <h3 id="ChooseString">ChooseString</h3>
 <p>设置 ListBox, DropDownList, ComboBox 或 Tab 控件的选择对象为开始部分匹配 <em>String</em> 的条目.</p>
 <pre class="Syntax"><span class="func">GuiControl</span>, ChooseString, ControlID, String</pre>
-<p>搜索不区分大小写. 例如, 如果控件包含项目 &quot;UNIX Text&quot;, 指定 <code>GuiControl, ChooseString, <i>ControlID</i>, unix</code> 就能选中它了. 还支持管道符和双管道符前缀(请参阅上面的 <a href="#Choose">Choose</a> 子命令以了解详情).</p>
+<p>搜索不区分大小写. 例如, 如果控件包含项目 "UNIX Text", 指定 <code>GuiControl, ChooseString, <i>ControlID</i>, unix</code> 就能选中它了. 还支持管道符和双管道符前缀(请参阅上面的 <a href="#Choose">Choose</a> 子命令以了解详情).</p>
 
 <h3 id="Font">Font</h3>
 <p>改变控件的字体为它所在窗口当前使用的字体, 大小, 颜色和样式.</p>
-<pre class="Syntax"><span class="func">GuiControl</span>, Font, ControlID, Options</pre>
+<pre class="Syntax"><span class="func">GuiControl</span>, Font, ControlID</pre>
 <p>例如:</p>
 <pre>Gui, Font</a>, s18 cRed Bold, Verdana  <em>; 如果需要, 使用这样的一行给窗口设置<a href="Gui.htm#Font">新的默认字体</a>.</em>
 GuiControl, Font, MyEdit  <em>; 让上面的字体设置对控件生效.</em></pre>
@@ -153,7 +153,7 @@ GuiControl, Font, MyEdit  <em>; 让上面的字体设置对控件生效.</em></p
 <pre>GuiControl +g, <i>ControlID</i>, %FuncObj%
 GuiControl +g, <i>ControlID</i>, % FuncObj</pre>
 
-<h2>错误处理</h2>
+<h2 id="Error_Handling">错误处理</h2>
 <p><span class="ver">[v1.1.04+]</span>: 此命令失败时会抛出异常. 想了解更多信息, 请参阅<a href="Catch.htm#RuntimeErrors">运行时错误</a>.</p>
 <p>如果指定的窗口/控件不存在或由于其他问题使得命令无法工作, 则 <a href="../misc/ErrorLevel.htm">ErrorLevel</a> 被设置为 1. 否则被设置为 0.</p>
 
@@ -161,22 +161,37 @@ GuiControl +g, <i>ControlID</i>, % FuncObj</pre>
 <p>要对非默认窗口进行操作, 需要在子命令前加上<a href="Gui.htm#MultiWin">窗口名称或编号</a>(或 <span class="ver">[v1.1.03+]</span> 它的 HWND) 和一个冒号, 例如:</p>
 <pre>GuiControl, MyGui:Show, MyButton
 GuiControl, MyGui:, MyListBox, Item1|Item2</pre>
-<p>即使 <em>ControlID</em> 为控件的关联变量或 HWND 这也是必须的, 因为任何一个变量可以使用多个 GUI 窗口. 从 <span class="ver">[v1.1.20+]</span> 开始, 如果 <em>ControlID</em> 为某个控件的 HWND 时 GUI 的名称可以省略. </p>
+<p>即使 <em>ControlID</em> 为控件的关联变量这也是必需的, 因为任何一个变量可以在多个 GUI 窗口中使用. 从 <span class="ver">[v1.1.20+]</span> 开始, 如果 <em>ControlID</em> 为某个控件的 HWND, 则可以省略 GUI 的名称. </p>
 <p>一个 GUI <a href="../misc/Threads.htm">线程</a>是由 GUI 动作启动的. GUI 动作包含从 GUI 窗口的菜单栏选择一个项目或触发其某个 <a href="Gui.htm#label">g-标签</a>(例如按下按钮).</p>
 <p>GUI 线程的<a href="Gui.htm#DefaultWin">默认窗口名称</a>是运行此线程的窗口名称. 非 GUI 线程的默认窗口编号为 1.</p>
 
-<h2>相关</h2>
+<h2 id="Related">相关</h2>
 <p><a href="Gui.htm">Gui</a>, <a href="GuiControlGet.htm">GuiControlGet</a>, <a href="Control.htm">Control</a></p>
 
-<h2>示例</h2>
+<h2 id="Examples">示例</h2>
+<div class="ex" id="ExReplaceList">
+<p><a class="ex_number" href="#ExReplaceList"></a> 用一个新的列表替换当前列表.</p>
+<pre>GuiControl,, MyListBox, |Red|Green|Blue</pre>
+</div>
 
-<div class="ex" id="ExBasic">
-<p><a href="#ExBasic">#1</a></p>
-<pre>GuiControl,, MyListBox, |Red|Green|Blue  <em>; 把当前列表替换为新列表.</em>
-GuiControl,, MyEdit, New text line 1.`nNew text line 2.
-GuiControl,, MyRadio2, 1  <em>; 选择此单选按钮并关闭同组中其他所有单选按钮.</em>
-GuiControl, Move, OK, x100 y200  <em>; 移动 OK 按钮到新位置.</em>
-GuiControl, Focus, LastName  <em>; 设置键盘焦点到变量名或文本为 "LastName" 的控件.</em></pre>
+<div class="ex" id="ExNewText">
+<p><a class="ex_number" href="#ExNewText"></a> 将新的文本放入编辑控件中.</p>
+<pre>GuiControl,, MyEdit, New text line 1.`nNew text line 2.</pre>
+</div>
+
+<div class="ex" id="ExRadio">
+<p><a class="ex_number" href="#ExRadio"></a> 打开一个单选按钮并关闭其组中的所有其他按钮.</p>
+<pre>GuiControl,, MyRadio2, 1</pre>
+</div>
+
+<div class="ex" id="ExMove">
+<p><a class="ex_number" href="#ExMove"></a> 移动 OK 按钮到新的位置.</p>
+<pre>GuiControl, Move, OK, x100 y200</pre>
+</div>
+
+<div class="ex" id="ExFocus">
+<p><a class="ex_number" href="#ExFocus"></a> 设置键盘焦点到其变量名或文本为 "LastName" 的控件上.</p>
+<pre>GuiControl, Focus, LastName</pre>
 </div>
 
 </body>
